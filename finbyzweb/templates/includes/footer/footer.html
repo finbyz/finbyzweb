@@ -1,0 +1,35 @@
+<footer class="web-footer">
+	<section class="footer-links">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3 col-sm-6 col-xs-12">
+					<h3>Group Company</h3><a href="http://www.finbyz.com/"><img alt="FinByz Consulting" class="footer-logo" src="/files/FinByz-Logo-Black_bg@2x.png" style="margin-top:10px">
+					<p><font color="#ddd">www.finbyz.com</font></p>
+					<p><font color="#ddd">Providing world class solutions to our clients, FinByz Consulting is pioneering in the field of debt syndication and forex risk management.</font></p></a>
+				</div>
+				<div class="col-md-6 col-sm-6 col-xs-12 text-left">
+					{% if footer_items -%}
+					<div class="row">
+						{% include "templates/includes/footer/footer_items.html" %}
+					</div>
+					{% endif %}
+				</div>
+				
+				<div class="col-md-3 col-sm-6 col-xs-12 text-left">
+					{% if footer_address %}
+						{% if copyright %}<br>{% endif %}
+						{{ footer_address }}
+					{% endif %}
+				</div>
+			</div>
+			<div class="row footer-bottom-line">
+				<div class="text-muted small col-sm-6 col-xs-12">
+					{% if copyright %}
+						&copy; {{ copyright }}
+					{% endif %}
+					
+				</div>
+			</div>
+		</div>
+	</section>
+</footer>

@@ -1,0 +1,65 @@
+{% extends "templates/web.html" %}
+
+{% block title %}About Us{% endblock %}
+{% block page_sidebar %}
+{% include "templates/pages/web_sidebar.html" %}
+{% endblock %}
+{% block page_content %}
+
+<article class="about-content">
+	<div class="container">
+	{{ doc.company_introduction or """<p>Some Introduction about your company that you would
+			like your website visitor to know.
+			More people than you think will read your About page.
+			People always like to know who the are doing business with.
+			Be authentic and avoid using jargon like 'value added services' etc.
+			Be sure to update your company history and
+			list of key team members in Website > About Us Settings</p>""" }}
+
+	{% if doc.get({"doctype":"Company History"}) %}
+	<h3>{{ doc.company_history_heading or "Company History" }}</h3>
+	<div class="timeline">
+	{% for d in doc.get({"doctype":"Company History"}) %}	
+		 <div class="container {{ loop.cycle('left', 'right') }}" >
+			<div class="timeline-icon">
+			 
+			  <img src="{{ d.image }}" data-aos="zoom-in" data-aos-duration="1000">
+			</div>
+			<div class="content" data-aos="{{ loop.cycle('fade-right', 'fade-left') }}" data-aos-duration="1000">
+			  <h2>{{ d.year }}</h2>
+			  <h3>{{ d.title }}</h3>
+			  <p>{{ d.highlight }}</p>
+			</div>
+		  </div>	
+	{% endfor %}
+	</div>
+	{% endif %}
+	{% if doc.middle_content %}
+		<div>{{ doc.middle_content }}</div>
+	{% endif %}
+	{% if doc.get({"doctype":"About Us Team Member"}) %}
+	<section>
+	<h1 class="text-center">{{ doc.team_members_heading or "Team Members" }}</h1>
+	<div class="team-member">
+	<div class="row row-flex" itemscope itemtype="http://schema.org/Person">
+		{% for d in doc.get({"doctype":"About Us Team Member"}) %}
+		<span class="mg-bottom col-md-6 col-sm-6 col-xs-12">
+			<div class="col-md-6 col-sm-6 col-xs-6 ">
+				<div>
+					<img src="{{ d.image_link }}" style="" itemprop="image" class="team-member-img">
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-6">
+				<h4 itemprop="name">{{ d.full_name }}</h4>
+				<p itemprop="description">{{ d.bio }}</p>
+			</div>
+		</span>
+		{% endfor %}
+	</div>
+	</div>
+	</section>
+	{% endif %}
+	{{ doc.footer or "" }}
+	</div>
+</article>
+{% endblock %}
