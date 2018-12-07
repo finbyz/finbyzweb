@@ -1,0 +1,126 @@
+div[data-path=contact] .page-head {display:none;}
+form .form-group{
+	float:left;
+    width: 25%; 
+	padding	:10px;
+}
+form .form-group:last-child{
+	clear:both;
+	width:75%;
+}
+.web-form-page .section {
+    padding: 18px 130px;
+}
+textarea .form-control {
+	height:194px;
+}
+.text-right {
+    text-align: center;
+}
+
+.btn {
+	width:15%;
+	margin-right: 63%;
+}
+.contactbg {
+background:url(../files/contabg.jpg);
+min-height:430px;
+}
+.contact_title {
+margin:40px 0 30px 60px;
+padding:0 0 15px 0;
+font-size:35px;
+color:#fff;
+border-bottom:solid #1aa8e2 5px;
+display:inline-block;
+}
+.media {
+margin:20px 60px;
+}
+.media i { 
+color:#1aa8e2;
+margin-right:20px;
+font-size:22px;
+}
+.media span {
+color:#fff;
+font-size:15px;font-weight:400;line-height:20px;
+}
+.media a { color:#fff; }
+.media a:hover { color:#1aa8e2; }
+
+.card-header{
+	height: 50px;
+	border: 1px solid grey;
+	display: block;
+	font-decoration: bolder;
+	margin-top: 1%;
+	margin-bottom: 1%;
+}
+/*******************************
+* Does not work properly if "in" is added after "collapse".
+* Get free snippets on bootpen.com
+*******************************/
+    .panel-group .panel {
+        border-radius: 0;
+        box-shadow: none;
+        border-color: #EEEEEE;
+    }
+.panel-default{
+	height: auto;
+}
+
+    .panel-default > .panel-heading {
+        padding: 0;
+        border-radius: 0;
+        color: #212121;
+        background-color: #FAFAFA;
+        border-color: #EEEEEE;
+    }
+
+    .panel-title {
+        font-size: 14px;
+    }
+
+    .panel-title > a {
+        display: block;
+        padding: 15px;
+        text-decoration: none;
+    }
+
+    .more-less {
+        float: right;
+        color: #212121;
+    }
+
+    .panel-default > .panel-heading + .panel-collapse > .panel-body {
+        border-top-color: #EEEEEE;
+    }
+
+.panel-group .panel .panel-heading .panel-title i{
+	color: #ffffff;
+}
+
+.panel-group .panel .panel-heading .panel-title a{
+	background-color: #1aa8e2;
+	color: #ffffff;
+}
+
+.box1 .round i{
+	color: #ffffff;
+}
+
+@media only screen and (max-width : 480px) {
+.btn {
+	margin-right:0%;
+}
+.web-form-page .section {
+    padding: 0px 85px;
+}
+form .form-group{
+	width:100%;
+}
+form .form-group:last-child{
+	width:100%;
+}
+}
