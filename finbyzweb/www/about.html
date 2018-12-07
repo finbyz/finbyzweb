@@ -25,7 +25,7 @@
 			 
 			  <img src="{{ d.image }}" data-aos="zoom-in" data-aos-duration="1000">
 			</div>
-			<div class="content" data-aos="{{ loop.cycle('fade-right', 'fade-left') }}" data-aos-duration="1000">
+			<div class="content" data-aos="fade-up" data-aos-duration="1000">
 			  <h2>{{ d.year }}</h2>
 			  <h3>{{ d.title }}</h3>
 			  <p>{{ d.highlight }}</p>
@@ -44,14 +44,15 @@
 	<div class="row row-flex" itemscope itemtype="http://schema.org/Person">
 		{% for d in doc.get({"doctype":"About Us Team Member"}) %}
 		<span class="mg-bottom col-md-6 col-sm-6 col-xs-12">
-			<div class="col-md-6 col-sm-6 col-xs-6 ">
+			<div class="col-md-4 col-sm-4 col-xs-4 ">
 				<div>
 					<img src="{{ d.image_link }}" style="" itemprop="image" class="team-member-img">
 				</div>
 			</div>
-			<div class="col-md-6 col-sm-6 col-xs-6">
-				<h4 itemprop="name">{{ d.full_name }}</h4>
-				<p itemprop="description">{{ d.bio }}</p>
+			<div class="col-md-8 col-sm-8 col-xs-8">
+				<h2 style="margin-top:-3px">{{ d.full_name }}</h2>
+				<h4>{{ d.designation }}</h4>
+				<p itemprop="description" class="about_bio">{{ d.bio }}</p>
 			</div>
 		</span>
 		{% endfor %}
