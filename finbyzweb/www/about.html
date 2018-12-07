@@ -46,7 +46,11 @@
 		<span class="mg-bottom col-md-6 col-sm-6 col-xs-12">
 			<div class="col-md-4 col-sm-4 col-xs-4 ">
 				<div>
+				{% if d.image_link %}
 					<img src="{{ d.image_link }}" style="" itemprop="image" class="team-member-img">
+				{% else %}
+					<img src="/files/person-image.jpg" style="" itemprop="image" class="team-member-img">
+				{% endif %}
 				</div>
 			</div>
 			<div class="col-md-8 col-sm-8 col-xs-8">
