@@ -25,6 +25,8 @@ textarea .form-control {
 .contactbg {
 background:url(../svg/contactbg.svg);
 min-height:430px;
+background-size: cover;
+background-repeat: no-repeat;
 }
 .contact_title {
 margin:40px 0 30px 60px;
