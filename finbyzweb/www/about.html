@@ -20,17 +20,17 @@
 	<div class="text-center pb-20"><h3 class="title-underline">{{ doc.company_history_heading or "Company History" }}</h3></div>
 	<div class="timeline">
 	{% for d in doc.get({"doctype":"Company History"}) %}	
-		 <div class="container {{ loop.cycle('left', 'right') }}" >
+		 <div class="container {{ loop.cycle('left', 'right') }}">
 			<div class="timeline-icon">
-			 
-			  <img src="{{ d.image }}" data-aos="zoom-in" data-aos-duration="1000">
+				<img src="{{ d.image }}" class="finbyz-zoomin">
 			</div>
-			<div class="content" data-aos="fade-up" data-aos-duration="1000">
+
+			<div class="content finbyz-fadeinup">
 			  <h2>{{ d.year }}</h2>
 			  <h3>{{ d.title }}</h3>
 			  <p>{{ d.highlight }}</p>
 			</div>
-		  </div>	
+		  </div>
 	{% endfor %}
 	</div>
 	{% endif %}
