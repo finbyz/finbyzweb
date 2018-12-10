@@ -3,23 +3,23 @@
 		<div class="row">
 		{% set customer_list = frappe.get_list("Customer",fields=("image"),filters={"show_on_website":1}) %}
 		{% for i in customer_list %}
-		{% if i<6 %}
+		{% if loop.index < 6 %}
 			<div class="col-md-2 col-sm-3 col-xs-6">
 				<img src="{{ i.image }}" class="grayscale-img">
 			</div>
 		{% endif %}
-		{% if i>5 and i<11 %}
+		{% if loop.index > 5 and loop.index < 11 %}
 		<div class="col-md-1"> </div>
 			<div class="col-md-2 col-sm-3 col-xs-6">
 				<img src="{{ i.image }}" class="grayscale-img">
 			</div>
 		{% endif %}
-		{% if i>10 and i<17 %}
+		{% if loop.index > 10 and loop.index < 17 %}
 			<div class="col-md-2 col-sm-3 col-xs-6">
 				<img src="{{ i.image }}" class="grayscale-img">
 			</div>
 		{% endif %}
-		{% if i>16 and i<22 %}
+		{% if loop.index > 16 and loop.index < 22 %}
 		<div class="col-md-1"> </div>
 		<div class="col-md-2 col-sm-3 col-xs-6">
 			<img src="{{ i.image }}" class="grayscale-img">
