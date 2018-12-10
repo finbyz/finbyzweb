@@ -9,10 +9,11 @@
 			</div>
 		{% endif %}
 		{% if loop.index > 5 and loop.index < 11 %}
-		<div class="col-md-1"> </div>
-			<div class="col-md-2 col-sm-3 col-xs-6">
+		<div class="col-md-1 col-sm-2 col-xs-1"> </div>
+			<div class="col-md-2 col-sm-3 col-xs-5">
 				<img src="{{ i.image }}" class="grayscale-img">
 			</div>
+		<div class="col-md-1 col-sm-1 col-xs-1"> </div>
 		{% endif %}
 		{% if loop.index > 10 and loop.index < 17 %}
 			<div class="col-md-2 col-sm-3 col-xs-6">
@@ -20,11 +21,11 @@
 			</div>
 		{% endif %}
 		{% if loop.index > 16 and loop.index < 22 %}
-		<div class="col-md-1"> </div>
-		<div class="col-md-2 col-sm-3 col-xs-6">
+		<div class="col-md-1 col-sm-2 col-xs-1"> </div>
+		<div class="col-md-2 col-sm-3 col-xs-5">
 			<img src="{{ i.image }}" class="grayscale-img">
 		</div>
-		<div class="col-md-1"> </div>
+		<div class="col-md-1 col-sm-1 col-xs-1"> </div>
 		{% endif %}
 		{% endfor %}
 		</div>
