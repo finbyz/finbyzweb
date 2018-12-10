@@ -2,10 +2,13 @@
 	<div class="container">
 		<div class="row">
 		{% set customer_list = frappe.get_list("Customer",fields=("image"),filters={"show_on_website":1}) %}
-		{% for i in customer_list %}
+		
 <!-- 		{% if loop.index < 6 %} -->
+
 			<div class="col-md-2 col-sm-3 col-xs-6">
+			{% for i in customer_list %}
 				<img src="{{ i.image }}" class="grayscale-img">
+			{% endfor %}
 			</div>
 <!-- 	{% endif %}
 		{% if loop.index > 5 and loop.index < 11 %}
@@ -27,7 +30,7 @@
 		</div>
 		<div class="col-md-1 col-sm-1 col-xs-1"> </div>
 		{% endif %} -->
-		{% endfor %}
+		
 		</div>
 	</div>
 </section>
