@@ -1,0 +1,12 @@
+<section id="customer">
+	<div class="container">
+		<div class="row">
+		{% set customer_list = frappe.get_list("Customer",fields=("image"),filters={"show_on_website":1}) %}
+		{% for i in customer_list%}
+			<div class="col-md-2 col-sm-3 col-xs-6">
+				<img src="{{ i.image }}" class="gray-scale">
+			</div>
+		{% endfor %}
+		</div>
+	</div>
+</section>
