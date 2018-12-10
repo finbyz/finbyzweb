@@ -19,11 +19,9 @@ app_license = "GPL 3.0"
 # app_include_js = "/assets/finbyzweb/js/finbyzweb.js"
 
 web_include_css = [
-	"https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css",
 	"https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.css"
 ]
-web_include_js = [	
-	"https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js",
+web_include_js = [
 	"https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js",
 	"https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TimelineMax.min.js",
 	"https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js",
@@ -33,9 +31,6 @@ web_include_js = [
 	"https://cdnjs.cloudflare.com/ajax/libs/scrollify/1.0.19/jquery.scrollify.min.js",
 	"js/splittext.min.js",
 	"js/finbyz.js",
-#	"js/isotope.pkgd.min.js",
-#	"js/ajax-pagination.js",
-#	"js/timer.js",
 ]
 
 # include js, css files in header of web template
