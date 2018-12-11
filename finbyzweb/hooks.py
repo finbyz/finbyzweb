@@ -135,3 +135,8 @@ web_include_js = [
 # 	"frappe.desk.doctype.event.event.get_events": "finbyzweb.event.get_events"
 # }
 
+doc_events = {
+	"Customer": {
+		"before_save": "finbyzweb.api.customer_before_save"
+	}
+}
