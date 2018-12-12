@@ -3,7 +3,6 @@
 
 frappe.ui.form.on('Customer Details', {
 	refresh: function(frm) {
-		frm.disable_save()
-		frm.set_read_only(true)
+		
 	}
 });
