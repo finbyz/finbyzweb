@@ -6,13 +6,19 @@
 		{% if page.child_items %} onclick="return false;" {% endif %}
 		{{ page.target or ''}}>	</a>
 		{%- if page.child_items -%}
-			<h3>{{ page.label }}</h3>
+			<p class="footer-title t-white">{{ page.label }}</p>
 		
 			<ul class="list-unstyled float">
 			{%- for child in page.child_items -%}
 				<li class="footer-child-item zoom" data-label='{{ child.label }}'>
-				<a href="{{ child.url | abs_url }}"
-						{% if child.target %}target="_blank"{% endif %}><i class="fa fa-angle-right" style="margin-right: 7px;"></i>{{ child.label }}</a>
+				<p class="footer-txt-md">
+					<a href="{{ child.url | abs_url }}"
+							{% if child.target %}target="_blank"{% endif %}><i class="fa fa-angle-right t-graylight" style="margin-right: 7px;"></i>
+							<span class="t-graylight">
+						{{ child.label }}
+					</span>
+					</a>
+						</p>
 				</li>
 			{%- endfor -%}
 			</ul>
