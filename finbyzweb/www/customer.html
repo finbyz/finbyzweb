@@ -1,13 +1,16 @@
+
 <section id="customer">
 	<div class="container">
-		<div class="row">
+<div class="row">
 		{% if doc.get({"doctype":"Customer Details List"}) %}
 		{% for i in doc.get({"doctype":"Customer Details List"}) %}
+
 			<div class="col-md-2 col-sm-3 col-xs-6">
-				<img src="{{ i.image }}" class="grayscale-img" title='{{ i.customer }}'>
+				<img src="{{ i.image }}" class="grayscale-img client-image" title='{{ i.customer }}'>
 			</div>
+
 		{% endfor %}
 		{% endif %}	
-		</div>
+</div>
 	</div>
 </section>
