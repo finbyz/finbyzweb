@@ -1,16 +1,13 @@
-
-<section id="customer">
+<section id="customer" class="mt-100">
 	<div class="container">
-<div class="row">
-		{% if doc.get({"doctype":"Customer Details List"}) %}
-		{% for i in doc.get({"doctype":"Customer Details List"}) %}
-
-			<div class="col-md-2 col-sm-3 col-xs-6">
-				<img src="{{ i.image }}" class="grayscale-img client-image" title='{{ i.customer }}'>
-			</div>
-
-		{% endfor %}
-		{% endif %}	
-</div>
+		<div class="row">
+			{% if doc.get({"doctype":"Customer Details List"}) %}
+			{% for i in doc.get({"doctype":"Customer Details List"}) %}
+				<div class="col-md-2 col-sm-3 col-xs-6">
+					<img src="{{ i.image }}" class="grayscale-img client-image" title='{{ i.customer }}'>
+				</div>
+			{% endfor %}
+			{% endif %}	
+		</div>
 	</div>
 </section>
