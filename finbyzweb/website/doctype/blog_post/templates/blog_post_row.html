@@ -4,22 +4,26 @@
 		<div class="col-xs-12">
 			<h2><a href="/{{ post.route }}" class="link-underline no-decoration">{{ post.title }}</a></h2>
 			{% if post.cover_image %}
-			<p>
-				<img  class="blogpost-cover-img" src="{{ post.cover_image }}" alt="{{post.title}} - Cover Image">
-			</p>
+			<div class="rollover">
+				<img class=" blogpost-cover-img finbyz-fadeinup" src="{{ post.cover_image }}" alt="{{post.title}} - Cover Image" width="80%">
+				<div class="overlay">
+				<div class="overlay_text">
+					 <p><a href="/{{ post.route }}" class="link-underline t-white">{{ post.title }}</a></p>
+				</div>
+			 </div>
+			</div>
 			{% endif %}
 			<br>
-
 			<div>
 				
 					<div class="row">
 						<div class="col-md-2 col-sm-2 col-xs-3">
-							<div class="date t-white">
+							<div class="date t-white finbyz-fadeinup">
 								<h2>{{ frappe.utils.get_datetime(post.published).strftime("%d") }}</h2>
 								<p class="text-center">{{ frappe.utils.get_datetime(post.published).strftime("%b, %Y") }}</p>
 							</div>
 						</div>
-						<div class="col-md-10 col-sm-10 col-xs-9">
+						<div class="col-md-10 col-sm-10 col-xs-9 finbyz-fadeinup">
 							<p><a href="/{{ post.route }}">{{ post.title }}</a></p>
 							<p>By <a href="/blog?blogger={{ post.blogger }}">{{ post.full_name }}</a> | {{ frappe.format_date(post.published_on) }} | Categories: <a href="/blog?blog_category={{ post.blog_category }}" class="no-decoration">{{ post.blog_category }}</a> {% if _user_tags -%}| Tags: {{ post._user_tags }} {% endif %}</p>
 							<p>{{ post.intro }}</p>					
@@ -46,5 +50,10 @@
 .page-head{
 	max-width:1130px;
 	margin: auto;
+}
+a:hover,
+a:focus{
+text-decoration:none;
+color:#FFF;
 }
 </style>

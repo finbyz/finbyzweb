@@ -16,6 +16,7 @@
 			Be sure to update your company history and
 			list of key team members in Website > About Us Settings</p>""" }}
 
+	
 	{% if doc.get({"doctype":"Company History"}) %}
 	<div class="text-center pb-20"><h3 class="title-underline">{{ doc.company_history_heading or "Company History" }}</h3></div>
 	<div class="timeline">
@@ -47,9 +48,9 @@
 			<div class="col-md-4 col-sm-4 col-xs-4 ">
 				<div>
 				{% if d.image_link %}
-					<img src="{{ d.image_link }}" style="" itemprop="image" class="team-member-img">
+					<img src="{{ d.image_link }}" style="" itemprop="image" class="grayscale-img">
 				{% else %}
-					<img src="/files/person-image.jpg" style="" itemprop="image" class="team-member-img">
+					<img src="/files/person-image.jpg" style="" itemprop="image" class="grayscale-img">
 				{% endif %}
 				</div>
 			</div>
@@ -66,6 +67,8 @@
 	{% endif %}
 	{{ doc.footer or "" }}
 	</div>
-	<!-- {% include "www/customer.html" %} -->
+	<div>
+		{% include "www/customer.html" %}
+	</div>
 </article>
 {% endblock %}
