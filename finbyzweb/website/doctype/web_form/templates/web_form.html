@@ -14,16 +14,18 @@
 
 {% block header_actions %}
 	{% if not read_only and has_header %}
-	<div style="padding-bottom: 15px;">
+	<!-- <div style="padding-bottom: 15px;">
 	    {% if login_required -%}
 		<a href="{{ cancel_url or pathname }}" class="btn btn-default btn-sm">
 	    	{{ _("Cancel") }}</a>
 		{%- endif %}
 		{% if not is_list %}
-	    <button type="submit" class="btn btn-sm btn-form-submit">
+		<div class="button">
+	    <button type="submit" class="btn finbyz-button">
 	    		{{ _("Save") }}</button>
+	    	</div>
 		{% endif %}
-	</div>
+	</div> -->
 	{% endif %}
 	{% if is_list %}
 	<div style="padding-bottom: 15px;">
@@ -277,18 +279,20 @@
 			<h5 class='uppercase'>{{ _(section.label) }}</h5>
 			<span class="help-block small text-muted">{{ _(section.description) }}</span>
 			{% endif %}
-			<div class="row">
-					{% for column in section.columns %}
-					<div class="col-sm-{{ (12 / (section.columns|len))|int }}">
-							{% for field in column %}
-								{% if field.fieldtype=='Table' %}
-									{{ render_table(field) }}
-								{% else %}
-									{{ render_field(field, doc) }}
-								{% endif %}
-							{% endfor %}
-					</div>
-					{% endfor %}
+			<div class="container">
+				<div class="row">
+						{% for column in section.columns %}
+						<div class="col-md-12 col-sm-12 finbyz-form">
+								{% for field in column %}
+									{% if field.fieldtype=='Table' %}
+										{{ render_table(field) }}
+									{% else %}
+										{{ render_field(field, doc) }}
+									{% endif %}
+								{% endfor %}
+						</div>
+						{% endfor %}
+				</div>
 			</div>
 		</div>
 		{% endfor %}
@@ -313,7 +317,7 @@
 				{{ _("Page {0} of {1}").format(loop.index, layout|len) }}</p>
 			{% endif %}
 			<br>
-			<p class='text-right'>
+			<p class='text-center'>
 				{%- if loop.index > 1 -%}
 				<button class='btn btn-sm btn-default btn-change-section'
 					data-idx="{{ loop.index - 1 }}">
@@ -322,8 +326,10 @@
 				<!-- save/next button -->
 				{% if (loop.index == layout|len or frappe.form_dict.new) %}
 					{% if not read_only %}
-				    <button type="submit" class="btn btn-form-submit">
+					<div class="button">
+				    <button type="submit" class="finbyz-button">
 				    	{{ _("SUBMIT") }}</button>
+					</div>
 					{% endif %}
 				{% elif layout|len > 1 %}
 				    <button class="btn btn-primary btn-sm btn-change-section"
