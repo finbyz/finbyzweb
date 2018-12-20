@@ -1,0 +1,31 @@
+{% extends "templates/web.html" %}
+
+{% block breadcrumbs %}
+	{% include "templates/includes/breadcrumbs.html" %}
+{% endblock %}
+
+
+
+{% block page_content %}
+<div class="container mt-50">
+	<div class="row">
+		<div class="col-md-4 web-title">
+			<div class="title-font h1-large pt-100">
+				<h1 class="title-underline">{{ job_title }}</h1>
+			</div>
+		</div>
+		
+		<div class="col-md-8"><img src="{{ job_image }}" style="float: right;" width="700px" height="300px" alt="{{ job_title }}">
+		</div>
+	</div>
+</div>
+{%- if description -%}
+<div>{{ description }}</div>
+{% endif %}
+<div style='margin-top: 30px' class="button">
+	<a class='finbyz-button'
+	href='/job_application_form?job_title={{ doc.name }}'>
+	{{ _("Apply Now") }}</a>
+</div>
+
+{% endblock %}

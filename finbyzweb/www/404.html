@@ -1,0 +1,34 @@
+{% extends "templates/web.html" %}
+
+{%- block title -%}{{_("Not Found")}}{%- endblock -%}
+
+{% block page_content %}
+
+<div class="container mt-50">
+	<div class="row">
+		<div class="col-md-4 web-title">
+			<div class="title-font h1-large pt-100">
+				<h1 class="title-underline">404 - Page Not Found</h1>
+			</div>
+		</div>
+		
+		<div class="col-md-8"><img src="/svg/banner-404.svg" style="float: right;" width="700px" height="300px" alt="Page Missing or Moved">
+		</div>
+	</div>
+</div>
+
+<div class='page-card'>
+	<div class='page-card-head'>
+		<span class='indicator darkgrey'>{{_("Page Missing or Moved")}}</span>
+	</div>
+	<p>{{_("The page you are looking for is missing. This could be because it is moved or there is a typo in the link.")}}</p>
+	
+	<div class="button mt-20"><button href='/' class='finbyz-button'>{{ _("Home") }}</button></div>
+</div>
+<p class='text-muted text-center small' style='margin-top: -20px;'>{{ _("Error Code: {0}").format('404') }}</p>
+<style>
+.hero-and-content {
+	background-color: #f5f7fa;
+}
+</style>
+{% endblock %}
