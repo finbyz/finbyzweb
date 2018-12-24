@@ -317,26 +317,44 @@
 				{{ _("Page {0} of {1}").format(loop.index, layout|len) }}</p>
 			{% endif %}
 			<br>
-			<p class='text-center'>
+			 <p class='text-center'>
 				{%- if loop.index > 1 -%}
 				<button class='btn btn-sm btn-default btn-change-section'
 					data-idx="{{ loop.index - 1 }}">
 					{{ _("Previous") }}</button>
 				{%- endif -%}
-				<!-- save/next button -->
+				
 				{% if (loop.index == layout|len or frappe.form_dict.new) %}
 					{% if not read_only %}
 					<div class="button">
-				    <button type="submit" class="finbyz-button">
-				    	{{ _("SUBMIT") }}</button>
+				    <button type="submit" class="finbyz-button btn-form-submit">
+				    	{{ _("SAVE") }}</button>
 					</div>
+					{% endif %}
+				{% elif layout|len > 1 %}
+				    <button class="btn btn-primary btn-sm btn-change-section "
+						data-idx="{{ loop.index + 1 }}">
+				    	{{ _("Next") }}</button>
+				{% endif %}
+			</p> 
+			<!-- <p class='text-right'>
+				{%- if loop.index > 1 -%}
+				<button class='btn btn-sm btn-default btn-change-section'
+					data-idx="{{ loop.index - 1 }}">
+					{{ _("Previous") }}</button>
+				{%- endif -%}
+				
+				{% if (loop.index == layout|len or frappe.form_dict.new) %}
+					{% if not read_only %}
+				    <button type="submit" class="btn btn-primary btn-sm btn-form-submit">
+				    	{{ _("SUBMIT") }}</button>
 					{% endif %}
 				{% elif layout|len > 1 %}
 				    <button class="btn btn-primary btn-sm btn-change-section"
 						data-idx="{{ loop.index + 1 }}">
 				    	{{ _("Next") }}</button>
 				{% endif %}
-			</p>
+			</p> -->
 		</div>
 	</div>
 	{% endfor %}
