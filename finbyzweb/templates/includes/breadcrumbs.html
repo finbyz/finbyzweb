@@ -1,13 +1,13 @@
 {% if parents and parents|length > 0 %}
-<ul class="breadcrumb mt-100" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+<ul class="breadcrumb mt-100" itemscope itemtype="http://data-vocabulary.org/Breadcrumb" style="font-size:20px">
 	{% for parent in parents %}
-		<li class="sub-text">
+		<li>
 			<a class="link-underline" href="{{ url_prefix }}{{ parent.route | abs_url }}" itemprop="url">
 			<span itemprop="title">{{ parent.title or parent.label or parent.name or "" }}</span>
 			</a>
 		</li>
 	{% endfor %}
-	<li class="active sub-text"><span itemprop="title">{{ title or "" }}</span></li>
+	<li class="active"><span itemprop="title">{{ title or "" }}</span></li>
 </ul>
 {% endif %}
 <style>
@@ -15,7 +15,8 @@
 	max-width: 1150px;
 	margin: auto;
 }
-.breadcrumb a:hover{
+.breadcrumb a:hover,
+.breadcrumb a:active{
 text-decoration:none;
 }
 </style>

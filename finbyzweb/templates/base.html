@@ -5,7 +5,10 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>{% block title %} {{ title | striptags }} {% endblock %}</title>
-      <meta name="generator" content="frappe">
+      <meta name="generator" content="finbyz">
+	  {% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}
+
+	  <script type="application/ld+json">{"@context": "http://schema.org/", "@type": "Organization", "name": "Finbyz","legalName": "Finbyz Tech Pvt Ltd", "url":" https://finbyz.tech", "description": "Best ERP Sotfware Provider", "sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://plus.google.com/s/finbyz", "https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz"], "logo": "https://finbyz.tech/files/FinbyzLogo.svg","address": {"@type": "PostalAddress", "addressLocality": "Ahmedabad", "addressRegion": "Gujarat", "postalCode": "380009","streetAddress": "FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura" }, "contactPoint": { "@type": "ContactPoint", "contactType": "sales", "telephone": "079 48912428","email": "info@finbyz.in"}}</script>
       {% block favicon %}
       <link rel="shortcut icon"
       href="{{ (favicon or "/assets/frappe/images/favicon.png") | abs_url }}"
