@@ -15,12 +15,13 @@
             {% include "templates/includes/list/filters.html" %}
         {%- endif %} -->
 		{% if result_heading_template %}{% include result_heading_template %}{% endif %}
-
-    	<div class="result">
-    		{% for item in result %}
-    			{{ item }}
-    		{% endfor %}
-    	</div>
+		<div class="row">
+			<div class="result">
+				{% for item in result %}
+					{{ item }}
+				{% endfor %}
+			</div>
+		</div>
     	<div class="more-block {% if not show_more -%} hide {%- endif %}">
     		<button class="btn btn-default btn-more btn-sm">{{ _("More") }}</button>
     	</div>
@@ -29,7 +30,7 @@
 {%- endif %}
 
 <style>
-.page_content p{
+.page_content p:first-child{
 	max-width: 1130px;
 	margin: auto;
 }

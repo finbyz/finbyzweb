@@ -1,5 +1,13 @@
-<div class="web-list-item">
-    <a class="no-decoration" href="/{{ route }}">
-        <p class="right-line">{{ doc.get(title_field) }}</p>
-    </a>
+<div class="col-md-6 pull-left">
+	<div class="web-list-item">
+		<a class="no-decoration" href="/{{ route }}">
+			<h3 class="right-line">{{ doc.get(title_field) }}</h3>
+			{%- if doc.image -%}
+			<img src="{{ doc.image }}" class="mt-20" height="300">
+			{%- endif -%}
+		</a>
+		<p style="font-family: sans-serif;font-size:30px">
+			{{ doc.skills or '' }}
+		</p>
+	</div>
 </div>
