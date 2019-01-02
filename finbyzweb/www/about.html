@@ -6,8 +6,8 @@
 {% endblock %}
 {% block page_content %}
 
-<article class="about-content">
-	<div class="container">
+<article itemscope itemtype ="http://schema.org/AboutPage" class="about-content">
+	<div itemprop="description" class="container">
 	{{ doc.company_introduction or """<p>Some Introduction about your company that you would
 			like your website visitor to know.
 			More people than you think will read your About page.
@@ -23,7 +23,7 @@
 	{% for d in doc.get({"doctype":"Company History"}) %}	
 		 <div class="container {{ loop.cycle('left', 'right') }}">
 			<div class="timeline-icon">
-				<img src="{{ d.image }}" class="finbyz-zoomin">
+				<img itemtype="image" src="{{ d.image }}" class="finbyz-zoomin" alt="Finbyz-icon">
 			</div>
 
 			<div class="content finbyz-fadeinup">
