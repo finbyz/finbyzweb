@@ -8,8 +8,37 @@
       <meta name="generator" content="finbyz">
 	  {% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}
 
-	  <script type="application/ld+json">{"@context": "http://schema.org/", "@type": "Organization", "name": "Finbyz","legalName": "Finbyz Tech Pvt Ltd", "url":" https://finbyz.tech", "description": "Best ERP Sotfware Provider", "sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://plus.google.com/s/finbyz", "https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz"], "logo": "https://finbyz.tech/files/FinbyzLogo.svg","address": {"@type": "PostalAddress", "addressLocality": "Ahmedabad", "addressRegion": "Gujarat", "postalCode": "380009","streetAddress": "FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura" }, "contactPoint": { "@type": "ContactPoint", "contactType": "sales", "telephone": "+91 07948912428","email": "info@finbyz.in"}}</script>
-      {% block favicon %}
+	  {% if page_type == "Job" %}
+	  <script type="application/ld+json">
+	  {
+		  "@context" : "http://schema.org",
+		  "@type" : "JobPosting",	  
+		  "title" : "{{ title }}",
+		  "hiringOrganization" : {
+			"@type":"Organization",
+			"name":"FinByz Tech Pvt Ltd",
+			"logo": "https://finbyz.tech/files/FinByz_Logo.png",
+			"email": "career@finbyz.tech"
+			},
+		  "jobLocation" : {
+			"@type" : "Place",
+			"address": {
+				"@type" : "PostalAddress",
+				"name": "FinByz Tech Pvt Ltd",
+				"addressLocality": "Ahmedabad",
+				"addressRegion": "Gujarat",
+				"addressCountry": "India",
+				"postalCode": "380009",
+				"streetAddress": "504-Addor Ambition, Nr. Navrang Circle, Navrangpura"
+			}
+		  },
+		  "datePosted" : "{{ modified }}",
+		  "description" : "{{ description }}",
+		  "employmentType": "Full-Time"  
+		}
+	  </script>
+	  {% endif %}
+	  {% block favicon %}
       <link rel="shortcut icon"
       href="{{ (favicon or "/assets/frappe/images/favicon.png") | abs_url }}"
       type="image/x-icon">
