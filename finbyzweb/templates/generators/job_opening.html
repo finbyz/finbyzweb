@@ -18,10 +18,25 @@
 		<div class="col-md-8"><img src="{{ image }}" style="float: right;" width="700px" height="300px" alt="{{ job_title }}">
 		</div>
 	</div>
+	{%- if description -%}
+	<div class="row mt-50">
+		<div class="col-md-12">
+		<h1>Job Description</h1>
+			{{ description }}
+		</div>
+	</div>
+	{% endif %}
+	{%- if skills -%}
+	<div class="row mt-50">
+		<div class="col-md-12">
+		<h1>Key Skills</h1>
+			{{ skills }}
+		</div>
+	</div>
+	{% endif %}
 </div>
-{%- if description -%}
-<div>{{ description }}</div>
-{% endif %}
+
+
 <div style='margin-top: 30px' class="button">
 	<a class='finbyz-button'
 	href='/job_application_form?job_title={{ doc.name }}'>
