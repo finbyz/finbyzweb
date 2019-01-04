@@ -6,8 +6,75 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>{% block title %} {{ title | striptags }} {% endblock %}</title>
       <meta name="generator" content="finbyz">
-	  {% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}
-
+	  {% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}	  
+	  {% if (doctype == "Web Page" and name == "homepage") or (doctype == "Web Form" and name == "contact") %}
+	  <script type="application/ld+json">{
+			"@context": "http://schema.org/", 
+			"@type": "Organization", 
+			"name": "Finbyz",
+			"legalName": "Finbyz Tech Pvt Ltd", 
+			"url":" https://finbyz.tech", 
+			"description": "Best ERP Sotfware Provider",
+			"sameAs":[
+				"https://www.facebook.com/FinByz",
+				"https://twitter.com/FinByz",
+				"https://plus.google.com/s/finbyz", 
+				"https://www.linkedin.com/company/finbyz",
+				"https://www.youtube.com/c/Finbyz"
+			], 
+			"logo": "https://finbyz.tech/files/FinbyzLogo.svg",
+			"address": 
+			{
+				"@type": "PostalAddress", 
+				"addressLocality": "Ahmedabad", 
+				"addressRegion": "Gujarat", 
+				"postalCode": "380009",
+				"streetAddress": "FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura" 
+			},
+			"openingHours": "Mo, Tu, We, Th, Fr, Sa 10.00:00-19:00",
+			"geo": {
+				"type": "GeoCoordinates",
+				"latitude": "23.046477",
+				"longitude": "72.558351"
+			}, 
+			"contactPoint": { 
+				"@type": "ContactPoint", 
+				"contactType": "sales", 
+				"telephone": "+91 07948912428",
+				"email": "info@finbyz.com"
+			}
+		}
+		</script>
+	  {% endif %}
+	  {% if doctype == "Blog Post" %}
+	  <script type="application/ld+json">
+		{
+		  "@context" : "http://schema.org",
+		  "@type" : "BlogPosting",
+		  "name" : "{{ title }}",
+		  "headline":"{{ blog_intro }}",
+		  "author" : {
+			"@type" : "Person",
+			"name" : "{{ full_name }}"
+			"image": "{{ avatar }}"
+		  },
+		  "datePublished" : "{{ published_on }}",
+		  "image" : "{{ image }}",
+		  "publisher" : {
+			"@type" : "Organization",
+			"name":"FinByz Tech Pvt Ltd",
+			"sameAs":"https://finbyz.tech",
+			"logo": {
+				"@type": "ImageObject"
+				"url": "https://finbyz.tech/files/FinbyzLogo.png",
+				"height": "300",
+				"width":"300",
+			}
+			"email": "info@finbyz.com"
+		  }
+		}
+		</script>
+	  {% endif %}
 	  {% if doctype == "Job Opening" %}
 	  <script type="application/ld+json">
 	  {
