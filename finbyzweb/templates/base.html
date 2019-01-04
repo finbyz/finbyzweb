@@ -6,7 +6,8 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>{% block title %} {{ title | striptags }} {% endblock %}</title>
       <meta name="generator" content="finbyz">
-	  {% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}	  
+	  {% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}
+	  <meta name="description" content="{{ small_description | truncate(135) or blog_intro | truncate(135) }}..." />
 	  {% if (doctype == "Web Page" and name == "homepage") or (doctype == "Web Form" and name == "contact") %}
 	  <script type="application/ld+json">{
 			"@context": "http://schema.org/", 
