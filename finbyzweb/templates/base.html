@@ -33,7 +33,7 @@
 			},
 			"openingHours": "Mo, Tu, We, Th, Fr, Sa 10.00:00-19:00",
 			"geo": {
-				"type": "GeoCoordinates",
+				"@type": "GeoCoordinates",
 				"latitude": "23.046477",
 				"longitude": "72.558351"
 			}, 
@@ -46,31 +46,31 @@
 		}
 		</script>
 	  {% endif %}
-	  {% if doctype == "Blog Post" %}
+	  {% if doctype == "Blog Post" and blog_intro %}
 	  <script type="application/ld+json">
 		{
 		  "@context" : "http://schema.org",
 		  "@type" : "BlogPosting",
 		  "name" : "{{ title }}",
-		  "headline":"{{ blog_intro }}",
+		  "headline":"{{ blog_intro | truncate(105) }}...",
 		  "author" : {
 			"@type" : "Person",
 			"name" : "{{ full_name }}"
-			"image": "{{ avatar }}"
 		  },
 		  "datePublished" : "{{ published_on }}",
-		  "image" : "{{ image }}",
+		  "dateModified": "{{ modified }}",
+		  "image" : "https://finbyz.tech{{ image_seo }}",
 		  "publisher" : {
 			"@type" : "Organization",
 			"name":"FinByz Tech Pvt Ltd",
 			"sameAs":"https://finbyz.tech",
+			"email": "info@finbyz.com",
 			"logo": {
-				"@type": "ImageObject"
+				"@type": "ImageObject",
 				"url": "https://finbyz.tech/files/FinbyzLogo.png",
-				"height": "300",
-				"width":"300",
-			}
-			"email": "info@finbyz.com"
+				"height": "300px",
+				"width":"300px"
+			}		
 		  }
 		}
 		</script>
