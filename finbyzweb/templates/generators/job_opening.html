@@ -15,13 +15,13 @@
 			</div>
 		</div>
 		
-		<div class="col-md-8"><img src="{{ image }}" style="float: right;" width="700px" height="300px" alt="{{ job_title }}">
+		<div class="col-md-8"><img src="{{ image }}" style="float: right;" width="700px" height="300px" alt="{{ job_title }}" title="{{ job_title }}">
 		</div>
 	</div>
 	{%- if description -%}
 	<div class="row mt-50">
 		<div class="col-md-12">
-		<h1>Job Description</h1>
+		<h3>Job Description</h3>
 			{{ description }}
 		</div>
 	</div>
@@ -29,7 +29,7 @@
 	{%- if skills -%}
 	<div class="row mt-50">
 		<div class="col-md-12">
-		<h1>Key Skills</h1>
+		<h3>Key Skills</h3>
 			{{ skills }}
 		</div>
 	</div>

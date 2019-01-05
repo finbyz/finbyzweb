@@ -18,17 +18,17 @@
 
 	
 	{% if doc.get({"doctype":"Company History"}) %}
-	<div class="text-center pb-20"><h3>{{ doc.company_history_heading or "Company History" }}</h3></div>
+	<div class="text-center pb-20"><h4>{{ doc.company_history_heading or "Company History" }}</h4></div>
 	<div class="timeline">
 	{% for d in doc.get({"doctype":"Company History"}) %}	
 		 <div class="container {{ loop.cycle('left', 'right') }}">
 			<div class="timeline-icon">
-				<img itemtype="image" src="{{ d.image }}" class="finbyz-zoomin" alt="Finbyz-icon">
+				<img itemtype="image" alt="{{ d.title }}" title="{{ d.title }}" src="{{ d.image }}" class="finbyz-zoomin" alt="Finbyz-icon">
 			</div>
 
 			<div class="content finbyz-fadeinup">
-			  <h2>{{ d.year }}</h2>
-			  <h3>{{ d.title }}</h3>
+			  <h3>{{ d.year }}</h3>
+			  <h4>{{ d.title }}</h4>
 			  <p>{{ d.highlight }}</p>
 			</div>
 		  </div>
@@ -40,7 +40,7 @@
 	{% endif %}
 	{% if doc.get({"doctype":"About Us Team Member"}) %}
 	<section id="team-finbyz">
-	<div class="text-center pb-20"><h1 class="title-underline">{{ doc.team_members_heading or "Team Members" }}</h1></div>
+	<div class="text-center pb-20"><h2 class="title-underline">{{ doc.team_members_heading or "Team Members" }}</h2></div>
 	<div class="team-member">
 	<div class="row row-flex" itemscope itemtype="http://schema.org/Person">
 		{% for d in doc.get({"doctype":"About Us Team Member"}) %}
@@ -48,15 +48,15 @@
 			<div class="col-md-4 col-sm-4 col-xs-4 ">
 				<div>
 				{% if d.image_link %}
-					<img src="{{ d.image_link }}" style="" itemprop="image" class="grayscale-img">
+					<img src="{{ d.image_link }}" alt="{{ d.full_name }}" title="{{ d.full_name }}" itemprop="image" class="grayscale-img">
 				{% else %}
-					<img src="/files/person-image.jpg" style="" itemprop="image" class="grayscale-img">
+					<img src="/files/person-image.jpg" alt="{{ d.full_name }}" title="{{ d.full_name }}" style="" itemprop="image" class="grayscale-img">
 				{% endif %}
 				</div>
 			</div>
 			<div class="col-md-8 col-sm-8 col-xs-8">
-				<h2 style="margin-top:-3px" itemprop="name">{{ d.full_name }}</h2>
-				<h4>{{ d.designation }}</h4>
+				<h3 style="margin-top:-3px" itemprop="name">{{ d.full_name }}</h3>
+				<h5>{{ d.designation }}</h5>
 				<p itemprop="description" class="about_bio">{{ d.bio }}</p>
 			</div>
 		</span>
