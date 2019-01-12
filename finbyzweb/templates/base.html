@@ -122,8 +122,11 @@
       {% if head_html is defined -%}
       {{ head_html or "" }}
       {%- endif %}
-      {%- for link in web_include_css %}
-      <link type="text/css" rel="stylesheet" href="{{ link|abs_url }}">
+	  <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+     {%- for link in web_include_css %}
+	 {% if link not in ["assets/frappe/css/bootstrap.css","assets/erpnext/css/website.css"] %}
+		<link type="text/css" rel="stylesheet" href="{{ link|abs_url }}">
+	 {%- endif -%}
       {%- endfor -%}
       {%- block head_include %}{{ head_include or "" }}{% endblock -%}
       {%- block style %}{%- endblock -%}
@@ -145,11 +148,13 @@
          	window.dev_server = {{ dev_server }};
          
       </script>
+	 
    </head>
    <body data-path="{{ path }}">
       <div class="main-section">
          <div>
             <header>
+			
                {%- block banner -%}
                {% include "templates/includes/banner_extension.html" ignore missing %}
                {% if banner_html -%}
@@ -188,10 +193,10 @@
       </div>
       {% block base_scripts %}
       <!-- js should be loaded in body! -->
-      <script type="text/javascript"
+       <script type="text/javascript"
          src="/assets/frappe/js/lib/jquery/jquery.min.js"></script>
-      <script type="text/javascript"
-         src="/assets/js/frappe-web.min.js"></script>
+     <script type="text/javascript"
+         src="/assets/js/frappe-web.min.js"></script> 
       {% endblock %}
       {%- if js_globals is defined %}
       <script>
@@ -201,8 +206,15 @@
       </script>
       {% endif -%}
       {%- for link in web_include_js %}
+	  {% if link not in ["website_script.js","assets/js/erpnext-web.min.js"] %}
       <script type="text/javascript" src="{{ link|abs_url }}"></script>
+	  {%- endif -%}
       {%- endfor -%}
+	  {% if name != "login"%}
+	  <script type="text/javascript" src="/assets/finbyzweb/js/combine.min.js"></script>
+	  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
+	  <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js">
+	   {% endif %}
       {%- block script %}{%- endblock %}
       <!-- csrf_token -->
       {%- block body_include %}{{ body_include or "" }}{% endblock -%}

@@ -1,0 +1,62 @@
+{% if slideshow %}
+{{ slideshow_header }}
+
+
+<div id="the-carousel" class="carousel slide">
+	<!-- Indicators -->
+	<ol class="carousel-indicators">
+		{% for slide in slides %}
+			<li data-target="#the-carousel" data-slide-to="0"
+				{%- if loop.index==0 %}class="active"{% endif %}></li>
+		{% endfor %}
+	</ol>
+
+	<!-- Wrapper for slides -->
+	<div class="carousel-inner">
+		{% for slide in slides %}
+		<div class="{% if slide.idx==1 %}active {% endif %}item">
+			<div class="row">
+				<div class="vertical-parent" {% if slide.background %}style="background-color: {{ slide.background }}"{% endif %}>
+					<div class="vertical-child">
+						<div class="container">
+							<div class="row">
+								<div class="col-md-5 col-sm-12">
+								{% if slide.heading or slide.description %}
+								<div class="mt-100">
+									{% if slide.heading %}<h4>{{ slide.heading }}</h4>{% endif %}
+									{% if slide.description %}<p>{{ slide.description }}</p>{% endif %}
+									{% if slide.button_1 %}
+									<div class="pull-left mt-10">
+										<button class="finbyz-button banner-button" onclick="window.location.href='{{ slide.route_1 }}'">{{ slide.button_1 }}</button>
+									</div>	
+									{% endif %}
+									{% if slide.button_2 %}
+									<div class="pull-left banner-button-2 mt-10">
+										<button class="finbyz-button banner-button" onclick="window.location.href='{{ slide.route_2 }}'">{{ slide.button_2 }}</button>
+									</div>
+									{% endif %}
+								</div>
+								{% endif %}
+								</div>
+								<div class="col-md-7 col-sm-12">
+									<img src="{{ slide.image }}" class="slide-image" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		{% endfor %}
+	</div>
+
+	<!-- Controls -->
+	<a class="left carousel-control" href="#the-carousel" data-slide="prev">
+		<span class="fa fa-chevron-left"></span>
+	</a>
+	<a class="right carousel-control" href="#the-carousel" data-slide="next">
+		<span class="fa fa-chevron-right"></span>
+	</a> 
+</div>
+
+{% endif %}

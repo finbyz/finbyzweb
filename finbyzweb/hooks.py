@@ -19,20 +19,12 @@ app_license = "GPL 3.0"
 # app_include_js = "/assets/finbyzweb/js/finbyzweb.js"
 
 web_include_css = [
+#	"https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css",
 	"https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.css"
 ]
-web_include_js = [
-	"https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TimelineMax.min.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.6/ScrollMagic.min.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.6/plugins/animation.gsap.min.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.6/plugins/debug.addIndicators.min.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/plugins/ScrollToPlugin.min.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/scrollify/1.0.19/jquery.scrollify.min.js",
-	"js/splittext.min.js",
-	"js/finbyz.js",
-]
+# web_include_js = [
+	# "assets/finbyzweb/js/finbyz.js",
+# ]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/finbyzweb/css/finbyzweb.css"
