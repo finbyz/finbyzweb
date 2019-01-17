@@ -38,7 +38,8 @@
       {% if head_html is defined -%}
       {{ head_html or "" }}
       {%- endif %}
-	  <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	  <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="all">
+	  <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" media="all">
      {%- for link in web_include_css %}
 	 {% if link not in ["assets/frappe/css/bootstrap.css","assets/erpnext/css/website.css"] %}
 		<link type="text/css" rel="stylesheet" href="{{ link|abs_url }}">
@@ -48,6 +49,7 @@
       {%- block style %}{%- endblock -%}
       {%- endblock -%}
       <!-- Google Analytics -->	  
+	  
 	<script src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js" async></script>
 <script>
 		var galite = galite || {};
