@@ -1,43 +1,65 @@
 frappe.ready(function() {
-			var seen = [];
-			var last = 0;
-			setInterval(function() {
-				var whats = [
-					'Passion', 'Expertise', 'Creativity', 'Innovation', 'Understanding',
-				];
+	var seen = [];
+	var last = 0;
 
-				if(seen.length == whats.length) {
-					seen = []
-				}
+	// performance.mark("show_text_start");
+	
+	setInterval(function() {
+		var whats = [
+			'Passion', 'Expertise', 'Creativity', 'Innovation', 'Understanding',
+		];
 
-				var index = parseInt(Math.random() * whats.length);
-				while(seen.includes(index) || last == index) {
-					index = parseInt(Math.random() * whats.length);
-				}
+		if(seen.length == whats.length) {
+			seen = []
+		}
 
-				var what = whats[index];
+		var index = parseInt(Math.random() * whats.length);
+		while(seen.includes(index) || last == index) {
+			index = parseInt(Math.random() * whats.length);
+		}
 
-				seen.push(index);
-				last = index;
+		var what = whats[index];
 
-				var start = 0;
-				for(var i = 0; i < what.length; i++) {
-					var text = what.substr(0, i + 1);
-					start += 50 + Math.random() * 50;
-					show_text(text, start);
-				}
+		seen.push(index);
+		last = index;
 
+		var start = 0;
+		for(var i = 0; i < what.length; i++) {
+			var text = what.substr(0, i + 1);
+			start += 50 + Math.random() * 50;
+			show_text(text, start);
+		}
+	}, 3000)
 
-			}, 3000)
+	// performance.mark("show_text_end");
 
-			function show_text(text, timeout) {
-				setTimeout(() => {
-					$('.what').text(text);
-				}, timeout)
-			}
-		});
-		
+	function show_text(text, timeout) {
+		setTimeout(() => {
+			$('.what').text(text);
+		}, timeout)
+	}
+
+	// performance.measure('show_text_difference', 'show_text_start', 'show_text_end');
+	// measurePerf();
+	// var perfEntries = performance.getEntriesByType('measure');
+	// console.log(perfEntries[0].duration);
+
+	// console.log(window.performance.measure('measure_load_from_dom', 'domComplete', 'endTask1'));
+	// console.log(window.performance.measure('measure_load_from_dom', 'domComplete', 'startTask1'));
+});
+
+function measurePerf() 
+{
+   var perfEntries = performance.getEntriesByType("measure");
+   for (var i = 0; i < perfEntries.length; i++)
+   {
+         if (window.console) console.log("Name: "        + perfEntries[i].name      + 
+                                         " Duration: "   + perfEntries[i].duration  + "\n");
+   }
+}
+	
 $(document).ready(function(){
+	performance.mark("owl_start");
 	$(".carousel").carousel();
 	
 	var owl = $('.owl-carousel');
@@ -89,6 +111,9 @@ $(document).ready(function(){
 		frappe.msgprint(__(html.toString()), __("IT Consulting"));
 		
 	});
+
+	performance.mark("owl_end");
+	performance.measure('owl_difference', 'owl_start', 'owl_end');
 });
 
 $(".modules-sub").hover(
@@ -140,6 +165,7 @@ TweenMax.staggerTo($(".card"), 0.5, {rotationY:-180, repeat:1, yoyo:true}, 0.1);
 
 $(function() {
   // init controller
+  	performance.mark("controller_start");
 	var controller = new ScrollMagic.Controller({globalSceneOptions: {triggerHook:"onEnter",duration: "135%"}});
 	
 	// build scenes
@@ -226,17 +252,18 @@ $(function() {
 	var lastScrollTop = 0;
 		// element should be replaced with the actual target element on which you have applied scroll, use window in case of no target element.
 		window.addEventListener("scroll", function(){ // or window.addEventListener("scroll"....
-		   var st = window.pageYOffset || document.documentElement.scrollTop; // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
-		   if (st > lastScrollTop){
-			  $('.navbar-default').removeClass('animated swingInX');
-			  $('.navbar-default').addClass('animated swingOutX');
-		   } else {
-			  $('.navbar-default').removeClass('animated swingOutX');
-			  $('.navbar-default').addClass('animated swingInX');
-		   }
-		   lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
+			var st = window.pageYOffset || document.documentElement.scrollTop; // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
+			if (st > lastScrollTop){
+				$('.navbar-default').removeClass('animated swingInX');
+				$('.navbar-default').addClass('animated swingOutX');
+			} else {
+				$('.navbar-default').removeClass('animated swingOutX');
+				$('.navbar-default').addClass('animated swingInX');
+			}
+			lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
 		}, false);
-	
-	
 
+	performance.mark("controller_end");
+	performance.measure('controller_difference', 'controller_start', 'controller_end');
+	// measurePerf();
 });
