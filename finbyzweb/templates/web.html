@@ -44,6 +44,18 @@
 					</div>
 				</div>
 				<div class="page_content">
+					{%- if image -%}
+					<div class="container mt-50">
+						<div class="row">
+							<div class="col-md-4 web-title">
+								<div class="title-font pt-100 pl-45">
+									<h1 class="title-underline">{{ title }}</h1>
+								</div>
+							</div>
+							<div class="col-md-8"><img alt="{{ title }}" height="auto" src="{{ image }}" style="float: right;" title="Career" width="700px"></div>
+						</div>
+					</div>
+					{%- endif -%}
 					{%- block page_content -%}{%- endblock -%}
 				</div>
 			</div>
