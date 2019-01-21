@@ -23,14 +23,11 @@
 	  {"@context":"http://schema.org","@type":"JobPosting","title":"{{ title }}","hiringOrganization":{"@type":"Organization","name":"FinByz Tech Pvt Ltd","sameAs":"https://finbyz.tech","logo":"https://finbyz.tech/files/FinbyzLogo.png","email":"career@finbyz.tech"},"jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","name":"FinByz Tech Pvt Ltd","addressLocality":"Ahmedabad","addressRegion":"Gujarat","addressCountry":"India","postalCode":"380009","streetAddress":"504-Addor Ambition, Nr. Navrang Circle, Navrangpura"}},"datePosted":"{{ modified }}","description":"<h2><strong>Job Description</strong><h2><br><p>{{ description }}</p><br><h2><strong>Key Skills</strong></h2><p>{{ skills }}</p><br><br><h2><strong>About Finbyz Tech</strong></h2><p>At Finbyz Tech, we are passionate about revolutionizing businesses through latest technology. We build scalable and innovative software solutions that streamlines your business processes efficiently. We value collaboration and strive to create a positive working environment by celebrating innovation.At FinByz, we believe the team builds company. Initiator or leader, Technical or Creative there is a space for each one. We create an environment where you can learn, grow, and thrive.</p>","employmentType":"Full-Time"}
 	  </script>
 	  {% endif %}
-	  {% block favicon %}
+	
       <link rel="shortcut icon"
-      href="{{ (favicon or "/assets/frappe/images/favicon.png") | abs_url }}"
+      href="/files/favicon.ico"
       type="image/x-icon">
-      <link rel="icon"
-      href="{{ (favicon or "/assets/frappe/images/favicon.png") | abs_url }}"
-      type="image/x-icon">
-      {% endblock %}
+      
       {%- block head -%}
       {% if meta_block is defined -%}
       {{ meta_block }}
@@ -49,7 +46,7 @@
       {%- endblock -%}
       <!-- Google Analytics -->	  
 	  
-	<script src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js" async></script>
+	<script src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js"></script>
 <script>
 		var galite = galite || {};
 		galite.UA = 'UA-70704275-2'; 
@@ -123,13 +120,13 @@
       {% endif -%}
       {%- for link in web_include_js %}
 	  {% if link not in ["website_script.js","assets/js/erpnext-web.min.js"] %}
-      <script type="text/javascript" src="{{ link|abs_url }}"></script>
+      <script type="text/javascript" src="{{ link|abs_url }}" async></script>
 	  {%- endif -%}
       {%- endfor -%}
 	  {% if name != "login"%}
 	  <script type="text/javascript" src="/assets/finbyzweb/js/combine.min.js"></script>
 	  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
-	  <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js">
+     <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script>
 	   {% endif %}
       {%- block script %}{%- endblock %}
       <!-- csrf_token -->
