@@ -46,7 +46,7 @@
       {%- endblock -%}
       <!-- Google Analytics -->	  
 	  
-	<script src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ga-lite/2.0.1/ga-lite.min.js" async></script>
 <script>
 		var galite = galite || {};
 		galite.UA = 'UA-70704275-2'; 
@@ -104,6 +104,7 @@
             {%- block footer -%}{% include "templates/includes/footer/footer.html" %}{%- endblock -%}
          </div>
       </div>
+	 
       {% block base_scripts %}
       <!-- js should be loaded in body! -->
        <script type="text/javascript"
@@ -120,7 +121,7 @@
       {% endif -%}
       {%- for link in web_include_js %}
 	  {% if link not in ["website_script.js","assets/js/erpnext-web.min.js"] %}
-      <script type="text/javascript" src="{{ link|abs_url }}" async></script>
+      <script type="text/javascript" src="{{ link|abs_url }}"></script>
 	  {%- endif -%}
       {%- endfor -%}
 	  {% if name != "login"%}
