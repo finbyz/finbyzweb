@@ -98,7 +98,7 @@ $(document).ready(function(){
 	$(".module-link").on("click",function(e) {
 		var id = "#" + $(this).attr('id');
 		e.preventDefault();
-		$.get('https://finbyz.tech/modules', null, function(text){
+		$.get('/modules', null, function(text){
 			html = $(text).find(id).html();
 			frappe.msgprint(__(html.toString()), __("Module"));
 		});
@@ -166,13 +166,7 @@ TweenMax.staggerTo($(".card"), 0.5, {rotationY:-180, repeat:1, yoyo:true}, 0.1);
 $(function() {
   // init controller
   	performance.mark("controller_start");
-	var controller = new ScrollMagic.Controller({globalSceneOptions: {triggerHook:"onEnter",duration: "135%"}});
 	
-	// build scenes
-	new ScrollMagic.Scene({triggerElement: "#parallax"})
-					.setTween("#parallax > div", {y: "80%", ease: Linear.easeNone})
-					.addTo(controller);
-
 	
 	/* new ScrollMagic.Scene({triggerElement: ".timeline"})
 					.setTween(timeline_scene)
@@ -180,23 +174,6 @@ $(function() {
 
 
 	var scrollController = new ScrollMagic.Controller();
-	
-	var parallax_all = new TimelineMax();
-	parallax_all	
-		.from("#Boat", 4 , {x:-700, ease: Power1.easeIn})	
-		.from("#steer_text",1,{y:500,opacity:0},2)
-		.from("#steer_sub_text",1,{y:500,opacity:0},3)
-		.from(".steer-button",1,{y:550,opacity:0},3)
-	
-		
-	new ScrollMagic.Scene({
-			triggerElement: "#parallax",
-			triggerHook:0.8,
-			reverse:true
-		})
-		.setTween(parallax_all)
-		.addTo(scrollController);
-		
 	
 	$(".finbyz-fadeinup").each(function(){
 		var fadeUpScene = new ScrollMagic.Scene({
@@ -266,4 +243,35 @@ $(function() {
 	performance.mark("controller_end");
 	performance.measure('controller_difference', 'controller_start', 'controller_end');
 	// measurePerf();
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  var lazyloadImages = document.querySelectorAll("img.lazy");    
+  var lazyloadThrottleTimeout;
+  
+  function lazyload () {
+    if(lazyloadThrottleTimeout) {
+      clearTimeout(lazyloadThrottleTimeout);
+    }    
+    
+    lazyloadThrottleTimeout = setTimeout(function() {
+        var scrollTop = window.pageYOffset;
+        lazyloadImages.forEach(function(img) {
+            if(img.offsetTop < (window.innerHeight + scrollTop)) {
+              img.src = img.dataset.src;
+              img.classList.remove('lazy');
+            }
+        });
+        if(lazyloadImages.length == 0) { 
+          document.removeEventListener("scroll", lazyload);
+          window.removeEventListener("resize", lazyload);
+          window.removeEventListener("orientationChange", lazyload);
+        }
+    }, 20);
+  }
+  
+  document.addEventListener("scroll", lazyload);
+  window.addEventListener("resize", lazyload);
+  window.addEventListener("orientationChange", lazyload);
 });
