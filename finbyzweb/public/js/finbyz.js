@@ -63,12 +63,12 @@ $(document).ready(function(){
 	$(".carousel").carousel();
 	
 	var owl = $('.owl-carousel');
-	owl.owlCarousel({
+	owl.owlCarousel({		
 		loop: true,
 		nav: true,
 		margin: 10,
-		navigation : true,
-		navigationText : ['<span class="fa-stack"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-chevron-circle-left fa-stack-1x fa-inverse"></i></span>','<span class="fa-stack"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-chevron-circle-right fa-stack-1x fa-inverse"></i></span>'],
+		navigation: true,
+		navigationText: ['<span class="fa-stack"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-chevron-circle-left fa-stack-1x fa-inverse"></i></span>', '<span class="fa-stack"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-chevron-circle-right fa-stack-1x fa-inverse"></i></span>'],
 		slideBy: 1,
 		responsive: {
 			0: {
