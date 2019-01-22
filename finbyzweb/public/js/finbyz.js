@@ -39,27 +39,11 @@ frappe.ready(function() {
 		}, timeout)
 	}
 
-	// performance.measure('show_text_difference', 'show_text_start', 'show_text_end');
-	// measurePerf();
-	// var perfEntries = performance.getEntriesByType('measure');
-	// console.log(perfEntries[0].duration);
-
-	// console.log(window.performance.measure('measure_load_from_dom', 'domComplete', 'endTask1'));
-	// console.log(window.performance.measure('measure_load_from_dom', 'domComplete', 'startTask1'));
 });
 
-function measurePerf() 
-{
-   var perfEntries = performance.getEntriesByType("measure");
-   for (var i = 0; i < perfEntries.length; i++)
-   {
-         if (window.console) console.log("Name: "        + perfEntries[i].name      + 
-                                         " Duration: "   + perfEntries[i].duration  + "\n");
-   }
-}
+
 	
 $(document).ready(function(){
-	performance.mark("owl_start");
 	$(".carousel").carousel();
 	
 	var owl = $('.owl-carousel');
