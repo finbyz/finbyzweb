@@ -2,8 +2,6 @@ frappe.ready(function() {
 	var seen = [];
 	var last = 0;
 
-	// performance.mark("show_text_start");
-	
 	setInterval(function() {
 		var whats = [
 			'Passion', 'Expertise', 'Creativity', 'Innovation', 'Understanding',
@@ -30,8 +28,6 @@ frappe.ready(function() {
 			show_text(text, start);
 		}
 	}, 3000)
-
-	// performance.mark("show_text_end");
 
 	function show_text(text, timeout) {
 		setTimeout(() => {
@@ -95,9 +91,6 @@ $(document).ready(function(){
 		frappe.msgprint(__(html.toString()), __("IT Consulting"));
 		
 	});
-
-	performance.mark("owl_end");
-	performance.measure('owl_difference', 'owl_start', 'owl_end');
 });
 
 $(".modules-sub").hover(
@@ -149,9 +142,7 @@ TweenMax.staggerTo($(".card"), 0.5, {rotationY:-180, repeat:1, yoyo:true}, 0.1);
 
 $(function() {
   // init controller
-  	performance.mark("controller_start");
-	
-	
+  	
 	/* new ScrollMagic.Scene({triggerElement: ".timeline"})
 					.setTween(timeline_scene)
 					.addTo(controller); */	
@@ -223,8 +214,4 @@ $(function() {
 			}
 			lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
 		}, false);
-
-	performance.mark("controller_end");
-	performance.measure('controller_difference', 'controller_start', 'controller_end');
-	// measurePerf();
 });
