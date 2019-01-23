@@ -9,6 +9,7 @@
 	  {% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}
 	  {% if small_description %}<meta name="description" content="{{ small_description | truncate(135) or blog_intro | truncate(135) }}..." />{% endif %}
 	  {% if (doctype == "Web Page" and name == "homepage") or (doctype == "Web Form" and name == "contact") %}
+	  <link rel="canonical" href="https://finbyz.tech/">
 	  <script type="application/ld+json">
 		{"@context":"http://schema.org/","@type":"Organization","name":"Finbyz","legalName":"Finbyz Tech Pvt Ltd","url":" https://finbyz.tech","description":"Best ERP Sotfware Provider","sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://plus.google.com/s/finbyz","https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz"],"logo":"https://finbyz.tech/files/FinbyzLogo.svg","address":{"@type":"PostalAddress","addressLocality":"Ahmedabad","addressRegion":"Gujarat","postalCode":"380009","streetAddress":"FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura"},"openingHours":"Mo, Tu, We, Th, Fr, Sa 10.00:00-19:00","geo":{"@type":"GeoCoordinates","latitude":"23.046477","longitude":"72.558351"},"contactPoint":{"@type":"ContactPoint","contactType":"sales","telephone":"+91 07948912428","email":"info@finbyz.com"}}
 		</script>
