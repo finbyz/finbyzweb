@@ -127,6 +127,11 @@ TweenLite.set(".cardWrapper", {perspective:800});
 TweenLite.set(".card", {transformStyle:"preserve-3d"});
 TweenLite.set(".back", {rotationY:-180});
 TweenLite.set([".back", ".front"], {backfaceVisibility:"hidden"});
+// set some global properties
+	TweenLite.set('.client-grid-wrap', {perspective:1000});
+	TweenLite.set('.client-grid-wrap-inner', {transformStyle:"preserve-3d"});
+	TweenLite.set('.grid-back', {rotationX:-90});
+	TweenLite.set(['.grid-back', '.grid-front'], {backfaceVisibility:"hidden", transformOrigin:'50% 0'});
 
 $(".cardWrapper").hover(
   function() {
@@ -200,6 +205,13 @@ $(function() {
 		.addTo(scrollController)
 	})
 	
+	/* var pinfooter = new ScrollMagic.Scene({
+		triggerElement: '.web-footer',
+		triggerHook: 1
+	})
+	.setPin('.container-fluid',{pushFollowers: false})
+	.addTo(scrollController)
+	.addIndicators() */
 	
 	var lastScrollTop = 0;
 		// element should be replaced with the actual target element on which you have applied scroll, use window in case of no target element.
@@ -214,4 +226,35 @@ $(function() {
 			}
 			lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
 		}, false);
+
+	
+// set some global properties
+TweenLite.set('.client-grid-wrap', {perspective:1000});
+TweenLite.set('.client-grid-wrap-inner', {transformStyle:"preserve-3d"});
+TweenLite.set('.grid-back', {rotationX:-90});
+TweenLite.set(['.grid-back', '.grid-front'], {backfaceVisibility:"hidden", transformOrigin:'50% 0'});
+
+// loop through each element
+	$(".client-grid-wrapper").each(function(i, el) {
+		
+	  // create a timeline for this element in paused state
+	  var tl = new TimelineMax({paused: true});
+
+	  // create your tween of the timeline in a variable
+	  var t = tl
+			 .set(el,{willChange:"transform"})
+			 .to($(el).find('.client-grid-wrap-inner'), 0.53, {y:"-40px", rotationX:90, zIndex: 2, overwrite:"all", ease:Back.easeOut}, 0);
+
+	  // store the tween timeline in the javascript DOM node
+	  el.animation = t;
+
+	  //create the event handler
+	  $(el).on("mouseenter",function(){
+		this.animation.play();
+	  }).on("mouseleave",function(){
+		this.animation.reverse();
+	  });
+	  
+	});
+		
 });
