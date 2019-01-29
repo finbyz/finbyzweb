@@ -3,7 +3,7 @@
 	<div class="row">
 		<div class="col-xs-12">
 			<h2><a href="/{{ post.route }}" class="link-underline no-decoration">{{ post.title }}</a></h2>
-			{% if post.cover_image %}
+			{% if post.cover_image  %}
 			<div class="rollover">
 				<img class=" blogpost-cover-img finbyz-fadeinup" src="{{ post.cover_image }}" alt="{{post.title}} - Cover Image" width="80%">
 				<div class="overlay">
@@ -23,7 +23,7 @@
 								<p class="text-center">{{ frappe.utils.get_datetime(post.published).strftime("%b, %Y") }}</p>
 							</div>
 						</div>
-						<div class="col-md-10 col-sm-10 col-xs-9 finbyz-fadeinup">
+						<div class="col-md-10 col-sm-10 col-xs-9 finbyz-fadeinup blog-description">
 							<p><a href="/{{ post.route }}">{{ post.title }}</a></p>
 							<p>By <a href="/blog?blogger={{ post.blogger }}">{{ post.full_name }}</a> | {{ frappe.format_date(post.published_on) }} | Categories: <a href="/blog?blog_category={{ post.blog_category }}" class="no-decoration">{{ post.blog_category }}</a> {% if _user_tags -%}| Tags: {{ post._user_tags }} {% endif %}</p>
 							<p>{{ post.intro }}</p>					
@@ -54,6 +54,8 @@
 .web-list-item a:hover,
 .web-list-item a:focus{
 text-decoration:none;
-color:#FFF;
+}
+.overlay_text a:hover,.overlay_text a:focus{
+	color: #fff;
 }
 </style>
