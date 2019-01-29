@@ -205,14 +205,6 @@ $(function() {
 		.addTo(scrollController)
 	})
 	
-	/* var pinfooter = new ScrollMagic.Scene({
-		triggerElement: '.web-footer',
-		triggerHook: 1
-	})
-	.setPin('.container-fluid',{pushFollowers: false})
-	.addTo(scrollController)
-	.addIndicators() */
-	
 	var lastScrollTop = 0;
 		// element should be replaced with the actual target element on which you have applied scroll, use window in case of no target element.
 		window.addEventListener("scroll", function(){ // or window.addEventListener("scroll"....
