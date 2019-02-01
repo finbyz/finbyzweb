@@ -18,7 +18,7 @@
 
 	
 	{% if doc.get({"doctype":"Company History"}) %}
-	<div class="text-center pb-20"><h4>{{ doc.company_history_heading or "Company History" }}</h4></div>
+	<div class="text-center pb-20 title-underline"><h4>{{ doc.company_history_heading or "Company History" }}</h4></div>
 	<div class="timeline">
 	{% for d in doc.get({"doctype":"Company History"}) %}	
 		 <div class="container {{ loop.cycle('left', 'right') }}">
