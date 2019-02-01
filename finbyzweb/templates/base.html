@@ -72,6 +72,15 @@
 	 
    </head>
    <body data-path="{{ path }}">
+      {% if name != "login" %}
+      <div id="loader-wrapper">
+        <div id="loader"></div>
+        
+        <div class="loader-section section-left"></div>
+        <div class="loader-section section-right"></div>
+        
+      </div>
+      {% endif %}
 		<!-- <div id="hellopreloader" style="display: block; position: fixed;z-index: 5;top: 0;left: 0;width: 100%;height: 100%;min-width: 100%;background: url(svg/FinbyzLogo.svg) center center no-repeat;background-size: 41px;opacity: 1;">
 		</div> -->
       <div class="main-section">
