@@ -18,20 +18,22 @@
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2019-01-23 13:00:46.622342", 
- "modified_by": "Administrator", 
+ "modified": "2019-02-08 17:31:47.292731", 
+ "modified_by": "info@finbyz.in", 
  "module": "Finbyzweb", 
  "name": "contact", 
  "owner": "info@finbyz.in", 
  "payment_button_label": "Buy Now", 
  "published": 1, 
  "route": "contact", 
+ "show_in_grid": 0, 
  "show_sidebar": 0, 
  "sidebar_items": [], 
  "success_url": "/contact", 
  "title": "Contact", 
  "web_form_fields": [
   {
+   "allow_read_on_all_link_options": 0, 
    "fieldname": "name1", 
    "fieldtype": "Data", 
    "hidden": 0, 
@@ -39,9 +41,11 @@
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 
-   "reqd": 1
+   "reqd": 1, 
+   "show_in_filter": 0
   }, 
   {
+   "allow_read_on_all_link_options": 0, 
    "fieldname": "email", 
    "fieldtype": "Data", 
    "hidden": 0, 
@@ -49,9 +53,11 @@
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 
-   "reqd": 1
+   "reqd": 1, 
+   "show_in_filter": 0
   }, 
   {
+   "allow_read_on_all_link_options": 0, 
    "fieldname": "subject", 
    "fieldtype": "Data", 
    "hidden": 0, 
@@ -59,9 +65,11 @@
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 
-   "reqd": 1
+   "reqd": 1, 
+   "show_in_filter": 0
   }, 
   {
+   "allow_read_on_all_link_options": 0, 
    "fieldname": "message", 
    "fieldtype": "Text", 
    "hidden": 0, 
@@ -69,7 +77,8 @@
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 
-   "reqd": 0
+   "reqd": 0, 
+   "show_in_filter": 0
   }
  ]
 }
