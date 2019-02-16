@@ -45,7 +45,10 @@ $(document).ready(function(){
 	$(".carousel").carousel();
 	
 	var owl = $('.owl-carousel');
-	owl.owlCarousel({		
+	owl.owlCarousel({
+		autoplay: true,
+      	autoplayHoverPause: true,
+      	smartSpeed: 1200,
 		loop: true,
 		nav: true,
 		margin: 10,
@@ -63,7 +66,7 @@ $(document).ready(function(){
 				items: 5
 			},
 			1200: {
-				items: 6
+				items: 5
 			}
 		}
 	});

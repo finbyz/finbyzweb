@@ -20,7 +20,7 @@ app_license = "GPL 3.0"
 
 web_include_css = [
 #	"https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css",
-	"https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.css"
+	"https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"
 ]
 # web_include_js = [
 	# "assets/finbyzweb/js/finbyz.js",
