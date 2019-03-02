@@ -13,7 +13,7 @@ class Gallery(WebsiteGenerator):
 			context.doc.gallery_category, ["category"], as_dict=1)
 
 		context.parents = [{"name": _("Home"), "route":"/"},
-			{"name": "Gallery", "route": "/gallery"}]
+			{"name": "Gallery", "route": "/"}]
 		return context
 
 def get_list_context(context=None):

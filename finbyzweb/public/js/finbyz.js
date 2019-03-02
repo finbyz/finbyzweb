@@ -122,12 +122,7 @@ TweenMax.staggerTo($(".card"), 0.5, {rotationY:-180, repeat:1, yoyo:true}, 0.1);
 
 $(function() {
   // init controller
-	var controller = new ScrollMagic.Controller({globalSceneOptions: {triggerHook:"onEnter",duration: "135%"}});
 	
-	// build scenes
-	new ScrollMagic.Scene({triggerElement: "#parallax"})
-					.setTween("#parallax > div", {y: "80%", ease: Linear.easeNone})
-					.addTo(controller);
 
 	
 	/* new ScrollMagic.Scene({triggerElement: ".timeline"})
@@ -136,23 +131,6 @@ $(function() {
 
 
 	var scrollController = new ScrollMagic.Controller();
-	
-	var parallax_all = new TimelineMax();
-	parallax_all	
-		.from("#Boat", 4 , {x:-700, ease: Power1.easeIn})	
-		.from("#steer_text",1,{y:500,opacity:0},2)
-		.from("#steer_sub_text",1,{y:500,opacity:0},3)
-		.from(".steer-button",1,{y:550,opacity:0},3)
-	
-		
-	new ScrollMagic.Scene({
-			triggerElement: "#parallax",
-			triggerHook:0.8,
-			reverse:true
-		})
-		.setTween(parallax_all)
-		.addTo(scrollController);
-		
 	
 	$(".finbyz-fadeinup").each(function(){
 		var fadeUpScene = new ScrollMagic.Scene({
