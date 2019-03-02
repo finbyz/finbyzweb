@@ -11,6 +11,18 @@ app_color = "#30AFE2"
 app_email = "info@finbyz.com"
 app_license = "GPL 3.0"
 
+
+app_include_js = [
+	"assets/js/summernote.min.js",
+	"assets/js/comment_desk.min.js",
+	"assets/js/editor.min.js",
+	"assets/js/timeline.min.js"
+]
+
+app_include_css = [
+	"assets/css/summernote.min.css"
+]
+
 # Includes in <head>
 # ------------------
 
