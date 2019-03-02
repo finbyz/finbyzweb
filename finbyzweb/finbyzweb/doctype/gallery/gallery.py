@@ -31,6 +31,7 @@ def get_list_context(context=None):
 			# select name,category, category_name
 			# from `tabGallery Sub Category`
 		# """),
+		no_breadcrumbs = True,
 		scrub = frappe.scrub
 	)
 

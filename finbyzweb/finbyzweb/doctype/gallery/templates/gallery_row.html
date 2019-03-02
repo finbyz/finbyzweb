@@ -1,9 +1,9 @@
 <!-- this is a sample default list template -->
 {%- if doc.animated_image -%}
 <div class="col-md-4 col-sm-4 col-xs-12 gallery-filter all {{doc.gallery_category}} {{doc.sub_category_name or ''}}">
-	<div class="gallery-list-main">
+	<div class="gallery-list-main project-item">
 	     	<a class='normal' href="{{ route }}">
-				<div class="text-center"><p class="link-underline">{{ gallery_title }}</p></div>
+				<div class="text-center bold"><p class="link-underline">{{ gallery_title }}</p></div>
 	       		<img src="{{ animated_image }}"  width="100%" alt="{{ gallery_title }}" title="{{ gallery_title }}">
 	      	</a> 
 	</div>

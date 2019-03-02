@@ -1,4 +1,7 @@
 $(document).ready(function(){
+	var $tab = window.location.hash.replace('#', '');
+        showProjects($tab, 20);
+		
 	$(".parent-category").click(function(){
 		  var selectedClass = $(this).attr("data-rel");
 		  if(selectedClass == "all"){
@@ -229,3 +232,31 @@ $(".client-row").each(function(i, el) {
   });
   
 });
+var controller = new ScrollMagic.Controller();
+function showProjects(tab, delay)
+{    //return false;
+  //$('.project-list.tab-'+tab).addClass('tab-active').show();
+  //  $('.filter-item.filter-item--active').removeClass('filter-item--active');
+ //   $('.filter-item-'+tab).addClass('filter-item--active');
+
+    $('.project-item').each(function(){
+        var $this = this;
+        var tween = new TimelineLite()
+            .to($(this), 0.5, {css:{className:'+=show'}}, 0.20).delay(Math.floor(Math.random() * (70+delay - delay) + delay)/100)
+            .from($(this).find('.project-item__details'), 1, {ease: Power4.easeOut, opacity: 0, y: '10%'})
+            //.from($(this).find('.icon-arrow-right'), 1, {ease: Power4.easeOut, opacity:0, x: '-20%'}, '-=0.5')
+            //.from($(this).find('.project-item__media, .project-item__branding'), 1, {ease: Power4.easeOut, opacity: 0, scale: 0.98, transformOrigin:"50% 50%"}, '-=1.5')
+            ;
+
+        new ScrollMagic.Scene({
+            triggerHook: 1,
+            triggerElement: $this
+        })
+		
+		.addTo(controller)
+		
+		//.addIndicators()
+        .setTween(tween);
+    });
+	
+}
