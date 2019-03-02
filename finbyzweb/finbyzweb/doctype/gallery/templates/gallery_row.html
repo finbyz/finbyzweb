@@ -1,0 +1,10 @@
+<!-- this is a sample default list template -->
+{%- if doc.animated_image -%}
+<div class="col-md-4 col-sm-4 col-xs-12 gallery-filter all {{doc.gallery_category}} {{doc.sub_category_name or ''}}">
+	<div class="gallery-list-main">
+	     	<a class='normal' href="{{ route }}">
+	       		<img src="{{ animated_image }}"  width="99%" alt="{{ doc.name }}" title="{{ doc.name }}">
+	      	</a> 
+	</div>
+</div>
+{%- endif -%}
