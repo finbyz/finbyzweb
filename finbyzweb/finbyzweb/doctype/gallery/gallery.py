@@ -13,9 +13,15 @@ class Gallery(WebsiteGenerator):
 			context.doc.gallery_category, ["category"], as_dict=1)
 
 		context.parents = [{"name": _("Home"), "route":"/"},
-			{"name": "Gallery", "route": "/"}]
+			{"name": "Gallery", "route": "/gallery"}]
 		return context
-
+		
+	def make_route(self):
+		'''Returns the default route. If `route` is specified in DocType it will be
+		route/title'''
+		from_title = self.scrubbed_title()
+		return from_title
+			
 def get_list_context(context=None):
 	list_context = frappe._dict(
 		title = _('Gallery'),
