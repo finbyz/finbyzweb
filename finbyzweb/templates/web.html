@@ -45,18 +45,33 @@
 				</div>
 				<div class="page_content">
 					{%- if image -%}
-					<div class="container mt-50">
-						<div class="row">
-							<div class="col-md-4 web-title">
-								<div class="title-font pt-100 pl-45">
-									<h1 class="title-underline">{{ title }}</h1>
+						{%- if doctype == "Job Opening" -%}
+						<div class="container mt-50">
+							<div class="row">
+								<div class="col-md-4 web-title">
+									<div class="title-font pt-100 pl-45">
+										<h1 class="title-underline">{{ title }}</h1>
+									</div>
+								</div>
+								<div class="col-md-8 text-center banner-jobs">
+									<img alt="{{ title }}" height="100%" src="{{ image }}" title="{{ title }}">
 								</div>
 							</div>
-							<div class="col-md-8">
-								<img alt="{{ title }}" height="auto" src="{{ image }}" style="float: right;" title="{{ title }}">
+						</div>
+						{%- else -%}
+						<div class="container mt-50">
+							<div class="row">
+								<div class="col-md-4 web-title">
+									<div class="title-font pt-100 pl-45">
+										<h1 class="title-underline">{{ title }}</h1>
+									</div>
+								</div>
+								<div class="col-md-8">
+									<img alt="{{ title }}" height="auto" src="{{ image }}" style="float: right;" title="{{ title }}">
+								</div>
 							</div>
 						</div>
-					</div>
+						{%- endif -%}
 					{%- endif -%}
 					{%- block page_content -%}{%- endblock -%}
 				</div>

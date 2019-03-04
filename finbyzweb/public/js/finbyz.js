@@ -27,6 +27,9 @@ $(document).ready(function(){
 	});
 	var owl = $('.owl-carousel');
 	owl.owlCarousel({
+		autoplay: true,
+      	autoplayHoverPause: true,
+      	smartSpeed: 1200,
 		loop: true,
 		nav: true,
 		margin: 10,
@@ -44,7 +47,7 @@ $(document).ready(function(){
 				items: 5
 			},
 			1200: {
-				items: 6
+				items: 5
 			}
 		}
 	});
@@ -61,7 +64,7 @@ $(document).ready(function(){
 	$(".module-link").on("click",function(e) {
 		var id = "#" + $(this).attr('id');
 		e.preventDefault();
-		$.get('https://finbyz.tech/modules', null, function(text){
+		$.get('/modules', null, function(text){
 			html = $(text).find(id).html();
 			frappe.msgprint(__(html.toString()), __("Module"));
 		});
@@ -211,27 +214,27 @@ TweenLite.set('.grid-back', {rotationX:-90});
 TweenLite.set(['.grid-back', '.grid-front'], {backfaceVisibility:"hidden", transformOrigin:'50% 0'});
 
 // loop through each element
-$(".client-row").each(function(i, el) {
-    
-  // create a timeline for this element in paused state
-  var tl = new TimelineMax({paused: true});
+	$(".client-grid-wrapper").each(function(i, el) {
+		
+	  // create a timeline for this element in paused state
+	  var tl = new TimelineMax({paused: true});
 
-  // create your tween of the timeline in a variable
-  var t = tl
-         .set(el,{willChange:"transform"})
-         .to($(el).find('.client-grid-wrap-inner'), 0.53, {y:"-40px", rotationX:90, z:0.01, zIndex: 2, overwrite:"all", ease:Back.easeOut}, 0);
+	  // create your tween of the timeline in a variable
+	  var t = tl
+			 .set(el,{willChange:"transform"})
+			 .to($(el).find('.client-grid-wrap-inner'), 0.53, {y:"-40px", rotationX:90, zIndex: 2, overwrite:"all", ease:Back.easeOut}, 0);
 
-  // store the tween timeline in the javascript DOM node
-  el.animation = t;
+	  // store the tween timeline in the javascript DOM node
+	  el.animation = t;
 
-  //create the event handler
-  $(el).on("mouseenter",function(){
-    this.animation.play();
-  }).on("mouseleave",function(){
-    this.animation.reverse();
-  });
-  
-});
+	  //create the event handler
+	  $(el).on("mouseenter",function(){
+		this.animation.play();
+	  }).on("mouseleave",function(){
+		this.animation.reverse();
+	  });
+	  
+	});
 var controller = new ScrollMagic.Controller();
 function showProjects(tab, delay)
 {    //return false;
