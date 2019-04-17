@@ -1,6 +1,6 @@
 {%- set post = doc -%}
 <div class="web-list-item finbyz-blog-list-item">
-	<div class="row">
+	<div>
 		<div class="col-xs-12">
 			<h2><a href="/{{ post.route }}" class="link-underline no-decoration">{{ post.title }}</a></h2>
 			{% if post.cover_image  %}
@@ -46,6 +46,7 @@
 .finbyz-blog-list-item{
 	max-width:1100px;
 	margin:auto;
+	padding:0 10px;
 }
 .page-head{
 	max-width:1130px;
