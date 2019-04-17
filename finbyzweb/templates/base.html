@@ -4,7 +4,7 @@
    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>{% block title %} {{ title | striptags }} {% endblock %}</title>
+      <title>{% block title %} {{ seo_title | striptags title | striptags }} {% endblock %}</title>
       <meta name="generator" content="finbyz">
 	  {% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}
 	  {% if small_description %}<meta name="description" content="{{ small_description | truncate(135) or blog_intro | truncate(135) }}..." />{% endif %}
