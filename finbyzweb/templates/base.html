@@ -41,24 +41,24 @@
    <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
 
    {%- block head -%}
-   {% if meta_block is defined -%}
+   {% if meta_block is defined %}
    {{ meta_block }}
-   {%- endif %}
-   {% if head_html is defined -%}
+   {% endif %}
+   {% if head_html is defined %}
    {{ head_html or "" }}
-   {%- endif %}
+   {% endif %}
    <!-- <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"> -->
    <link rel="stylesheet" type="text/css"
       href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
    <link rel="stylesheet" type="text/css"
       href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-   {%- for link in web_include_css %}
+   {% for link in web_include_css %}
    {% if link not in ["assets/frappe/css/bootstrap.css","assets/erpnext/css/website.css","assets/css/frappe-web.css"] %}
    <link type="text/css" rel="stylesheet" href="{{ link|abs_url }}">
    {%- endif -%}
    {%- endfor -%}
-   {%- block head_include %}{{ head_include or "" }}{% endblock -%}
-   {%- block style %}{%- endblock -%}
+   {% block head_include %}{{ head_include or "" }}{% endblock %}
+   {% block style %}{%- endblock -%}
    {%- endblock -%}
    <!-- Google Analytics -->
 
@@ -115,13 +115,13 @@
 
             {%- block banner -%}
             {% include "templates/includes/banner_extension.html" ignore missing %}
-            {% if banner_html -%}
+            {% if banner_html %}
             <div class="container-fluid">
                <div class='banner'>
                   {{ banner_html or "" }}
                </div>
             </div>
-            {%- endif %}
+            {% endif %}
             {%- endblock -%}
             {%- block navbar -%}
             {% include "templates/includes/navbar/navbar.html" %}
@@ -158,14 +158,14 @@
    <script type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
    {% endblock %}
-   {%- if js_globals is defined %}
+   {% if js_globals is defined %}
    <script>
-      {% - for key, value in js_globals.iteritems() %}
-      window.{ { key } } = "{{ value[0] }}";
-      {% - endfor -%}
+      {% for key, value in js_globals.iteritems() %}
+      window.{{ key }} = "{{ value[0] }}";
+      {% endfor %}
    </script>
-   {% endif -%}
-   {%- for link in web_include_js %}
+   {% endif %}
+   {% for link in web_include_js %}
    {% if link not in ["website_script.js","assets/js/erpnext-web.min.js"] %}
    <script type="text/javascript" src="{{ link|abs_url }}"></script>
    {%- endif -%}
@@ -178,9 +178,9 @@
    <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script>
 
    {% endif %}
-   {%- block script %}{%- endblock %}
+   {% block script %}{% endblock %}
    <!-- csrf_token -->
-   {%- block body_include %}{{ body_include or "" }}{% endblock -%}
+   {% block body_include %}{{ body_include or "" }}{% endblock %}
 </body>
 
 </html>
