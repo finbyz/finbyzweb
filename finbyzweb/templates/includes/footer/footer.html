@@ -2,10 +2,11 @@
 	<div class="footer-outer">
 		<div class="footer-inner">
 			<section class="footer-section">
-				<div class="container-fluid">
+				<div>
+					<div class="row">
 					<div class="container">
 						<div class="row mb-50">
-							<div class="col-md-6">
+							<div class="col-md-6 co-lg-6 col-xl-6 col-12">
 								<div class="">
 									<p class="footer-title t-white">
 										Group Company
@@ -27,40 +28,40 @@
 									<ul class="footer-social">
 										
 										<li>
-											<a class="zoom" href="https://www.facebook.com/FinByz">
+											<a class="zoom" href="https://www.facebook.com/FinByz" target="_blank">
 												<img alt="facebook.com/Finbyz" title="Facebook" src="/svg/social-facebook.svg" class="footer-icon-social">
 											</a>
 										</li>
 										<li>
-											<a class="zoom" href="https://twitter.com/FinByz">
+											<a class="zoom" href="https://twitter.com/FinByz" target="_blank">
 												<img alt="twitter.com/FinByz" title="Twitter/FinByz" src="/svg/social-twitter.svg" class="footer-icon-social">
 											</a>
 										</li>
-										<li>
-											<a class="zoom" href="https://plus.google.com/s/finbyz">
+										<!-- <li>
+											<a class="zoom" href="https://plus.google.com/s/finbyz" target="_blank">
 												<img alt="plus.google.com/s/finbyz" title="plus.google.com/finbyz" src="/svg/social-google.svg" class="footer-icon-social">
 											</a>
-										</li>
+										</li> -->
 										<li>
-											<a class="zoom" href="https://www.linkedin.com/company/finbyz">
+											<a class="zoom" href="https://www.linkedin.com/company/finbyz" target="_blank">
 												<img alt="linkedin.com/company/finbyz" title="linkedin/finbyz" src="/svg/social-linkedin.svg" class="footer-icon-social">
 											</a>
 										</li>
 										<li>
-											<a class="zoom" href="https://www.youtube.com/c/Finbyz">
+											<a class="zoom" href="https://www.youtube.com/c/Finbyz" target="_blank">
 												<img alt="youtube.com/c/Finbyz" title="youtube/Finbyz" src="/svg/social-youtube.svg" class="footer-icon-social">
 											</a>
 										</li>
 										<li>
-											<a class="zoom" href="https://www.instagram.com/finbyz/">
+											<a class="zoom" href="https://www.instagram.com/finbyz/" target="_blank">
 												<img alt="https://www.instagram.com/finbyz/" title="instagram/finbyz" src="/svg/social-instagram.svg" class="footer-icon-social">
 											</a>
 										</li>
 									</ul>
 								</div>
 							</div>
-							<div class="col-md-6">
-								<div>
+							<div class="col-md-6 co-lg-6 col-xl-6 col-12">
+								<div class="row">
 									<p>
 										{% include "templates/includes/footer/footer_items.html" %}
 									</p>
@@ -69,7 +70,7 @@
 						</div>
 						<hr>
 						<div class="row pb-20">
-							<div class="col-md-4">
+							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
 								<div class="row-flex finbyz-fadeinup-footer">
 									<div class="">
 										<img alt="Call Us" title="Call Us" src="/svg/icon-phone.svg" class="footer-icon">
@@ -84,15 +85,14 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-md-4">
+							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
 								<div class="row-flex finbyz-fadeinup-footer">
 									<div>
 										<img alt="Mail Us" title="Mail Us" src="/svg/icon-email.svg" class="footer-icon">
 									</div>
 									<div>
 										<p class="footer-title t-white pl-5 pt-10">
-											<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#110;&#102;&#111;&#64;&#102;&#105;&#110;&#98;&#121;&#122;&#46;&#99;&#111;&#109;">&#105;&#110;&#102;&#111;&#64;&#102;&#105;&#110;&#98;&#121;&#122;&#46;&#99;&#111;&#109;</a>
-
+											<a href="mailto:info@finbyz.com">info@finbyz.com</a>
 										</p>
 										<p class="footer-txt-sm t-gray pl-5">
 											Mail Us
@@ -100,7 +100,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-md-4">
+							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
 								<div class="row-flex finbyz-fadeinup-footer">
 									<div>
 										<img alt="location" title="Location" src="/svg/icon-location.svg" class="footer-icon">
@@ -117,9 +117,11 @@
 							</div>
 						</div>
 					</div>
+					</div>
 					<div class="row footer-dark">
 						<div class="container">
-							<div class="col-md-6 col-sm-6">
+							<div class="row">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 								<p class="footer-txt-sm t-gray">
 									Copyright &copy; {{ frappe.utils.getdate().year }} 
 									<a href="/home">
@@ -127,7 +129,7 @@
 									</a>
 								</p>
 							</div>
-							<div class="col-md-6 col-sm-6">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 								<p class="footer-txt-sm t-gray text-right">
 									Developed &amp; Designed by&nbsp;&nbsp;
 									<a href="/about#team-finbyz">
@@ -136,6 +138,7 @@
 										</span>
 									</a>
 								</p>
+							</div>
 							</div>
 						</div>
 					</div>

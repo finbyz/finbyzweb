@@ -1,21 +1,23 @@
-	<nav class="navbar navbar-default navbar-main" role="navigation">
-		<div class="container">
-			<div class="navbar-header">
-				<a class="navbar-brand ellipsis"
-					 href="{{ url_prefix }}{{ home_page or "/"}}">
-					<span>{{ brand_html or (frappe.get_hooks("brand_html") or ["Home"])[0] }}</span>
-				</a>
-				<div class="dropdown">
-					<button class="btn btn-default navbar-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-						&#x2630;
-					</button>
-					{% include "templates/includes/navbar/dropdown_items.html" %}
-				</div>
-			</div>
-			<div class="hidden-xs">
-				{% block navbar_items %}
-				{% include "templates/includes/navbar/navbar_items.html" %}
-				{% endblock %}
+<nav class="navbar navbar-expand-lg navbar-main p-0 bb-0" role="navigation">
+	<div class="container nav-ai-fs">
+		<a class="navbar-brand ellipsis p-10" href="{{ url_prefix }}{{ home_page or "/"}}">
+			<span>{{ brand_html or (frappe.get_hooks("brand_html") or ["Home"])[0] }}</span>
+		</a>
+		<div>
+			<button class="btn btn-default navbar-toggler" type="button" data-toggle="collapse" aria-haspopup="true"
+				aria-expanded="true" data-target="#navbar">
+				<img src="/svg/menu-button.svg">
+			</button>
+		</div>
+		<div class="collapse navbar-collapse pl-10" id="navbar">
+			<div class="d-lg-none">
+				{% include "templates/includes/navbar/dropdown_items.html" %}
 			</div>
 		</div>
-	</nav>
+		<div class="d-none d-lg-block">
+			{% block navbar_items %}
+			{% include "templates/includes/navbar/navbar_items.html" %}
+			{% endblock %}
+		</div>
+	</div>
+</nav>

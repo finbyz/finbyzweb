@@ -1,54 +1,61 @@
 <div class="client-wrapper">
-<section class="mt-100">
-	<div class="container mt-50">
-		<div class="row">
-			<div class="col-md-4">
-				<div class="title-font pt-100 pl-45">
-					<h1 class="title-underline">
-						Clients
-					</h1>
+	<section class="mt-100">
+		<div class="container mt-50">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="title-font pt-100 pl-45">
+						<h1 class="title-underline">
+							Clients
+						</h1>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<img src="/svg/banner-client.svg" alt="Client List" title="Client List" style="float: right;"
+						width="700px" height="auto">
 				</div>
 			</div>
-			<div class="col-md-8">
-				<img src="/svg/banner-client.svg" alt="Client List" title="Client List" style="float: right;" width="700px" height="auto">
-			</div>
 		</div>
-	</div>
-</section>
-<section id="customer" class="mt-70">
-	<div class="container">
-		<div class="row">
-			<div class="text-center">
-				<h2>
-					Some of The Loyal Clients of FinByz.
-				</h2>
+	</section>
+	<section id="customer" class="mt-70">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12">
+					<h2 class="text-center">
+						Some of The Loyal Clients of FinByz.
+					</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 text-center">
+					<p class="sub-text back-quote pl-45">
+						The Best Way to Look at Any Business is From The Standpoint of The Clients.-Jamie Dimon
+					</p>
+				</div>
 			</div>
 			<div>
-				<p class="sub-text back-quote pl-45">
-					The Best Way to Look at Any Business is From The Standpoint of The Clients.-Jamie Dimon
-				</p>
-			</div><br>
-			<div class="client-row" style="display: grid!important;grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));grid-gap: 2rem;">
-				{% if doc.get({"doctype":"Customer Details List"}) %}
-				{% for i in doc.get({"doctype":"Customer Details List"}) %}
+				<div class="client-row"
+					style="display: grid!important;grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));grid-gap: 2rem;">
+					{% if doc.get({"doctype":"Customer Details List"}) %}
+					{% for i in doc.get({"doctype":"Customer Details List"}) %}
 					<div class="client-grid-wrapper">
 						<div class="client-grid-wrap">
 							<div class="client-grid-wrap-inner">
 								<div class="client-img-main grid-front">
-									<img src="{{ i.image }}" alt="{{ i.customer }}" class="client-image" title='{{ i.customer }}'>
+									<img src="{{ i.image }}" alt="{{ i.customer }}" class="client-image"
+										title='{{ i.customer }}'>
 								</div>
 								<div class="client-info grid-back">
 									<h3 class="client-info-txt">
 										{{ i.customer }}
 									</h3>
 								</div>
-							</div>	
-						</div>		
+							</div>
+						</div>
 					</div>
-				{% endfor %}
-				{% endif %}
+					{% endfor %}
+					{% endif %}
+				</div>
 			</div>
 		</div>
-	</div>
-</section>
+	</section>
 </div>

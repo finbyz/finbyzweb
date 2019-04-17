@@ -6,9 +6,9 @@
 {% endblock %}
 {% block page_content %}
 
-<article itemscope itemtype ="http://schema.org/AboutPage" class="about-content">
+<article itemscope itemtype="http://schema.org/AboutPage" class="about-content">
 	<div itemprop="description" class="container">
-	{{ doc.company_introduction or """<p>Some Introduction about your company that you would
+		{{ doc.company_introduction or """<p>Some Introduction about your company that you would
 			like your website visitor to know.
 			More people than you think will read your About page.
 			People always like to know who the are doing business with.
@@ -16,56 +16,69 @@
 			Be sure to update your company history and
 			list of key team members in Website > About Us Settings</p>""" }}
 
-	
-	{% if doc.get({"doctype":"Company History"}) %}
-	<div class="text-center pb-20 title-underline"><h4>{{ doc.company_history_heading or "Company History" }}</h4></div>
-	<div class="timeline">
-	{% for d in doc.get({"doctype":"Company History"}) %}	
-		 <div class="container {{ loop.cycle('left', 'right') }}">
-			<div class="timeline-icon">
-				<img itemtype="image" alt="{{ d.title }}" title="{{ d.title }}" src="{{ d.image }}" class="finbyz-zoomin" alt="Finbyz-icon">
-			</div>
 
-			<div class="content finbyz-fadeinup">
-			  <h3>{{ d.year }}</h3>
-			  <h4>{{ d.title }}</h4>
-			  <p>{{ d.highlight }}</p>
-			</div>
-		  </div>
-	{% endfor %}
-	</div>
-	{% endif %}
-	{% if doc.middle_content %}
-		<div>{{ doc.middle_content }}</div>
-	{% endif %}
-	{% if doc.get({"doctype":"About Us Team Member"}) %}
-	<section id="team-finbyz">
-	<div class="text-center pb-20"><h2 class="title-underline">{{ doc.team_members_heading or "Team Members" }}</h2></div>
-	<div class="team-member">
-	<div class="row row-flex" itemscope itemtype="http://schema.org/Person">
-		{% for d in doc.get({"doctype":"About Us Team Member"}) %}
-		<span class="mg-bottom col-md-6 col-sm-6 col-xs-12">
-			<div class="col-md-4 col-sm-4 col-xs-4 ">
-				<div>
-				{% if d.image_link %}
-					<img src="{{ d.image_link }}" alt="{{ d.full_name }}" title="{{ d.full_name }}" itemprop="image" class="grayscale-img" height="185" width="160">
-				{% else %}
-					<img src="/files/person-image.jpg" alt="{{ d.full_name }}" title="{{ d.full_name }}" style="" itemprop="image" class="grayscale-img" height="185" width="160">
-				{% endif %}
+		{% if doc.get({"doctype":"Company History"}) %}
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="text-center pb-20">
+					<div class="title-underline">
+						<h4>{{ doc.company_history_heading or "Company History" }}</h4>
+					</div>
 				</div>
 			</div>
-			<div class="col-md-8 col-sm-8 col-xs-8">
-				<h3 style="margin-top:-3px" itemprop="name">{{ d.full_name }}</h3>
-				<h5>{{ d.designation }}</h5>
-				<p itemprop="description" class="about_bio">{{ d.bio }}</p>
+		</div>
+		<div class="timeline">
+			{% for d in doc.get({"doctype":"Company History"}) %}
+			<div class="container {{ loop.cycle('left', 'right') }}">
+				<div class="timeline-icon">
+					<img itemtype="image" alt="{{ d.title }}" title="{{ d.title }}" src="{{ d.image }}"
+						class="finbyz-zoomin" alt="Finbyz-icon">
+				</div>
+
+				<div class="content finbyz-fadeinup">
+					<h3>{{ d.year }}</h3>
+					<h4>{{ d.title }}</h4>
+					<p>{{ d.highlight }}</p>
+				</div>
 			</div>
-		</span>
-		{% endfor %}
-	</div>
-	</div>
-	</section>
-	{% endif %}
-	{{ doc.footer or "" }}
+			{% endfor %}
+		</div>
+		{% endif %}
+		{% if doc.middle_content %}
+		<div>{{ doc.middle_content }}</div>
+		{% endif %}
+		{% if doc.get({"doctype":"About Us Team Member"}) %}
+		<section id="team-finbyz">
+			<div class="text-center pb-20">
+				<h2 class="title-underline">{{ doc.team_members_heading or "Team Members" }}</h2>
+			</div>
+			<div class="team-member">
+				<div class="row row-flex" itemscope itemtype="http://schema.org/Person">
+					{% for d in doc.get({"doctype":"About Us Team Member"}) %}
+					<span class="mg-bottom col-md-6 col-sm-6 col-xs-12">
+						<div class="col-md-4 col-sm-4 col-xs-4 ">
+							<div>
+								{% if d.image_link %}
+								<img src="{{ d.image_link }}" alt="{{ d.full_name }}" title="{{ d.full_name }}"
+									itemprop="image" class="grayscale-img" height="185" width="160">
+								{% else %}
+								<img src="/files/person-image.jpg" alt="{{ d.full_name }}" title="{{ d.full_name }}"
+									style="" itemprop="image" class="grayscale-img" height="185" width="160">
+								{% endif %}
+							</div>
+						</div>
+						<div class="col-md-8 col-sm-8 col-xs-8">
+							<h3 style="margin-top:-3px" itemprop="name">{{ d.full_name }}</h3>
+							<h5>{{ d.designation }}</h5>
+							<p itemprop="description" class="about_bio">{{ d.bio }}</p>
+						</div>
+					</span>
+					{% endfor %}
+				</div>
+			</div>
+		</section>
+		{% endif %}
+		{{ doc.footer or "" }}
 	</div>
 </article>
 {% endblock %}

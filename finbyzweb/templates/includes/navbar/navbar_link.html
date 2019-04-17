@@ -1,0 +1,59 @@
+{% set nav = 'nav-item' %}
+{% set megali = 'megamenu-li'%}
+{% set sub = 'dropdown dropdown-submenu' %}
+{% set close = '"' %}
+{% set drmenu = '"dropdown-menu' %}
+{% set mega = 'megamenu"' %}
+
+{% macro get_class() %}
+	{% set duplicate_megali = [] %}
+	{% if page.child_items %} 
+		{{ nav }} {{ sub }}
+		{%- for row in page.child_items-%}
+			{% if row.sub_menu_title and megali not in duplicate_megali %} 
+				{{ megali }}
+				{% set _ = duplicate_megali.append(megali) %}
+			{% endif %}
+		{% endfor %}
+	{% else %}
+		{{ nav }}
+	{% endif %}
+{% endmacro %}
+
+<li data-label='{{ page.label }}' class= "active {{ get_class() }}">
+	<a id = "{{ page.label }}" {% if not page.child_items -%} class="nav-link nav-active" href="{{ (page.url or '')|abs_url }}" {%- endif %} 
+		{% if page.child_items %} class="nav-link dropdown-toggle dropdown-item" onclick="return false;" data-toggle="dropdown" aria-expanded="true" aria-haspopup="true" {% endif %}
+		{{ page.target or ''}}>
+	{{ page.label }}
+	{%- if page.child_items -%}
+	</a>
+	<div aria-labelledby='{{ page.label }}' class={%- for row in page.child_items-%}{% if row.sub_menu_title %} {{ drmenu }} {{ mega }} {% else %}
+{{ drmenu }}{{ close }} {% endif %}{% endfor %} >
+   <div class="row mr-0 ml-0">
+		 {%- set group = [] -%}
+          {%- for child in page.child_items -%}
+           {%- if child.sub_menu_title not in group and child.sub_menu_title -%}
+           	{%- set _ = group.append(child.sub_menu_title) -%}
+           	<div class="col-sm-6 col-lg-3">
+         		<h5 class="t-blue">{{ child.sub_menu_title or '' }}</h5>
+         		 {%- for child1 in page.child_items -%}
+         		 {%- if child.sub_menu_title ==  child1.sub_menu_title-%}
+         		 
+         		 {% if child1.image %}<img src="{{ child1.image }}" alt="{{ child1.label }}" title="{{ child1.label }}" height="150" width="200">{% endif %}
+         		 <a class="dropdown-item p-1" 
+					href="{{ child1.url | abs_url }}" {{ child1.target or '' }}>{{ child1.label }}</a>{% endif %} {%- endfor -%} 		
+            </div>
+            {%- elif not child.sub_menu_title -%}
+            
+            <a class="dropdown-item" {% if child.indent %} style="padding-left: {{((child.indent|int)+1)*15 }}px"{% endif %}
+					href="{{ child.url | abs_url }}" {{ child.target or '' }}>{{ child.label }}</a>
+			
+         	{%- endif-%}
+            
+		{%- endfor -%} 		
+	</div>
+   </div>
+	{%- else -%}
+	</a>
+	{%- endif -%}
+</li>
