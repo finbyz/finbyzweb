@@ -53,10 +53,11 @@
 				<h2 class="title-underline">{{ doc.team_members_heading or "Team Members" }}</h2>
 			</div>
 			<div class="team-member">
-				<div class="row row-flex" itemscope itemtype="http://schema.org/Person">
+				<div class="row" itemscope itemtype="http://schema.org/Person">
 					{% for d in doc.get({"doctype":"About Us Team Member"}) %}
 					<span class="mg-bottom col-md-6 col-sm-6 col-xs-12">
-						<div class="col-md-4 col-sm-4 col-xs-4 ">
+						<div class="row">
+						<div class="col-lg-4 col-xl-4 col-md-4 col-sm-4 col-4 ">
 							<div>
 								{% if d.image_link %}
 								<img src="{{ d.image_link }}" alt="{{ d.full_name }}" title="{{ d.full_name }}"
@@ -67,10 +68,11 @@
 								{% endif %}
 							</div>
 						</div>
-						<div class="col-md-8 col-sm-8 col-xs-8">
+						<div class="col-lg-8 col-xl-8 col-md-8 col-sm-8 col-8">
 							<h3 style="margin-top:-3px" itemprop="name">{{ d.full_name }}</h3>
 							<h5>{{ d.designation }}</h5>
 							<p itemprop="description" class="about_bio">{{ d.bio }}</p>
+						</div>
 						</div>
 					</span>
 					{% endfor %}
