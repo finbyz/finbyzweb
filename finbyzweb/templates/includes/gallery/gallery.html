@@ -9,21 +9,20 @@
     </div>
 {% else %}
 <div class="container mt-100">
-    <div class="col-md-12 justify-content-center mb-10 gallery-category-main">
-            <div class="gallery-category-button pull-left">
-                <button type="button" class="finbyz-button filter" data-rel="all" style="width:150px">
-                        <span>ALL</span>
-                </button>
-            </div>
-            {% for category in gallery_category %}
-            <div class="gallery-category-button pull-left">
-                <button type="button" class="finbyz-button filter parent-category" data-rel="{{ category.name }}" style="width:150px">
-                        <span>{{ category.name }}</span>
-                </button>
-            </div>
-            {% endfor %}
-			
+    <div class="row mb-10 gallery-category-main">
+        <div class="gallery-category-button pb-10 pull-left">
+            <button type="button" class="finbyz-button filter" data-rel="all" style="width:150px">
+                    <span>ALL</span>
+            </button>
         </div>
+        {% for category in gallery_category %}
+        <div class="gallery-category-button pb-10 pull-left">
+            <button type="button" class="finbyz-button filter parent-category" data-rel="{{ category.name }}" style="width:150px">
+                    <span>{{ category.name }}</span>
+            </button>
+        </div>
+        {% endfor %}		
+    </div>
 		<div class="clearfix"></div>
 		<div class="col-md-12 justify-content-center mb-10 gallery-category-main">
 			{% for category in gallery_sub_category %}
