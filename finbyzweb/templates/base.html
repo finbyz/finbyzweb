@@ -5,7 +5,7 @@
 <head>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>{% block title %} {{ seo_title | striptags or title | striptags }} {% endblock %}</title>
+   <title>{% block title %} {{ seo_title or title }} {% endblock %}</title>
    <meta name="generator" content="finbyz">
    {% if keywords %}
    <meta name="keywords" content="{{ keywords }}">{% endif %}
