@@ -1,3 +1,9 @@
+var loc = window.location.pathname;
+
+$(".nav .nav-item a.nav-active").each(function(){
+  $( this ).parent( 'li' ).toggleClass('active', $(this).attr('href') == loc);
+});
+
 $(document).ready(function () {
 	var $tab = window.location.hash.replace('#', '');
 	showProjects($tab, 20);

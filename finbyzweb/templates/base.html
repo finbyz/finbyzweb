@@ -10,7 +10,7 @@
    {% if keywords %}
    <meta name="keywords" content="{{ keywords }}">{% endif %}
    {% if small_description %}
-   <meta name="description" content="{{ small_description | truncate(135) or blog_intro | truncate(135) }}..." />
+   <meta name="description" content="{{ small_description or blog_intro }}" />
    {% endif %}
    <link rel="manifest" href="/assets/finbyzweb/js/manifest.json">
    <!-- Chrome, Firefox OS and Opera -->
