@@ -1,7 +1,7 @@
 var loc = window.location.pathname;
 
 $(".nav .nav-item a.nav-active").each(function(){
-  $( this ).parent( 'li' ).toggleClass('active', $(this).attr('href') == loc);
+  $(this).parent( 'li' ).toggleClass('active', $(this).attr('href') == loc);
 });
 
 $(document).ready(function () {
