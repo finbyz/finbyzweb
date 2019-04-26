@@ -40,16 +40,22 @@
 
    <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
 
-   
+   <meta property="og:locale" content="en_US" />
+   <meta property="og:type" content="website" />
    <meta  name="name" content="{{ seo_title or title }}">
    <meta property="og:title" content="{{ seo_title or title }}" />
    <meta property="og:url" content="{{ url }}" />
+   <meta property="og:site_name" content="FinByz Tech Pvt Ltd" />
+   <meta property="og:image" content="{% if image %}{{image}} {% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
    {% if small_description %}
    <meta property="og:description" content="{{ small_description or blog_intro }}" />
    {% endif %}
    <meta  name="twitter:card" content="summary_large_image">
    <meta  name="twitter:title" content="{{ seo_title or title }}">
    <meta  name="twitter:url" content="{{ url }}">
+   <meta name="twitter:site" content="@finbyz" />
+   <meta name="twitter:creator" content="@finbyz" />
+   <meta name="twitter:image" content="{% if image %}{{image}} {% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
    {% if small_description %}
    <meta  name="twitter:description" content="{{ small_description or blog_intro }}">
    {% endif %}
@@ -105,7 +111,7 @@
       fbq('init', '672790263237399');
       fbq('track', 'PageView');
    </script>
-   <noscript><img height="1" width="1" style="display:none"
+   <noscript><img height="1" width="1" class="d-none"
          src="https://www.facebook.com/tr?id=672790263237399&ev=PageView&noscript=1" /></noscript>
    <!-- End Facebook Pixel Code -->
 
