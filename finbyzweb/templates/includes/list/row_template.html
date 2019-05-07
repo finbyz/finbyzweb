@@ -4,10 +4,12 @@
 			<!-- <h3 class="link-underline"></h3> -->
 			<div class="hover-sub">			
 					<div class="hover-div bg-black text-center">
-						
-						<h3 class="t-white link-underline">{{ doc.get(title_field) }}</h3></br></br>
-						<h4 class="hover-sub-text t-white mt-50" style="padding-top:50px">Key Skills</h4>
-						<div class="hover-sub-text t-white mt-50 p-10" style="text-align:left">{{ doc.skills or '' }}</div>
+						<div>
+
+							<h3 class="t-white link-underline">{{ doc.get(title_field) }}</h3>
+						</div>
+						<h4 class="hover-sub-text t-white mt-10">Key Skills</h4>
+						<div class="hover-sub-text t-white p-10" style="text-align:left">{{ doc.skills or '' }}</div>
 					</div>
 					{%- if doc.image -%}
 					<div class="text-center mt-0 pt-0 img-hover-job">
