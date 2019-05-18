@@ -39,7 +39,7 @@
          		 {%- for child1 in page.child_items -%}
          		 {%- if child.sub_menu ==  child1.sub_menu-%}
          		 
-         		 {% if child1.image %}<img src="{{ child1.image }}" alt="{{ child1.label }}" title="{{ child1.label }}" height="150" width="200">
+         		 {% if child1.image %}<a href="{{ child1.url | abs_url }}" {{ child1.target or '' }}><img src="{{ child1.image }}" alt="{{ child1.label }}" title="{{ child1.label }}" height="150" width="200"></a>
 				 {% else %}
 				  <a class="dropdown-item p-1" 
 					href="{{ child1.url | abs_url }}" {{ child1.target or '' }}>{{ child1.label }}</a>
