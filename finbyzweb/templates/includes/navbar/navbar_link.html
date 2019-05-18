@@ -29,7 +29,7 @@
 	</a>
 	<div aria-labelledby='{{ page.label }}' class={%- for row in page.child_items-%}{% if row.sub_menu %} {{ drmenu }} {{ mega }} {% else %}
 {{ drmenu }}{{ close }} {% endif %}{% endfor %} >
-   <div class="row mr-0 ml-0">
+   <div class="row{%- for row in page.child_items-%}{%- if not row.sub_menu -%} ml-0 mr-0{%- endif -%}{% endfor %}">
 		 {%- set group = [] -%}
           {%- for child in page.child_items -%}
            {%- if child.sub_menu not in group and child.sub_menu -%}
@@ -39,7 +39,7 @@
          		 {%- for child1 in page.child_items -%}
          		 {%- if child.sub_menu ==  child1.sub_menu-%}
          		 
-         		 {% if child1.image %}<a href="{{ child1.url | abs_url }}" {{ child1.target or '' }}><img src="{{ child1.image }}" alt="{{ child1.label }}" title="{{ child1.label }}" height="150" width="200"></a>
+         		 {% if child1.image %}<a href="{{ child1.url | abs_url }}" {{ child1.target or '' }}><img src="{{ child1.image }}" alt="{{ child1.label }}" title="{{ child1.label }}" height="150" class="megamenu-image"></a>
 				 {% else %}
 				  <a class="dropdown-item p-1" 
 					href="{{ child1.url | abs_url }}" {{ child1.target or '' }}>{{ child1.label }}</a>
