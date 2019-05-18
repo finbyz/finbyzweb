@@ -1,11 +1,14 @@
 {%- set post = doc -%}
 <div class="web-list-item finbyz-blog-list-item">
-	
+		<div class="container">
+			<div class="row">
+
+			
 		<div class="col-12 col-sm-12">
 			<h2><a href="/{{ post.route }}" class="link-underline no-decoration">{{ post.title }}</a></h2>
 			{% if post.cover_image  %}
 			<div class="rollover">
-				<a href="/{{ post.route }}"><img class=" blogpost-cover-img finbyz-fadeinup" src="{{ post.cover_image }}" alt="{{post.title}} - Cover Image" width="80%"></a>
+				<a href="/{{ post.route }}"><img class="blogpost-cover-img finbyz-fadeinup" src="{{ post.cover_image }}" alt="{{post.title}} - Cover Image" width="80%"></a>
 				<div class="overlay">
 				<div class="overlay_text">
 					 <p><a href="/{{ post.route }}" class="link-underline t-white">{{ post.title }}</a></p>
@@ -14,7 +17,7 @@
 			</div>
 			{% endif %}
 			<br>
-			<div>
+			<div class="container">
 				
 					<div class="row">
 						<div class="col-md-2 d-none d-sm-none d-md-block">
@@ -40,6 +43,8 @@
 			
 		</div>
 	</div>
+</div>
+</div>
 </div>
 <hr>
 <style>
