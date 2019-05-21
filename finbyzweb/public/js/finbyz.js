@@ -171,6 +171,15 @@ $(function () {
 			.addTo(scrollController)
 	})
 
+	$(".finbyz-fadeinleft").each(function () {
+		var fadeUpScene = new ScrollMagic.Scene({
+			triggerElement: this,
+			triggerHook: 0.8
+		})
+			.setTween(TweenMax.from(this, 0.8, { x: 50, opacity: 0, ease: Power1.easeIn },10))
+			.addTo(scrollController)
+	})
+
 	$(".finbyz-zoomin").each(function () {
 		var fadeUpScene = new ScrollMagic.Scene({
 			triggerElement: this,
@@ -212,6 +221,16 @@ $(function () {
 
 
 });
+
+// for image zoom on hover with fadein effect
+$(".hover-zoom").hover(
+	function () {
+		TweenLite.to(this, 1, { scale:1.05 , ease: Power1.easeIn });
+	},
+	function () {
+		TweenLite.to(this, 1, { scale:1 , ease: Power1.easeIn });
+	}
+);
 
 // set some global properties
 TweenLite.set('.client-grid-wrap', { perspective: 1000 });
