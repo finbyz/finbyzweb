@@ -70,7 +70,7 @@ $(document).ready(function () {
 	$(".module-link").on("click", function (e) {
 		var id = "#" + $(this).attr('id');
 		e.preventDefault();
-		$.get('/modules', null, function (text) {
+		$.get('/modules-of-erp', null, function (text) {
 			html = $(text).find(id).html();
 			frappe.msgprint(__(html.toString()), __("Module"));
 		});
