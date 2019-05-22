@@ -44,7 +44,7 @@
    <meta property="og:type" content="website" />
    <meta  name="name" content="{{ seo_title or title }}">
    <meta property="og:title" content="{{ seo_title or title }}" />
-   <meta property="og:url" content="{{ url }}" />
+   <meta property="og:url" content="https://finbyz.tech/{{ route }}" />
    <meta property="og:site_name" content="FinByz Tech Pvt Ltd" />
    <meta property="og:image" content="{% if image %}{{image}} {% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
    {% if small_description %}
@@ -52,7 +52,7 @@
    {% endif %}
    <meta  name="twitter:card" content="summary_large_image">
    <meta  name="twitter:title" content="{{ seo_title or title }}">
-   <meta  name="twitter:url" content="{{ url }}">
+   <meta  name="twitter:url" content="https://finbyz.tech/{{ route }}">
    <meta name="twitter:site" content="@finbyz" />
    <meta name="twitter:creator" content="@finbyz" />
    <meta name="twitter:image" content="{% if image %}{{image}} {% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
