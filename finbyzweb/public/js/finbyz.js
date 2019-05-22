@@ -38,9 +38,8 @@ $(document).ready(function () {
 		smartSpeed: 1200,
 		loop: true,
 		nav: true,
+		dots:false,
 		margin: 10,
-		navigation: true,
-		navigationText: ['<span class="fa-stack"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-chevron-circle-left fa-stack-1x fa-inverse"></i></span>', '<span class="fa-stack"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-chevron-circle-right fa-stack-1x fa-inverse"></i></span>'],
 		slideBy: 1,
 		responsive: {
 			0: {
