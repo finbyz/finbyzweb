@@ -10,9 +10,6 @@
 	position: relative;
 	border-top: 1px solid {{ style.border_color }};
 }
-.blog-info {
-	margin-top: 30px;
-}
 .blog-text {
 	padding-top: 50px;
 	padding-bottom: 50px;
@@ -44,7 +41,14 @@
 		<i class="spacer-dot"></i> {{ comment_text }}
 	</p>
 	</div>
-	<div class="addthis_inline_share_toolbox mt-20"></div>
+	<div class="a2a_kit a2a_kit_size_32 a2a_default_style mt-20">
+		<a class="a2a_button_facebook"></a>
+		<a class="a2a_button_twitter"></a>
+		<a class="a2a_button_email"></a>
+		<a class="a2a_button_linkedin"></a>
+		<a class="a2a_button_whatsapp d-block d-sm-none"></a>
+		<a class="a2a_button_pinterest"></a>
+	</div>
 	<div class="longform blog-text">
 	{{ content }}
 	</div>
