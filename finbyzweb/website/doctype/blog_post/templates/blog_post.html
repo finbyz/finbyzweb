@@ -36,8 +36,8 @@
 	<h1 class="blog-header">{{ title }}</h1>
 	<p class="post-by text-muted">
 		<a href="/blog?blogger={{ blogger }}" class="no-decoration pr-2">{{ _("By") }} {{ blogger_info and blogger_info.full_name or full_name }}</a>
-		<i class="spacer-dot pr-2"></i> {{ frappe.format_date(published_on) }}
-		<i class="spacer-dot pr-2"></i> <a href="/blog?blog_category={{ blog_category }}" class="no-decoration">{{ category.title }}</a>
+		<span><i class="spacer-dot pr-2"></i> {{ frappe.format_date(published_on) }}</span>
+		<span><i class="spacer-dot pr-2"></i> <a href="/blog?blog_category={{ blog_category }}" class="no-decoration">{{ category.title }}</a></span>
 	<!-- 	<i class="spacer-dot"></i> {{ comment_text }} -->
 	</p>
 	</div>
