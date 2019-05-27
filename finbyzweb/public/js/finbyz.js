@@ -4,7 +4,29 @@ $(".nav .nav-item a.nav-active").each(function(){
   $(this).parent( 'li' ).toggleClass('active', $(this).attr('href') == loc);
 });
 
+$(".tabanchor").click(
+	function () {
+		TweenMax.from('.flex-inner', 0.8, { scale: 0, ease: Power1.easeIn })
+	}
+)
+$(".ind-module .nav-pills .nav-link").click(
+	function () {
+		TweenMax.from('.tab-pane', 0.8, { y: 150, opacity: 0, ease: Power1.easeIn })
+	}
+) 
+
 $(document).ready(function () {
+	/* phase js */
+	$('.tabanchor').on('click', function (e) {
+        var getTab = $(this).attr('href');
+        $('.circle-icon').removeClass('active');
+        $(this).parent().addClass('active');
+        $('.flex-inner').removeClass('active')
+        $(getTab).addClass('active')
+        e.preventDefault();
+
+    })
+	
 	var $tab = window.location.hash.replace('#', '');
 	showProjects($tab, 20);
 
