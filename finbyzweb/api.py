@@ -21,3 +21,15 @@ def customer_before_save(self, method):
 			doc.save()
 
 	frappe.db.commit()
+
+@frappe.whitelist()
+def get_from_data(name,mobile_no,title,email,message,ignore_permissions=True):
+	data = frappe.new_doc("Lead")
+	data.lead_name = name
+	data.mobile_no = mobile_no
+	data.source = 'Website'
+	data.notes = title + '</br>' + message
+	data.email_id = email
+	data.save()
+	
+	frappe.db.commit()

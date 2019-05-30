@@ -54,7 +54,7 @@ $(document).ready(function () {
 			}, 300);
 		}
 	});
-	var owl = $('.owl-carousel');
+	var owl = $('.owl-carousel.module-carousel');
 	owl.owlCarousel({
 		autoplay: true,
 		autoplayHoverPause: true,
