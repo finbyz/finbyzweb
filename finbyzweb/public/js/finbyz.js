@@ -115,17 +115,14 @@ $(document).ready(function () {
 							'lead_name': $('#lead_name').val(),
 							'company_name': $('#company_name').val(),
 							'mobile_no': $('#mobile_no').val(),
-							'title': document.title,
-							'email': $('#email').val(),
-							'message': $('#message').val()
+							'title': document.title + '</br>' + window.location.href,
+							'email': $('#email').val()
 					},
 					callback: function (r) {
-							frappe.msgprint("Thank you for the Inquiry. We will contact you shortly")
 							$('#lead_name').val('');
 							$('#company_name').val('');
 							$('#mobile_no').val('');
 							$('#email').val('');
-							$('#message').val('');
 					}
 			});
 		};
@@ -159,7 +156,7 @@ $(document).ready(function () {
 			return;
 		
 		var valid = true;
-		form.find('input, textarea').removeClass('invalid').each(function() {
+		form.find('input').removeClass('invalid').each(function() {
 			if (!this.value) {
 				$(this).addClass('invalid');
 				valid = false;
@@ -172,15 +169,13 @@ $(document).ready(function () {
 					.animate({left:    '0'},  50);
 			}
 		else {
-			submit.attr('value', 'Sending...')
-						.css({boxShadow: '0 0 200em 200em rgba(225, 225, 225, 0.6)',
-									backgroundColor: '#ccc'});
+			submit.attr('value', 'Sending...');
 			// simulate AJAX response
 			setTimeout(function() {
 				// step 1: slide labels and inputs
 				// when AJAX responds with success
 				// no animation for AJAX failure yet
-				$( "#inquiry-form" ).toggle({ effect: "scale", direction: "horizontal" });
+				$( "#inquiry-form" ).toggle({ effect: "scale", direction: "vertical" });
 				form.find('label')
 				
 						.animate({left: '100%'}, 500)
