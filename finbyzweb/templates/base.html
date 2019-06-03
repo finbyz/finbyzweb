@@ -46,7 +46,11 @@
    <meta property="og:title" content="{{ seo_title or title }}" />
    <meta property="og:url" content="https://finbyz.tech/{{ route }}" />
    <meta property="og:site_name" content="FinByz Tech Pvt Ltd" />
-   <meta property="og:image" content="{% if image %}{{image}} {% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
+   {% if doctype == "Blog Post" and blog_intro %}
+   <meta property="og:image" content="{% if image_seo %}https://finbyz.tech/{{ image_seo }}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
+   {% else %}
+   <meta property="og:image" content="{% if image %}https://finbyz.tech/{{image}}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
+   {% endif %}
    {% if small_description %}
    <meta property="og:description" content="{{ small_description or blog_intro }}" />
    {% endif %}
