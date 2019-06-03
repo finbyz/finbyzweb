@@ -60,9 +60,9 @@
    <meta name="twitter:site" content="@finbyz" />
    <meta name="twitter:creator" content="@finbyz" />
    {% if doctype == "Blog Post" and blog_intro %}
-   <meta property="og:image" content="{% if image_seo %}https://finbyz.tech{{ image_seo }}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
+   <meta property="twitter:image" content="{% if image_seo %}https://finbyz.tech{{ image_seo }}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
    {% else %}
-   <meta property="og:image" content="{% if image %}https://finbyz.tech{{image}}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
+   <meta property="twitter:image" content="{% if image %}https://finbyz.tech{{image}}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
    {% endif %}{% if small_description %}
    <meta  name="twitter:description" content="{{ small_description or blog_intro }}">
    {% endif %}
