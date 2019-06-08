@@ -206,6 +206,7 @@ $(document).ready(function () {
 			}
 	});
 
+<<<<<<< HEAD
 	var owl = $('.owl-carousel.main-carousel');
 	  owl.owlCarousel({
 		autoplay: true,
@@ -245,6 +246,8 @@ $(document).ready(function () {
 		
 	 });
 	 
+=======
+>>>>>>> 9fbd08ccce092b98c70b5a9e4e71e13424ceef58
 
 });
 

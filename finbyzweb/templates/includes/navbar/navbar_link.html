@@ -10,7 +10,7 @@
 	{% if page.child_items %} 
 		{{ nav }} {{ sub }}
 		{%- for row in page.child_items-%}
-			{% if row.sub_menu_title and megali not in duplicate_megali %} 
+			{% if row.sub_menu and megali not in duplicate_megali %} 
 				{{ megali }}
 				{% set _ = duplicate_megali.append(megali) %}
 			{% endif %}
@@ -27,23 +27,26 @@
 	{{ page.label }}
 	{%- if page.child_items -%}
 	</a>
-	<div aria-labelledby='{{ page.label }}' class={%- for row in page.child_items-%}{% if row.sub_menu_title %} {{ drmenu }} {{ mega }} {% else %}
+	<div aria-labelledby='{{ page.label }}' class={%- for row in page.child_items-%}{% if row.sub_menu %} {{ drmenu }} {{ mega }} {% else %}
 {{ drmenu }}{{ close }} {% endif %}{% endfor %} >
-   <div class="row mr-0 ml-0">
+   <div class="row{%- for row in page.child_items-%}{%- if not row.sub_menu -%} ml-0 mr-0{%- endif -%}{% endfor %}">
 		 {%- set group = [] -%}
           {%- for child in page.child_items -%}
-           {%- if child.sub_menu_title not in group and child.sub_menu_title -%}
-           	{%- set _ = group.append(child.sub_menu_title) -%}
+           {%- if child.sub_menu not in group and child.sub_menu -%}
+           	{%- set _ = group.append(child.sub_menu) -%}
            	<div class="col-sm-6 col-lg-3">
-         		<h5 class="t-blue">{{ child.sub_menu_title or '' }}</h5>
+         		<h5 class="t-blue">{{ child.sub_menu or '' }}</h5>
          		 {%- for child1 in page.child_items -%}
-         		 {%- if child.sub_menu_title ==  child1.sub_menu_title-%}
+         		 {%- if child.sub_menu ==  child1.sub_menu-%}
          		 
-         		 {% if child1.image %}<img src="{{ child1.image }}" alt="{{ child1.label }}" title="{{ child1.label }}" height="150" width="200">{% endif %}
-         		 <a class="dropdown-item p-1" 
-					href="{{ child1.url | abs_url }}" {{ child1.target or '' }}>{{ child1.label }}</a>{% endif %} {%- endfor -%} 		
+         		 {% if child1.image %}<a href="{{ child1.url | abs_url }}" {{ child1.target or '' }}><img src="{{ child1.image }}" alt="{{ child1.label }}" title="{{ child1.label }}" height="150" class="megamenu-image"></a>
+				 {% else %}
+				  <a class="dropdown-item p-1" 
+					href="{{ child1.url | abs_url }}" {{ child1.target or '' }}>{{ child1.label }}</a>
+				 {% endif %}
+         		{% endif %} {%- endfor -%} 		
             </div>
-            {%- elif not child.sub_menu_title -%}
+            {%- elif not child.sub_menu -%}
             
             <a class="dropdown-item" {% if child.indent %} style="padding-left: {{((child.indent|int)+1)*15 }}px"{% endif %}
 					href="{{ child.url | abs_url }}" {{ child.target or '' }}>{{ child.label }}</a>

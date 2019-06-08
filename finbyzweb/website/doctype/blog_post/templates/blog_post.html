@@ -10,9 +10,6 @@
 	position: relative;
 	border-top: 1px solid {{ style.border_color }};
 }
-.blog-info {
-	margin-top: 30px;
-}
 .blog-text {
 	padding-top: 50px;
 	padding-bottom: 50px;
@@ -38,11 +35,56 @@
 	<div class="blog-info">
 	<h1 class="blog-header">{{ title }}</h1>
 	<p class="post-by text-muted">
-		<a href="/blog?blogger={{ blogger }}" class="no-decoration">{{ _("By") }} {{ blogger_info and blogger_info.full_name or full_name }}</a>
-		<i class="spacer-dot"></i> {{ frappe.format_date(published_on) }}
-		<i class="spacer-dot"></i> <a href="/blog?blog_category={{ blog_category }}" class="no-decoration">{{ category.title }}</a>
-		<i class="spacer-dot"></i> {{ comment_text }}
+		<a href="/blog?blogger={{ blogger }}" class="no-decoration pr-2">{{ _("By") }} {{ blogger_info and blogger_info.full_name or full_name }}</a>
+		<span><i class="spacer-dot pr-2"></i> {{ frappe.format_date(published_on) }}</span>
+		<span><i class="spacer-dot pr-2"></i> <a href="/blog?blog_category={{ blog_category }}" class="no-decoration">{{ category.title }}</a></span>
+	<!-- 	<i class="spacer-dot"></i> {{ comment_text }} -->
 	</p>
+	</div>
+	<!-- <div class="a2a_kit a2a_kit_size_32 a2a_default_style mt-20">
+		<a class="a2a_button_facebook"></a>
+		<a class="a2a_button_twitter"></a>
+		<a class="a2a_button_email"></a>
+		<a class="a2a_button_linkedin"></a>
+		<a class="a2a_button_whatsapp d-block d-sm-none"></a>
+		<a class="a2a_button_pinterest"></a>
+	</div> -->
+	<div class="footer-social mt-20">
+		<ul class="footer-social">
+			
+			<li>
+				<a class="zoom" href="http://www.facebook.com/sharer.php?s=100&p[title]={{ title }}&p[url]=https://finbyz.tech/{{ route }}&p[summary]={{ blog_intro }}" target="_blank">
+					<img alt="facebook.com/Finbyz" title="Facebook" class="footer-icon-social" src="/svg/social-facebook.svg">
+				</a>
+			</li>
+			<li class="d-inline d-sm-none">
+				<a class="zoom" href="whatsapp://send?text=https://finbyz.tech/{{ route }} {{ title }}" data-action="share/whatsapp/share" target="_blank">
+					<img alt="Whataapp" title="Whataapp/finbyz" class="footer-icon-social" src="/svg/social-whatsapp.svg">
+				</a>
+			</li>
+			<li>
+				<a class="zoom" href="https://twitter.com/intent/tweet?url=https://finbyz.tech/{{ route }}&text={{ blog_intro }}" target="_blank">
+					<img alt="twitter.com/FinByz" title="Twitter/FinByz" class="footer-icon-social" src="/svg/social-twitter.svg">
+				</a>
+			</li>
+			
+			<li>
+				<a class="zoom" href="https://www.linkedin.com/shareArticle?mini=true&url=https://finbyz.tech/{{ route }}&title={{ title }}&summary={{ blog_intro }}&source=https://finbyz.tech/{{ route }}" target="_blank">
+					<img alt="linkedin.com/company/finbyz" title="linkedin/finbyz" class="footer-icon-social" src="/svg/social-linkedin.svg">
+				</a>
+			</li>
+			<li>
+				<a class="zoom" href="https://www.pinterest.com/pin/create/button/?media=https://finbyz.tech{{ image_seo }}&url=https://finbyz.tech/{{ route }}&description={{ title }}" target="_blank">
+					<img alt="Pinterest/Finbyz" title="Pinterest/Finbyz" class="footer-icon-social" src="/svg/social-pinterest.svg">
+				</a>
+			</li>
+			<li>
+				<a class="zoom" href="mailto:?subject={{ title }}&body={{ blog_intro}} https://finbyz.tech/{{ route }}" target="_blank">
+					<img alt="EMAIL" title="EMIAL/finbyz" class="footer-icon-social" src="/svg/social-mail.svg">
+				</a>
+			</li>
+			
+		</ul>
 	</div>
 	<div class="longform blog-text">
 	{{ content }}
@@ -52,9 +94,9 @@
 {% if blogger_info %}
 {% include "templates/includes/blog/blogger.html" %}
 {% endif %}
-<div class="blog-comments">
+<!-- <div class="blog-comments">
 	{% include 'templates/includes/comments/comments.html' %}
-</div>
+</div> -->
 </div>
 <script>
     frappe.ready(function() { frappe.set_search_path("/blog"); })
