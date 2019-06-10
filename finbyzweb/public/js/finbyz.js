@@ -4,11 +4,15 @@ $(".nav .nav-item a.nav-active").each(function(){
   $(this).parent( 'li' ).toggleClass('active', $(this).attr('href') == loc);
 });
 
+// logistics-industry circle design
+
 $(".tabanchor").click(
 	function () {
 		TweenMax.from('.flex-inner', 0.8, { scale: 0, ease: Power1.easeIn })
 	}
 )
+
+// other module section
 $(".ind-module .nav-pills .nav-link").click(
 	function () {
 		TweenMax.from('.tab-pane', 0.8, { y: 150, opacity: 0, ease: Power1.easeIn })
@@ -30,6 +34,9 @@ $(document).ready(function () {
 	
 	var $tab = window.location.hash.replace('#', '');
 	showProjects($tab, 20);
+
+
+	// gallery Filter
 
 	$(".parent-category").click(function () {
 		var selectedClass = $(this).attr("data-rel");
@@ -54,81 +61,29 @@ $(document).ready(function () {
 			}, 300);
 		}
 	});
-	var owl = $('.owl-carousel.module-carousel');
-	owl.owlCarousel({
-		autoplay: true,
-		autoplayHoverPause: true,
-		smartSpeed: 1200,
-		loop: true,
-		nav: true,
-		dots:false,
-		margin: 10,
-		slideBy: 1,
-		responsive: {
-			0: {
-				items: 1
-			},
-			600: {
-				items: 3
-			},
-			960: {
-				items: 5
-			},
-			1200: {
-				items: 5
-			}
-		}
-	});
-
-	owl.on('mousewheel', '.owl-stage', function (e) {
-		if (e.deltaY > 0) {
-			owl.trigger('next.owl');
-		} else {
-			owl.trigger('prev.owl');
-		}
-		e.preventDefault();
-	});
-
-	$(".module-link").on("click", function (e) {
-		var id = "#" + $(this).attr('id');
-		e.preventDefault();
-		$.get('/modules-of-erp', null, function (text) {
-			html = $(text).find(id).html();
-			frappe.msgprint(__(html.toString()), __("Module"));
-		});
-	});
-
-	$(".hover-link").on("click", function (e) {
-		var id = "#" + $(this).attr('id') + "_msg";
-		e.preventDefault();
-		html = $(id).html();
-		frappe.msgprint(__(html.toString()), __("IT Consulting"));
-
-	});
 
 	// inquiry form 
 	// lead creation
 		function lead_creation() {
 			frappe.call({
-					method: "finbyzweb.api.set_form_data",
-					args:{
-							'lead_name': $('#lead_name').val(),
-							'company_name': $('#company_name').val(),
-							'mobile_no': $('#mobile_no').val(),
-							'title': document.title + '</br>' + window.location.href,
-							'email': $('#email').val()
-					},
-					callback: function (r) {
-							$('#lead_name').val('');
-							$('#company_name').val('');
-							$('#mobile_no').val('');
-							$('#email').val('');
-					}
+				method: "finbyzweb.api.set_form_data",
+				args:{
+						'lead_name': $('#lead_name').val(),
+						'company_name': $('#company_name').val(),
+						'mobile_no': $('#mobile_no').val(),
+						'title': document.title + '</br>' + window.location.href,
+						'email': $('#email').val()
+				},
+				callback: function (r) {
+						$('#lead_name').val('');
+						$('#company_name').val('');
+						$('#mobile_no').val('');
+						$('#email').val('');
+				}
 			});
 		};
 		
-		//validation and animation
-		
+		//validation and animation	
  	$(function () {
 		let show = 'show';
 		
@@ -206,8 +161,10 @@ $(document).ready(function () {
 			}
 	});
 
-	var owl = $('.owl-carousel.main-carousel');
-	  owl.owlCarousel({
+	//Main Slider Owl init
+
+	var mainOwl = $('.owl-carousel.main-carousel');
+	mainOwl.owlCarousel({
 		autoplay: true,
 		autoplayHoverPause: true,
 		smartSpeed: 800,
@@ -223,10 +180,11 @@ $(document).ready(function () {
 		items: 1,
 		});
 	
-	 owl.on('changed.owl.carousel', function(e) {
+	// tween for Main Slider Owl change 
+	mainOwl.on('changed.owl.carousel', function(e) {
 		var scrollController = new ScrollMagic.Controller();
 		
-		$(".main-carousel #first-p").each(function () {
+		$(".owl-carousel.main-carousel #first-p").each(function () {
 			var fadeUpScene = new ScrollMagic.Scene({
 				triggerElement: this,
 				triggerHook: 1
@@ -234,7 +192,7 @@ $(document).ready(function () {
 				.setTween(TweenMax.from(this, 1, { scale: 0, ease: Power1.easeIn,delay:1 }))
 			.addTo(scrollController)
 		})
-		$(".main-carousel .slide1 img").each(function () {
+		$(".owl-carousel.main-carousel .slide1 img").each(function () {
 			var fadeUpScene = new ScrollMagic.Scene({
 				triggerElement: this,
 				triggerHook: 1
@@ -245,9 +203,69 @@ $(document).ready(function () {
 		
 	 });
 	 
+	// Homepage Module carousel Init
+	var moduleOwl = $('.owl-carousel.module-carousel');
+	moduleOwl.owlCarousel({
+		autoplay: true,
+		autoplayHoverPause: true,
+		smartSpeed: 1200,
+		loop: true,
+		nav: true,
+		dots: false,
+		margin: 10,
+		slideBy: 1,
+		responsive: {
+			0: {
+				items: 1
+			},
+			600: {
+				items: 3
+			},
+			960: {
+				items: 5
+			},
+			1200: {
+				items: 5
+			}
+		}
+	});
+
+	// Homepage Module carousel change on mouse wheel change
+	moduleOwl.on('mousewheel', '.owl-stage', function (e) {
+		if (e.deltaY > 0) {
+			moduleOwl.trigger('next.owl');
+		} else {
+			moduleOwl.trigger('prev.owl');
+		}
+		e.preventDefault();
+	});
+
+	// Homepage Module on click one module it shows html of 
+	// their modules html from modules web page
+
+	$(".module-link").on("click", function (e) {
+		var id = "#" + $(this).attr('id');
+		e.preventDefault();
+		$.get('/modules-of-erp', null, function (text) {
+			html = $(text).find(id).html();
+			frappe.msgprint(__(html.toString()), __("Module"));
+		});
+	});
+
+	// IT consulting Module on click one module it shows html of 
+	// their modules html from that same web page
+
+	$(".hover-link").on("click", function (e) {
+		var id = "#" + $(this).attr('id') + "_msg";
+		e.preventDefault();
+		html = $(id).html();
+		frappe.msgprint(__(html.toString()), __("IT Consulting"));
+
+	});
 
 });
 
+// homepage module overlay effect on hover
 $(".modules-sub").hover(
 	function () {
 		TweenLite.to($(this).find(".modules-div"), 1, { css: { height: "100%", opacity: "0.9" }, ease: Sine.easeOut });
@@ -258,6 +276,8 @@ $(".modules-sub").hover(
 		TweenLite.to($(this).find(".modules-sub-text"), 0.3, { css: { display: "none" }, ease: Sine.easeOut });
 	}
 );
+
+// IT Consulting module overlay effect on hover
 
 $(".hover-sub").hover(
 	function () {
@@ -298,8 +318,6 @@ TweenMax.staggerTo($(".card"), 0.5, { rotationY: -180, repeat: 1, yoyo: true }, 
 $(function () {
 	// init controller
 
-
-
 	/* new ScrollMagic.Scene({triggerElement: ".timeline"})
 					.setTween(timeline_scene)
 					.addTo(controller); */
@@ -307,6 +325,7 @@ $(function () {
 
 	var scrollController = new ScrollMagic.Controller();
 
+	// fadeinup effect
 	$(".finbyz-fadeinup").each(function () {
 		var fadeUpScene = new ScrollMagic.Scene({
 			triggerElement: this,
@@ -316,6 +335,7 @@ $(function () {
 			.addTo(scrollController)
 	})
 
+	// fadeinup effect for footer
 	$(".finbyz-fadeinup-footer").each(function () {
 		var fadeUpScene = new ScrollMagic.Scene({
 			triggerElement: this,
@@ -325,6 +345,7 @@ $(function () {
 			.addTo(scrollController)
 	})
 
+	// fadeindown effect
 	$(".finbyz-fadeindown").each(function () {
 		var fadeUpScene = new ScrollMagic.Scene({
 			triggerElement: this,
@@ -334,6 +355,7 @@ $(function () {
 			.addTo(scrollController)
 	})
 
+	// fadeinleft effect
 	$(".finbyz-fadeinleft").each(function () {
 		var fadeUpScene = new ScrollMagic.Scene({
 			triggerElement: this,
@@ -343,6 +365,7 @@ $(function () {
 			.addTo(scrollController)
 	})
 
+	// zoomin effect
 	$(".finbyz-zoomin").each(function () {
 		var fadeUpScene = new ScrollMagic.Scene({
 			triggerElement: this,
@@ -352,6 +375,7 @@ $(function () {
 			.addTo(scrollController)
 	})
 
+	// flip box on small screen trigger at comes to view 
 	$(".card").each(function () {
 		var tl_card = new TimelineMax();
 		tl_card.to(this, 1.2, { rotationY: 180, ease: Back.easeOut })
@@ -366,6 +390,7 @@ $(function () {
 			.addTo(scrollController)
 	})
 
+	//Navigation bar swing effect on scroll
 
 	var lastScrollTop = 0;
 	// element should be replaced with the actual target element on which you have applied scroll, use window in case of no target element.
@@ -395,6 +420,8 @@ $(".hover-zoom").hover(
 	}
 );
 
+// client grid hover effect
+
 // set some global properties
 TweenLite.set('.client-grid-wrap', { perspective: 1000 });
 TweenLite.set('.client-grid-wrap-inner', { transformStyle: "preserve-3d" });
@@ -423,6 +450,7 @@ $(".client-grid-wrapper").each(function (i, el) {
 	});
 
 });
+
 var controller = new ScrollMagic.Controller();
 function showProjects(tab, delay) {    //return false;
 	//$('.project-list.tab-'+tab).addClass('tab-active').show();
