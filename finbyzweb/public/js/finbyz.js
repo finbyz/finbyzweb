@@ -171,7 +171,7 @@ $(document).ready(function () {
 		loop: true,
 		nav: false,
 		navText: false,
-		dots: false,
+		dots: true,
 		mouseDrag: true,
 		margin: 10,
 		navigation: true,
