@@ -9,7 +9,7 @@
    <meta name="generator" content="finbyz">
    {% if keywords %}
    <meta name="keywords" content="{{ keywords }}">{% endif %}
-   {% if small_description %}
+   {% if small_description or blog_intro %}
    <meta name="description" content="{{ small_description or blog_intro }}" />
    {% endif %}
    <link rel="manifest" href="/assets/finbyzweb/js/manifest.json">
@@ -51,7 +51,7 @@
    {% else %}
    <meta property="og:image" content="{% if image %}https://finbyz.tech{{image}}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
    {% endif %}
-   {% if small_description %}
+   {% if small_description or blog_intro %}
    <meta property="og:description" content="{{ small_description or blog_intro }}" />
    {% endif %}
    <meta  name="twitter:card" content="summary_large_image">
@@ -63,7 +63,7 @@
    <meta property="twitter:image" content="{% if image_seo %}https://finbyz.tech{{ image_seo }}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
    {% else %}
    <meta property="twitter:image" content="{% if image %}https://finbyz.tech{{image}}{% else %} https://finbyz.tech/svg/banner-homepage.svg {% endif %}" />
-   {% endif %}{% if small_description %}
+   {% endif %}{% if small_description or blog_intro %}
    <meta  name="twitter:description" content="{{ small_description or blog_intro }}">
    {% endif %}
    
