@@ -47,29 +47,8 @@
 
 {% block page_content %}
 <div class="introduction">
-	{% if doctype == "Web Form" and name == "contact" %}
-		<div class="contact fullscreen">
-			<div class="row">
-				<div class="col-md-5 col-sm-12 contactbg">
-					<h2 class="contact_title">Contact Us</h2>
-					<div class="media"> <img alt="Call Us" class="footer-icon" src="/svg/icon-phone.svg" title="Call Us"> <span
-							class="ml-10">079 48912428</span> </div>
-					<div class="media"> <img alt="Email" class="footer-icon" src="/svg/icon-email.svg" title="Mail Us"> <a
-							class="ml-10" href="mailto:info@finbyz.in">info@finbyz.in</a> </div>
-					<div class="media"> <img alt="FinByz Location" class="footer-icon" src="/svg/icon-location.svg"
-							title="Location"> <span style="display: table-cell; padding-left: 10px;">504-Addor Ambition,Nr.
-							Navrang Circle,<br> Navrangpura,Ahmedabad, Gujarat 380009</span> </div>
-				</div>
-				<div class="col-md-7 col-sm-12" style="padding: 0;">
-					<iframe allowfullscreen="" class="b-0" frameborder="0" height="430"
-						src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJSbfkVouEXjkR41KyNaJzb0s&amp;key=AIzaSyBTzRW8vV_dvk6YaZzXerNfQfcGuHUNQKo"
-						width="100%"></iframe></div>
-			</div>
-		</div>
-	{% else %}
-		{% if introduction_text %}
-			<p class="text-muted">{{ _(introduction_text) }}</p>
-		{% endif %}
+	{% if introduction_text %}
+	<p class="text-muted">{{ _(introduction_text) }}</p>
 	{% endif %}
 </div>
 <div class="form-message hide"></div>
