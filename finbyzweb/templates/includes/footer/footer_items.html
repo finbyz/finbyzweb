@@ -1,4 +1,5 @@
 {% for page in footer_items %}
+{%- if page.child_items -%}
 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 footer-group">
 	{% if not page.parent_label -%}
 		<div data-label='{{ page.label }}'>
@@ -27,7 +28,8 @@
 		</a>
 		{%- endif -%}
 		</div>
-	{%- endif -%}
-	</div>
+    {%- endif -%}
+</div>
+{%- endif -%}
 {% endfor %}
 
