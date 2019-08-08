@@ -4,16 +4,18 @@
 {% block content %}
 
 {% macro main_content() %}
-<div class="page-content-wrapper">
-	<!-- breadcrumbs -->
-	<div class="page-breadcrumbs">
-		{% block breadcrumbs %}
-		{% include 'templates/includes/breadcrumbs.html' %}
-		{% endblock %}
-	</div>
+<div class="page-content-wrapper container-fluid main-container pl-0 pr-0" data-path="{{ pathname }}"
+	{%- if page_or_generator=="Generator" %}
+		data-doctype="{{ doctype }}"{% endif %}>
 
 	{% block page_container %}
-	<main class="container my-5">
+	<main class="my-5">
+		<!-- breadcrumbs -->
+		<div class="page-breadcrumbs">
+			{% block breadcrumbs %}
+			{% include 'templates/includes/breadcrumbs.html' %}
+			{% endblock %}
+		</div>
 		<div class="d-flex justify-content-between align-items-center">
 			<div class="page-header">
 				{% block header %}{% endblock %}
