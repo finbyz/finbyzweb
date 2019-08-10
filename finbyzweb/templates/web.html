@@ -26,11 +26,7 @@
 				{% block header %}{% endblock %}
 			</div>
 
-			{% if self.header_actions() %}
-			<div class="page-header-actions-block">
-				{% block header_actions %}{% endblock %}
-			</div>
-			{% endif %}
+			
 		</div>
 
 		<div class="page_content">
@@ -79,6 +75,14 @@
 					
 					{%- endif -%}
 			{%- block page_content -%}{%- endblock -%}
+			
+			
+			{% if self.header_actions() %}
+			<div class="page-header-actions-block">
+				{% block header_actions %}{% endblock %}
+			</div>
+			{% endif %}
+			
 								{% if page_type == "Industry" %}
 					<div class="other-modules-section">
 						<div class="container ind-module">
