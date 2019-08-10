@@ -20,8 +20,8 @@ $(".ind-module .nav-pills .nav-link").click(
 ) 
 
 $(document).ready(function () {
-	$(".web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
-	$(".page-card .page-card-body a").addClass('finbyz-button').removeClass('btn btn-primary');
+	$(".page-header-actions-block .web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
+	$(".page-card .page-card-body a").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
 	/* phase js */
 	$('.tabanchor').on('click', function (e) {
         var getTab = $(this).attr('href');
