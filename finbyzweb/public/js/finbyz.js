@@ -20,7 +20,7 @@ $(".ind-module .nav-pills .nav-link").click(
 ) 
 
 $(document).ready(function () {
-	$("div[data-doctype='Web Form'] .page-header-actions-block button").addClass('finbyz-button').removeClass("btn btn-primary");
+	$("div[data-doctype='Web Form'] .page-header-actions-block button").addClass('finbyz-button');
 	
 	/* phase js */
 	$('.tabanchor').on('click', function (e) {
