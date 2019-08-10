@@ -1,15 +1,30 @@
-<div class="web-list-item">
-    <a class="no-underline text-reset" href="/{{ route }}">
-		{% if list_view_fields %}
-			<div class="row">
-				{% for df in list_view_fields %}
-				<div class='col-sm-{{ (12/(list_view_fields|len))|int }}'>
-					{{ doc.get(df.fieldname) }}
-				</div>
-				{% endfor %}
+<div class="col-md-4 col-sm-6 col-xs-12 mg-bottom">
+	<div class="web-list-item">
+		<a class="no-decoration" href="/{{ route }}">
+			<!-- <h3 class="link-underline"></h3> -->
+			<div class="hover-sub">			
+					<div class="hover-div bg-black text-center">
+						<div>
+
+							<h3 class="t-white link-underline">{{ doc.get(title_field) }}</h3>
+						</div>
+						<h4 class="hover-sub-text t-white mt-10">Key Skills</h4>
+						<div class="hover-sub-text t-white p-10" style="text-align:left">{{ doc.skills or '' }}</div>
+					</div>
+					{%- if doc.image -%}
+					<div class="text-center mt-0 pt-0 img-hover-job">
+						<img alt="{{ doc.get(title_field) }}" title="{{ doc.get(title_field) }}" class="img-fluid" src="{{ doc.image }}"></div>
+					{%- endif -%}
 			</div>
-		{% else %}
-        	<p>{{ doc.get(title_field) }}</p>
-		{% endif %}
-    </a>
+			
+			<!-- <img  class="mt-20 job-img" height="300" width="350"> -->
+			
+		</a>
+		    
+	</div>
 </div>
+<style>
+	.container-fluid[data-path="jobs"] .page_content>p{
+		display: none;
+	}
+</style>
