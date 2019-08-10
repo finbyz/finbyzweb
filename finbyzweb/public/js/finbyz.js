@@ -370,9 +370,9 @@ $(function () {
 	$(".finbyz-zoomin").each(function () {
 		var fadeUpScene = new ScrollMagic.Scene({
 			triggerElement: this,
-			triggerHook: 0.8
+			triggerHook: 0.9
 		})
-			.setTween(TweenMax.from(this, 0.8, { scale: 0, ease: Power1.easeIn }))
+			.setTween(TweenMax.from(this, 0.9, { scale: 0, ease: Power1.easeIn }))
 			.addTo(scrollController)
 	})
 
