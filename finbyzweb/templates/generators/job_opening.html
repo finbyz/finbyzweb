@@ -1,0 +1,35 @@
+{% extends "templates/web.html" %}
+
+{% block breadcrumbs %}
+	{% include "templates/includes/breadcrumbs.html" %}
+{% endblock %}
+
+
+
+{% block page_content %}
+<div class="container mt-50">
+	{%- if description -%}
+	<div class="row mt-50">
+		<div class="col-md-12">
+		<h3>Job Description</h3>
+			{{ description }}
+		</div>
+	</div>
+	{% endif %}
+	{%- if skills -%}
+	<div class="row mt-50">
+		<div class="col-md-12">
+		<h3>Key Skills</h3>
+			{{ skills }}
+		</div>
+	</div>
+	{% endif %}
+</div>
+
+<div style='margin-top: 30px' class="button">
+	<a class='finbyz-button'
+	href='/job_application?new=1&job_title={{ doc.name }}'>
+	{{ _("Apply Now") }}</a>
+</div>
+
+{% endblock %}
