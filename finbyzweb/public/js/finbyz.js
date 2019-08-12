@@ -1,7 +1,7 @@
 var loc = window.location.pathname;
 
-$(".nav .nav-item a.nav-active").each(function(){
-  $(this).parent( 'li' ).toggleClass('active', $(this).attr('href') == loc);
+$(".nav .nav-item a.nav-active").each(function () {
+	$(this).parent('li').toggleClass('active', $(this).attr('href') == loc);
 });
 
 // logistics-industry circle design
@@ -17,22 +17,23 @@ $(".ind-module .nav-pills .nav-link").click(
 	function () {
 		TweenMax.from('.tab-pane', 0.8, { y: 150, opacity: 0, ease: Power1.easeIn })
 	}
-) 
+)
 
 $(document).ready(function () {
-	$(".page-header-actions-block .web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
+	document.querySelectorAll('.web-form-actions button').addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
+	// $(".page-header-actions-block .web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
 	$(".page-card .page-card-body a").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
 	/* phase js */
 	$('.tabanchor').on('click', function (e) {
-        var getTab = $(this).attr('href');
-        $('.circle-icon').removeClass('active');
-        $(this).parent().addClass('active');
-        $('.flex-inner').removeClass('active')
-        $(getTab).addClass('active')
-        e.preventDefault();
+		var getTab = $(this).attr('href');
+		$('.circle-icon').removeClass('active');
+		$(this).parent().addClass('active');
+		$('.flex-inner').removeClass('active')
+		$(getTab).addClass('active')
+		e.preventDefault();
 
-    })
-	
+	})
+
 	var $tab = window.location.hash.replace('#', '');
 	showProjects($tab, 20);
 
@@ -65,101 +66,101 @@ $(document).ready(function () {
 
 	// inquiry form 
 	// lead creation
-		function lead_creation() {
-			frappe.call({
-				method: "finbyzweb.api.set_form_data",
-				args:{
-						'lead_name': $('#lead_name').val(),
-						'company_name': $('#company_name').val(),
-						'mobile_no': $('#mobile_no').val(),
-						'title': document.title + '</br>' + window.location.href,
-						'email': $('#email').val()
-				},
-				callback: function (r) {
-						$('#lead_name').val('');
-						$('#company_name').val('');
-						$('#mobile_no').val('');
-						$('#email').val('');
-				}
-			});
-		};
-		
-		//validation and animation	
- 	$(function () {
+	function lead_creation() {
+		frappe.call({
+			method: "finbyzweb.api.set_form_data",
+			args: {
+				'lead_name': $('#lead_name').val(),
+				'company_name': $('#company_name').val(),
+				'mobile_no': $('#mobile_no').val(),
+				'title': document.title + '</br>' + window.location.href,
+				'email': $('#email').val()
+			},
+			callback: function (r) {
+				$('#lead_name').val('');
+				$('#company_name').val('');
+				$('#mobile_no').val('');
+				$('#email').val('');
+			}
+		});
+	};
+
+	//validation and animation	
+	$(function () {
 		let show = 'show';
-		
+
 		$('.inquiry-main .inquiry-input').on('checkval', function () {
 			let label = $(this).next('label');
-			if(this.value !== '') {
+			if (this.value !== '') {
 				label.addClass(show);
 			} else {
 				label.removeClass(show);
 			}
 		}).on('keyup', function () {
 			$(this).trigger('checkval');
-		}); 
-	 
-	 });
+		});
 
-		var form = $('#inquiry'),
+	});
+
+	var form = $('#inquiry'),
 		submit = form.find('[name="submit"]');
 
-	form.on('submit', function(e) {
+	form.on('submit', function (e) {
 		e.preventDefault();
-		
+
 		// avoid spamming buttons
 		if (submit.attr('value') !== 'Send')
 			return;
-		
+
 		var valid = true;
-		form.find('input').removeClass('invalid').each(function() {
+		form.find('input').removeClass('invalid').each(function () {
 			if (!this.value) {
 				$(this).addClass('invalid');
 				valid = false;
 			}
 		});
-		
+
 		if (!valid) {
-			form.animate({left: '-3em'},  50)
-					.animate({left:  '3em'}, 100)
-					.animate({left:    '0'},  50);
-			}
+			form.animate({ left: '-3em' }, 50)
+				.animate({ left: '3em' }, 100)
+				.animate({ left: '0' }, 50);
+		}
 		else {
 			submit.attr('value', 'Sending...');
 			// simulate AJAX response
-			setTimeout(function() {
+			setTimeout(function () {
 				// step 1: slide labels and inputs
 				// when AJAX responds with success
 				// no animation for AJAX failure yet
-				$( "#inquiry-form" ).toggle({ effect: "scale", direction: "vertical" });
+				$("#inquiry-form").toggle({ effect: "scale", direction: "vertical" });
 				form.find('label')
-				
-						.animate({left: '100%'}, 500)
-						.animate({opacity: '0'}, 500);
+
+					.animate({ left: '100%' }, 500)
+					.animate({ opacity: '0' }, 500);
 			}, 1000);
-			setTimeout(function() {
+			setTimeout(function () {
 				// step 2: show thank you message after step 1
 				submit.attr('value', 'Thank you :)')
-							.css({boxShadow: 'none'});
+					.css({ boxShadow: 'none' });
 			}, 1000);
-			setTimeout(function() {
+			setTimeout(function () {
 				// step 3: reset
-				$( "#inquiry-form" ).toggle({ effect: "scale", direction: "vertical" });
-				
+				$("#inquiry-form").toggle({ effect: "scale", direction: "vertical" });
+
 				form.find('label')
-						.css({left: '0'})
-						.animate({opacity: '1'}, 500);
+					.css({ left: '0' })
+					.animate({ opacity: '1' }, 500);
 				submit.attr('value', 'Send')
-							.css({backgroundColor: ''});
-							lead_creation();
+					.css({ backgroundColor: '' });
+				lead_creation();
 			}, 3000);
 			let show = 'show';
 			$('.inquiry-main', function () {
-					let label = $('.inquiry-label');
-						label.removeClass(show);
-					
-				}); 
-			}
+				let label = $('.inquiry-label');
+				label.removeClass(show);
+
+			});
+		}
 	});
 
 	//Main Slider Owl init
@@ -179,31 +180,31 @@ $(document).ready(function () {
 		navigationText: ['<span class="fa-stack"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-chevron-circle-left fa-stack-1x fa-inverse"></i></span>', '<span class="fa-stack"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-chevron-circle-right fa-stack-1x fa-inverse"></i></span>'],
 		slideBy: 1,
 		items: 1,
-		});
-	
+	});
+
 	// tween for Main Slider Owl change 
-	mainOwl.on('changed.owl.carousel', function(e) {
+	mainOwl.on('changed.owl.carousel', function (e) {
 		var scrollController = new ScrollMagic.Controller();
-		
+
 		$(".owl-carousel.main-carousel #first-p").each(function () {
 			var fadeUpScene = new ScrollMagic.Scene({
 				triggerElement: this,
 				triggerHook: 1
 			})
-				.setTween(TweenMax.from(this, 1, { scale: 0, ease: Power1.easeIn,delay:1 }))
-			.addTo(scrollController)
+				.setTween(TweenMax.from(this, 1, { scale: 0, ease: Power1.easeIn, delay: 1 }))
+				.addTo(scrollController)
 		})
 		$(".owl-carousel.main-carousel .slide1 img").each(function () {
 			var fadeUpScene = new ScrollMagic.Scene({
 				triggerElement: this,
 				triggerHook: 1
 			})
-				.setTween(TweenMax.from(this, 1, {x: 50, opacity: 0, ease: Power1.easeOut,delay:0.5}))
-			.addTo(scrollController)
+				.setTween(TweenMax.from(this, 1, { x: 50, opacity: 0, ease: Power1.easeOut, delay: 0.5 }))
+				.addTo(scrollController)
 		})
-		
-	 });
-	 
+
+	});
+
 	// Homepage Module carousel Init
 	var moduleOwl = $('.owl-carousel.module-carousel');
 	moduleOwl.owlCarousel({
@@ -362,7 +363,7 @@ $(function () {
 			triggerElement: this,
 			triggerHook: 0.8
 		})
-			.setTween(TweenMax.from(this, 0.8, { x: 50, opacity: 0, ease: Power1.easeIn },10))
+			.setTween(TweenMax.from(this, 0.8, { x: 50, opacity: 0, ease: Power1.easeIn }, 10))
 			.addTo(scrollController)
 	})
 
@@ -414,10 +415,10 @@ $(function () {
 // for image zoom on hover with fadein effect
 $(".hover-zoom").hover(
 	function () {
-		TweenLite.to(this, 1, { scale:1.05 , ease: Power1.easeIn });
+		TweenLite.to(this, 1, { scale: 1.05, ease: Power1.easeIn });
 	},
 	function () {
-		TweenLite.to(this, 1, { scale:1 , ease: Power1.easeIn });
+		TweenLite.to(this, 1, { scale: 1, ease: Power1.easeIn });
 	}
 );
 
