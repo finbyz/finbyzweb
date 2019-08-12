@@ -20,6 +20,8 @@ $(".ind-module .nav-pills .nav-link").click(
 )
 
 $(document).ready(function () {
+	
+	$(".website-list .result a").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
 	$(".web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
 	$(".page-card .page-card-body a").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
 	/* phase js */
