@@ -1,29 +1,31 @@
-<div class="my-5 container-fluid">
-    <div class="row">
-        <div class="col-12 col-sm-12">
-            <h3>{{ doc.job_title }}</h3>
-        </div>
-        <div class="col-12 col-md-8">
-            <p>{{ doc.description }}</p>
-            <!-- <p>{{ doc.skills }}</p> -->
-            <div class="d-flex">
-                <div>
-                    <a class="btn btn-primary" href="/job_application?new=1&job_title={{ doc.name }}">
-                        {{ _("Apply Now") }}</a>
-                </div>
-                <div>
-                    <a class="finbyz-button" href="/{{ route }}">
-                        Know More
-                    </a>
+<div class="my-5 col-12 col-sm-12">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-sm-12">
+                <h3>{{ doc.job_title }}</h3>
+            </div>
+            <div class="col-12 col-md-8">
+                <p>{{ doc.description }}</p>
+                <!-- <p>{{ doc.skills }}</p> -->
+                <div class="d-flex">
+                    <div>
+                        <a class="btn btn-primary" href="/job_application?new=1&job_title={{ doc.name }}">
+                            {{ _("Apply Now") }}</a>
+                    </div>
+                    <div>
+                        <a class="finbyz-button" href="/{{ route }}">
+                            Know More
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-12 col-md-4">
-            {%- if doc.image -%}
-            <div class="text-center mt-0 pt-0 img-hover-job">
-                <img alt="{{ doc.get(title_field) }}" title="{{ doc.get(title_field) }}" class="img-fluid" src="{{ doc.image }}">
+            <div class="col-12 col-md-4">
+                {%- if doc.image -%}
+                <div class="text-center mt-0 pt-0 img-hover-job">
+                    <img alt="{{ doc.get(title_field) }}" title="{{ doc.get(title_field) }}" class="img-fluid" src="{{ doc.image }}">
+                </div>
+                {%- endif -%}
             </div>
-            {%- endif -%}
         </div>
     </div>
 </div>
