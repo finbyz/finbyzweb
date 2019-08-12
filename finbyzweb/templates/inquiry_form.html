@@ -1,0 +1,45 @@
+<div>
+						{% if doctype == "Web Page" and name != "career" %}
+						<section class="mt-100 bg-layer inquiry-form-section">
+							<div class="container">
+								<div class="row p-5">
+									<div class="col-md-6 bg-white br-left d-flex align-items-center justify-content-center">
+										<div class="mt-4 mb-4">
+											<div class="text-center">
+											<h2 class="finbyz-fadeinup t-blue">
+											Request for FREE Demo
+											</h2>
+											</div>
+											<img src="/files/envelope-icon.svg" alt="Request for FREE Demo" title="Request for FREE Demo" class="finbyz-zoomin pt-4">
+										</div>
+									</div>
+									<div class="col-md-6 mtn-1 mln-2 bg-white br-right">
+										<div id="inquiry-form">
+											<form id="inquiry" name="contact" class="inquiry-main  finbyz-fadeinup bg-white ml-auto mt-4 mb-4" accept-charset="utf-8">
+												<input class="form-control inquiry-input" name="lead_name" type="text" id="lead_name" placeholder="Name">
+												<label class="inquiry-label"><span>Name</span>
+												</label>
+												
+												<input class="form-control inquiry-input" name="company_name" type="text" id="company_name" placeholder="Oraganization Name">
+												<label class="inquiry-label"><span>Oraganization Name</span>
+												</label>
+												<input class="form-control inquiry-input" name="email" type="email" id="email" placeholder="Email">
+												<label class="inquiry-label"><span>Email</span>
+												</label>
+												<input class="form-control inquiry-input" data-bind="value:mobile_no" id="mobile_no" name="mobile_no" min="0" required="" placeholder="Mobile No" type="number" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+												maxlength = "10"> 
+												<label class="inquiry-label"><span>Mobile No</span>
+												</label>
+													
+												<!-- <input name="submit" type="submit" value="Send"/> -->
+												<div class="text-center mt-4">
+													<button class="btn finbyz-button" name="submit" type="submit" value="Send">Submit</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</section>
+						{% endif %}
+					</div>
