@@ -9,20 +9,22 @@
                 <!-- <p>{{ doc.skills }}</p> -->
                 <div class="d-md-flex d-sm-block d-block text-center">
                     <div class="m-2">
-                        <a class="finbyz-button" href="/job-application-form?new=1&job_title={{ doc.name }}">
-                            {{ _("Apply Now") }}</a>
-                    </div>
-                    <div class="m-2">
-                        <a class="finbyz-button" href="/{{ doc.route }}">
+                        <a class="finbyz-button" href="/{% frappe.db.get_value('Job Opening',doc.name,'route') %}">
                             Know More
                         </a>
                     </div>
+                    <div class="m-2">
+                        <a class="finbyz-button" href="/job-application-form?new=1&job_title={{ doc.name }}">
+                            {{ _("Apply Now") }}
+                        </a>
+                    </div>
+                    
                 </div>
             </div>
             <div class="col-12 col-md-4">
                 {%- if doc.image -%}
                 <div class="text-center mt-0 pt-0 img-hover-job">
-                    <img alt="{{ doc.get(title_field) }}" title="{{ doc.get(title_field) }}" class="img-fluid" src="{{ doc.image }}">
+                    <img alt="{{ doc.get(title_field) }}" title="{{ doc.get(title_field) }}" class="img-fluid" src="{% frappe.db.get_value('Job Opening',doc.name,'image') %}">
                 </div>
                 {%- endif -%}
             </div>
