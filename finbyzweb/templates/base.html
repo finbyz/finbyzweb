@@ -91,7 +91,7 @@
    {% block head_include %}{{ head_include or "" }}{% endblock %}
    {% block style %}{%- endblock -%}
    {%- endblock -%}
-  
+  {% include "templates/includes/app_analytics/google_analytics.html" %}
    <!-- Facebook Pixel Code -->
    <script>
       !function (f, b, e, v, n, t, s) {
