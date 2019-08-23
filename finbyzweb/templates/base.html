@@ -91,21 +91,7 @@
    {% block head_include %}{{ head_include or "" }}{% endblock %}
    {% block style %}{%- endblock -%}
    {%- endblock -%}
-   <!-- Google Analytics -->
-   
-   <script src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js" async></script>
-   <script>
-      var galite = galite || {};
-      galite.UA = 'UA-70704275-2';
-
-      window.frappe = {};
-      frappe.ready_events = [];
-      frappe.ready = function (fn) {
-         frappe.ready_events.push(fn);
-      }
-      window.dev_server = {{ dev_server }};
-
-   </script>
+  
    <!-- Facebook Pixel Code -->
    <script>
       !function (f, b, e, v, n, t, s) {
