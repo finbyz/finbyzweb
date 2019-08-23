@@ -205,11 +205,13 @@
    <script type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
       {% if script_path%}<script type="text/javascript" src="{{ script_path }}"></script>{% endif %}
-   <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script>
    {% endif %}
    
   
    {% block script %}{% endblock %}
+	{% if name != "login"%}
+    <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script>
+    {% endif %}
    <!-- csrf_token -->
    {% block body_include %}{{ body_include or "" }}{% endblock %}
 </body>
