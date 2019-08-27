@@ -91,6 +91,8 @@
    {% block head_include %}{{ head_include or "" }}{% endblock %}
    {% block style %}{%- endblock -%}
    {%- endblock -%}
+	{%- if frappe.db.get_single_value('Website Settings', 'google_analytics_id') -%}
+	
    
    <script src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js" async></script>
    <script>
@@ -103,6 +105,7 @@
       }
       window.dev_server = {{ dev_server }};
    </script>
+   {% endif %}
    <!-- Facebook Pixel Code -->
    <script>
       !function (f, b, e, v, n, t, s) {
