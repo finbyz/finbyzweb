@@ -18,14 +18,20 @@ $(".ind-module .nav-pills .nav-link").click(
 		TweenMax.from('.tab-pane', 0.8, { y: 150, opacity: 0, ease: Power1.easeIn })
 	}
 )
+$(window).on('load', function () {
+
+	setTimeout(function () {
+		if ($(".web-form-actions button").hasClass('btn btn-primary btn-sm')) {
+			$(".web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
+		}
+		if ($(".website-list .result a").hasClass('btn btn-primary btn-sm')){
+			$(".website-list .result a").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
+		}
+	}, 100);
+})
 
 $(document).ready(function () {
-	if ($(".website-list .result a").hasClass('btn btn-primary btn-sm')){
-		$(".website-list .result a").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
-	}
-	if ($(".web-form-actions button").hasClass('btn btn-primary btn-sm')) {
-		$(".web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
-	}
+	
 	/* phase js */
 	$('.tabanchor').on('click', function (e) {
 		var getTab = $(this).attr('href');
