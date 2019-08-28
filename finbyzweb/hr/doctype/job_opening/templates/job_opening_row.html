@@ -9,7 +9,7 @@
                 <!-- <p>{{ doc.skills }}</p> -->
                 <div class="d-md-flex d-sm-block d-block text-center">
                     <div class="m-2">
-                        <a class="finbyz-button" href="{{ doc.name }}">
+                        <a class="finbyz-button" href="{{ frappe.db.get_value('Job Opening',doc.name,'route') }}">
                             Know More
                         </a>
                     </div>
