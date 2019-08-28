@@ -242,14 +242,14 @@ $(document).ready(function () {
 	});
 
 	// Homepage Module carousel change on mouse wheel change
-	moduleOwl.on('mousewheel', '.owl-stage', function (e) {
-		if (e.deltaY > 0) {
-			moduleOwl.trigger('next.owl');
-		} else {
-			moduleOwl.trigger('prev.owl');
-		}
-		e.preventDefault();
-	});
+	// moduleOwl.on('mousewheel', '.owl-stage', function (e) {
+	// 	if (e.deltaY > 0) {
+	// 		moduleOwl.trigger('next.owl');
+	// 	} else {
+	// 		moduleOwl.trigger('prev.owl');
+	// 	}
+	// 	e.preventDefault();
+	// });
 
 	// Homepage Module on click one module it shows html of 
 	// their modules html from modules web page
