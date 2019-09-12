@@ -1,51 +1,50 @@
 {%- set post = doc -%}
 <div class="web-list-item finbyz-blog-list-item">
-		<div class="container">
-			<div class="row">
-
-			
-		<div class="col-12 col-sm-12">
-			<h2><a href="/{{ post.route }}" class="link-underline no-decoration">{{ post.title }}</a></h2>
-			{% if post.cover_image  %}
-			<div class="rollover">
-				<a href="/{{ post.route }}"><img class="blogpost-cover-img finbyz-fadeinup" src="{{ post.cover_image }}" alt="{{post.title}} - Cover Image" width="80%"></a>
-				<div class="overlay">
-				<div class="overlay_text">
-					 <p><a href="/{{ post.route }}" class="link-underline t-white">{{ post.title }}</a></p>
+	<div class="container">
+		<div class="row">
+			<div class="col-12 col-sm-12 finbyz-fadeinup my-3">
+				<h2><a href="/{{ post.route }}" class="link-underline no-decoration">{{ post.title }}</a></h2>
+				{% if post.cover_image  %}
+				<div class="rollover">
+					<a href="/{{ post.route }}">
+						<img class="blogpost-cover-img" src="{{ post.cover_image }}" alt="{{post.title}} - Cover Image" width="80%">
+					</a>
+					<div class="overlay">
+						<div class="overlay_text">
+							<p><a href="/{{ post.route }}" class="link-underline t-white">{{ post.title }}</a></p>
+						</div>
+					</div>
 				</div>
-			 </div>
-			</div>
-			{% endif %}
-			<br>
-			<div class="container">
-				
+				{% endif %}
+				<br>
+				<div class="container">
 					<div class="row">
 						<div class="col-md-2 d-none d-sm-none d-md-block">
-							<div class="date t-white finbyz-fadeinup">
+							<div class="date t-white">
 								<h2>{{ frappe.utils.get_datetime(post.published).strftime("%d") }}</h2>
 								<p class="text-center">{{ frappe.utils.get_datetime(post.published).strftime("%b, %Y") }}</p>
 							</div>
 						</div>
-						<div class="col-md-10 col-sm-10 col-xs-9 finbyz-fadeinup blog-description">
+						<div class="col-md-10 col-sm-10 col-xs-9 blog-description">
 							<h4><a href="/{{ post.route }}">{{ post.title }}</a></h4>
 							<p class="m-0">By <a href="/blog?blogger={{ post.blogger }}">{{ post.full_name }}</a> | {{ frappe.format_date(post.published_on) }} | Categories: <a href="/blog?blog_category={{ post.blog_category }}" class="no-decoration">{{ post.blog_category }}</a> {% if _user_tags -%}| Tags: {{ post._user_tags }} {% endif %}</p>
 							<p class="m-0">{{ post.intro }}</p>					
 						</div>
 					</div>
-				<!-- <div class="inline-block" style="width: calc(100% - 100px)">
-					<div><p class="title"><a href="/{{ post.route }}">{{ post.title }}</a></p></div>
-					<div class='text-muted'>
-						<p>By <a href="/blog?blogger={{ post.blogger }}">{{ post.full_name }}</a> | {{ frappe.format_date(post.published_on) }} | Categories: {{ post.blog_category }} {% if _user_tags -%}| Tags: {{ post._user_tags }} {% endif %}</p>
-						<p>{{ post.intro }}</p>	
-					</div>
-					
-				</div> -->
-			
+					<!-- <div class="inline-block" style="width: calc(100% - 100px)">
+						<div><p class="title"><a href="/{{ post.route }}">{{ post.title }}</a></p></div>
+						<div class='text-muted'>
+							<p>By <a href="/blog?blogger={{ post.blogger }}">{{ post.full_name }}</a> | {{ frappe.format_date(post.published_on) }} | Categories: {{ post.blog_category }} {% if _user_tags -%}| Tags: {{ post._user_tags }} {% endif %}</p>
+							<p>{{ post.intro }}</p>	
+						</div>
+						
+					</div> -->
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
-</div>
-</div>
+<hr>
 <style>
 
 .page-head{
