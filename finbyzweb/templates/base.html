@@ -145,22 +145,23 @@
 		</div> -->
    <div class="main-section">
       <div>
-         <header>
-
-            {%- block banner -%}
-            {% include "templates/includes/banner_extension.html" ignore missing %}
-            {% if banner_html %}
-            <div class="container-fluid">
-               <div class='banner'>
-                  {{ banner_html or "" }}
+         {%- if doctype!="Ad Campaign" -%}
+            <header>
+               {%- block banner -%}
+               {% include "templates/includes/banner_extension.html" ignore missing %}
+               {% if banner_html %}
+               <div class="container-fluid">
+                  <div class='banner'>
+                     {{ banner_html or "" }}
+                  </div>
                </div>
-            </div>
-            {% endif %}
-            {%- endblock -%}
-            {%- block navbar -%}
-            {% include "templates/includes/navbar/navbar.html" %}
-            {%- endblock -%}
-         </header>
+               {% endif %}
+               {%- endblock -%}
+               {%- block navbar -%}
+               {% include "templates/includes/navbar/navbar.html" %}
+               {%- endblock -%}
+            </header>
+         {%- endif -%}
          <div class="container-fluid pl-0 pr-0">
             <div data-html-block="hero">
                {%- block hero -%}{%- endblock -%}
@@ -170,17 +171,23 @@
             </div>
          </div>
          
-         {%- if footer is defined -%}
-         <footer class="page-footer">
-            <div class="container-fluid pl-0 pr-0">
-               {{ footer }}
-            </div>
-         </footer>
+         {%- if doctype!="Ad Campaign" -%}
+            {%- if footer is defined -%}
+            <footer class="page-footer">
+               <div class="container-fluid pl-0 pr-0">
+                  {{ footer }}
+               </div>
+            </footer>
+            {%- endif -%}
          {%- endif -%}
       </div>
-      <div>
-         {%- block footer -%}{% include "templates/includes/footer/footer.html" %}{%- endblock -%}
-      </div>
+      {%- if doctype!="Ad Campaign" -%}
+         <div>
+            {%- block footer -%}{% include "templates/includes/footer/footer.html" %}{%- endblock -%}
+         </div>
+      {%- endif -%}
+	 
+	  
    </div>
 
    {%- block base_scripts -%}

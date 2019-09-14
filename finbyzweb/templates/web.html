@@ -37,11 +37,14 @@
 				{% block header_actions %}{% endblock %}
 			</div>
 			{% endif %}
-
-			{% include "templates/other_erp_module.html" %}
+			{% if page_type == "Industry" %}			
+				{% include "templates/other_erp_module.html" %}
+			{% endif %}
+			{% if doctype == "Web Page" and name != "career" and doctype!="Ad Campaign" %}
 			{% include "templates/inquiry_form.html" %}
+			{% endif %}
 		</div>
-
+		
 	</main>
 	{% endblock %}
 </div>

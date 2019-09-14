@@ -240,6 +240,40 @@ $(document).ready(function () {
 			}
 		}
 	});
+	
+	//Client
+	var owl = $('.finbyz-customer .owl-carousel');
+	owl.owlCarousel({
+  
+		autoplay: true,
+        autoplayHoverPause: false,
+		autoplaySpeed: 2000,
+		loop: true,
+		nav: false,
+		margin: 10,
+		navText: false,
+		dots: false,
+		mouseDrag: true,
+		slideBy: 1,
+		responsive: {
+			0: {
+				items: 1,
+				loop: true,
+			},
+			600: {
+				items: 3,
+				loop: true,
+			},
+			960: {
+				items: 5,
+				loop: true,
+			},
+			1200: {
+				items: 6,
+				loop: true,
+			}
+		} 
+	});
 
 	// Homepage Module carousel change on mouse wheel change
 	// moduleOwl.on('mousewheel', '.owl-stage', function (e) {
@@ -420,7 +454,17 @@ $(function () {
 
 
 });
-
+$(window).bind('scroll', function() {
+  var scrollhight = $(window).height()*0.9
+        var navHeight = $(window).height() - scrollhight;
+  
+        if ($(window).scrollTop() > navHeight) {
+            $('.navbar.landing-navbar-main').addClass('on');
+     
+        } else {
+            $('.navbar.landing-navbar-main').removeClass('on');
+        }
+});
 // for image zoom on hover with fadein effect
 $(".hover-zoom").hover(
 	function () {
