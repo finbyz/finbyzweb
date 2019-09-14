@@ -2,9 +2,9 @@
 	<div class="footer-outer">
 		<div class="footer-inner">
 			<section class="footer-section">
-				<div>
+					<div>
 					<div class="container">
-						<div class="row mb-3">
+						<div class="row mb-50">
 							<div class="col-md-4 co-lg-4 col-xl-4 col-12">
 								<div class="">
 									<p class="footer-title t-white text-center text-md-left">
@@ -61,7 +61,9 @@
 							</div>
 							<div class="col-md-8 co-lg-8 col-xl-8 col-12">
 								<div class="row">
-                                    {% include "templates/includes/footer/footer_items.html" %}
+									<p>
+										{% include "templates/includes/footer/footer_items.html" %}
+									</p>
 								</div>
 							</div>
 						</div>
@@ -89,7 +91,7 @@
 									</div>
 									<div>
 										<p class="footer-title t-white pl-5 pt-10">
-											<a href="mailto:info@finbyz.com" class="t-white">info@finbyz.com</a>
+											<a href="mailto:info@finbyz.com">info@finbyz.com</a>
 										</p>
 										<p class="footer-txt-sm t-gray pl-5">
 											Mail Us
@@ -121,7 +123,7 @@
 							<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 								<p class="footer-txt-sm t-gray">
 									Copyright &copy; {{ frappe.utils.getdate().year }} 
-									<a href="/home">
+									<a href="/">
 										<span class="t-graylight">FinByz Tech Pvt Ltd</span>
 									</a>
 								</p>
