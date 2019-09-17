@@ -1,0 +1,46 @@
+<section id="inquiry-form-section" class="inquiry-form-section ad-campaign-form">
+    <div class="container">
+        <div class="row p-5">
+            <div class="col-md-6 bg-white inquiry-form-fields">
+                <div id="inquiry-form">
+                    <form id="inquiry" name="contact" class="inquiry-main bg-white ml-auto position-relative"
+                        accept-charset="utf-8">
+                        <h3 class="pb-2">
+                            Inquiry
+                        </h3>
+                        <input class="form-control inquiry-input" name="lead_name" type="text" id="lead_name"
+                            placeholder="Name">
+                        <label class="inquiry-label"><span>Name</span>
+                        </label>
+
+                        <input class="form-control inquiry-input" name="company_name" type="text" id="company_name"
+                            placeholder="Oraganization Name">
+                        <label class="inquiry-label"><span>Oraganization Name</span>
+                        </label>
+                        <input class="form-control inquiry-input" name="email" type="email" id="email"
+                            placeholder="Email">
+                        <label class="inquiry-label"><span>Email</span>
+                        </label>
+                        <input class="form-control inquiry-input" data-bind="value:mobile_no" id="mobile_no"
+                            name="mobile_no" min="0" required="" placeholder="Mobile No" type="number"
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                            maxlength="10">
+                        <label class="inquiry-label"><span>Mobile No</span>
+                        </label>
+
+                        <!-- <input name="submit" type="submit" value="Send"/> -->
+                        <div class="text-center mt-2">
+                            <button class="btn finbyz-button" name="submit" type="submit" value="Send">Submit</button>
+                        </div>
+                        <div id="campaign_enquire_btn" class="enquire-btn d-flex">
+                            <p class="pr-2">
+                                <span class="pr-2">Contact Us</span>
+                                <img src="/files/enquire-icon.svg" class="pt-2" alt="Contact Us" title="Contact Us">
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

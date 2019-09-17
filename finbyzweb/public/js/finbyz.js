@@ -90,6 +90,7 @@ $(document).ready(function () {
 				$('#company_name').val('');
 				$('#mobile_no').val('');
 				$('#email').val('');
+				frappe.msgprint("Thank you for inquiry. we will contact you shortly");
 			}
 		});
 	};
