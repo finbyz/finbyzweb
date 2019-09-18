@@ -7,12 +7,12 @@
 
 {% block content %}
     {{ main_section or html }}
-    {% include "templates/other_erp_module.html" %}
-    {% include "templates/campaign_inquiry_form.html" %}
+    {% include "templates/includes/other_erp_module.html" %}
+    {% include "templates/includes/form/campaign_inquiry_form.html" %}
     <div class="customer">
         {% include 'www/customer.html' %}
     </div>
-    {% include "www/landing_footer.html" %}
+    {% include "templates/includes/footer/landing_footer.html" %}
 {% endblock %}
 
 {%- block script -%}

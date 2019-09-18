@@ -29,7 +29,7 @@
 		</div>
 
 		<div class="page_content">
-			{% include "templates/finbyz-banner.html" %}
+			{% include "templates/includes/finbyz-banner.html" %}
 			{%- block page_content -%}{%- endblock -%}
 
 			{% if self.header_actions() %}
@@ -38,10 +38,10 @@
 			</div>
 			{% endif %}
 			{% if page_type == "Industry" %}			
-				{% include "templates/other_erp_module.html" %}
+				{% include "templates/includes/other_erp_module.html" %}
 			{% endif %}
 			{% if doctype == "Web Page" and name != "career" and doctype!="Ad Campaign" %}
-			{% include "templates/inquiry_form.html" %}
+			{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
 		</div>
 		
