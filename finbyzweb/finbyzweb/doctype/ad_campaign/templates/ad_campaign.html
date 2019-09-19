@@ -9,14 +9,14 @@
     {% include "templates/includes/top_contact_bar.html" %}
     {% if video %}
     <section id="main_intro" class="h-100vh d-xl-flex align-items-center">
-        <div class="container">
+        <div class="container mt-5 mt-sm-5 mt-xl-0">
             <div class="row">
-                <div class="col-lg-4 col-xl-4 web-title d-flex">
-                    <div class="title-font d-flex align-items-center">
+                <div class="col-12 col-lg-4 col-xl-4 web-title d-flex justify-content-center text-center">
+                    <div class="title-font d-flex align-items-center mt-5 mt-sm-5 mt-xl-0">
                         <h1>{{ title }}</h1>
                     </div>
                 </div>
-                <div class="col-lg-8 col-xl-8 text-center">
+                <div class="col-12 col-lg-8 col-xl-8 text-center">
                     <div>
                         <video width="100%" id="myVideo" src="{{ video }}" height="auto" muted="muted" autoplay>
                         </video>
