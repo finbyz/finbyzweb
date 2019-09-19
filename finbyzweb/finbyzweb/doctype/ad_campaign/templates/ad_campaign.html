@@ -6,6 +6,26 @@
 {%- endblock -%}
 
 {% block content %}
+    {% include "templates/includes/top_contact_bar.html" %}
+    {% if video %}
+    <section id="main_intro" class="h-100vh d-xl-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-xl-4 web-title d-flex">
+                    <div class="title-font d-flex align-items-center">
+                        <h1>{{ title }}</h1>
+                    </div>
+                </div>
+                <div class="col-lg-8 col-xl-8 text-center">
+                    <div>
+                        <video width="100%" id="myVideo" src="{{ video }}" height="auto" muted="muted" autoplay>
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
     {{ main_section or html }}
     {% include "templates/includes/other_erp_module.html" %}
     {% include "templates/includes/form/campaign_inquiry_form.html" %}

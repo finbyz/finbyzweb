@@ -11,6 +11,7 @@
   "start_date",
   "end_date",
   "published",
+  "video",
   "column_break_6",
   "keywords",
   "route",
@@ -21,6 +22,7 @@
   "style_section",
   "css",
   "script_section",
+  "script_path",
   "javascript"
  ],
  "fields": [
@@ -113,11 +115,21 @@
    "fieldname": "custom_html",
    "fieldtype": "Small Text",
    "label": "Custom HTML"
+  },
+  {
+   "fieldname": "video",
+   "fieldtype": "Attach",
+   "label": "Video"
+  },
+  {
+   "fieldname": "script_path",
+   "fieldtype": "Data",
+   "label": "Script Path"
   }
  ],
  "has_web_view": 1,
  "is_published_field": "published",
- "modified": "2019-09-14 12:48:27.774791",
+ "modified": "2019-09-19 10:02:27.592713",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Ad Campaign",
