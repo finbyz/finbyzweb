@@ -125,10 +125,11 @@
       fbq('init', '672790263237399');
       fbq('track', 'PageView');
    </script>
+
    <noscript><img height="1" width="1" class="d-none"
          src="https://www.facebook.com/tr?id=672790263237399&ev=PageView&noscript=1" /></noscript>
    <!-- End Facebook Pixel Code -->
-
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
 <body data-path="{{ path }}">
@@ -158,7 +159,7 @@
                {% endif %}
                {%- endblock -%}
                {%- block navbar -%}
-               {% include "templates/includes/navbar/navbar.html" %}
+               {% include "templates/includes/navbar/Nav.html" %}
                {%- endblock -%}
             </header>
          {%- endif -%}
@@ -191,13 +192,15 @@
    </div>
 
    {%- block base_scripts -%}
-   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   
    <script type="text/javascript" src="/assets/js/frappe-web.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
    <!-- <script type="text/javascript"
 		src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script> -->
    <script type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+	  
    {%- endblock -%}
    {%- if js_globals is defined -%}	
    <script>
@@ -223,6 +226,7 @@
    {%- block script -%}{%- endblock -%}
 	
    <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script>
+   
     
    <!-- csrf_token -->
    {% block body_include %}{{ body_include or "" }}{% endblock %}
