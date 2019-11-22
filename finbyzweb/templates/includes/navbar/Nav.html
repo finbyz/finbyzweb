@@ -414,7 +414,8 @@
                             <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Blog" title="Blog">
                             <h5 class="link-underline mt-1">From the blog</h5>
                         </a>
-                        {%- set blog = frappe.get_list('Blog Post',fields=["name","title","route"],order_by='creation desc',limit=3) -%}
+                        
+                        {%- set blog =  frappe.get_list('Blog Post',filters={'published': 1},fields=["title","route"],order_by='published_on desc',limit=3) -%}
                         <ul class="blogPosts">
                             {%- for d in blog -%}
                             <li>

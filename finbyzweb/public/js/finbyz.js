@@ -794,14 +794,31 @@ $(".go-tosub-menu").on("click", function(event) {
 	if($(`#${lsid}`).hasClass("d-block")){
 		let $li = $("#navsidebar").children("ul").children("li");
 		$(`#${lsid}`).removeClass("d-block").parent("li").removeClass("show");
+		$(`#${lsid}`).parent("li").fadeOut(function () {
+	        $(this).toggle('slide', {
+	            direction: 'right'
+	        }, 1000);
+	    });
 		$(`#${lsid}`).parent("li").children("img").removeClass("d-none");
 		$(`#${lsid}`).parent("li").find("a img:first").addClass("d-none");
+		// $(`#${lsid}`).parent("li").removeClass("show").addClass("showreverce");
+		// $(`#${lsid}`).parent("li").css({
+		// 	"position" : "relative";
+		// });
 		$.each($li, function(ix, list) {
 			$(this).removeClass("d-none");
 		});
 	}else{
 		if ($(`#${lsid}`).addClass("d-block")) {
 			$(`#${lsid}`).parent("li").addClass("show").parent("li").children("img").addClass("d-none").parent("li");
+			// $(`#${lsid}`).parent("li").css({
+			// 	"position" : "relative",
+			// });
+			$(`#${lsid}`).parent("li").fadeOut(function () {
+		        $(this).toggle('slide', {
+		            direction: 'left'
+		        }, 1000);
+		    });
 			$(`#${lsid}`).parent("li").children("img").addClass("d-none");
 			$(`#${lsid}`).parent("li").find("a img:first").removeClass("d-none");
 			let $li = $("#navsidebar").children("ul").children("li").not("li.show");
