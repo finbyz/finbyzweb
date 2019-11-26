@@ -822,5 +822,13 @@ $(".go-tosub-menu").on("click", function(event) {
 });
 $('#navsidebarCollapse').on('click', function() {
 	$('#navsidebar').toggleClass('active');
+	$("header.finbyzNav div.nav-wrapper").css({
+		"left" : "0px",
+	});
+	if($(this).hasClass('active')){
+		$("header.finbyzNav div.nav-wrapper").css({
+			"left" : "-50px",
+		});
+	}
 	$(this).toggleClass('active');
 });
