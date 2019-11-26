@@ -832,3 +832,24 @@ $('#navsidebarCollapse').on('click', function() {
 	}
 	$(this).toggleClass('active');
 });
+
+/* Go to Top */
+
+var btn = $('a#gototop');
+
+$(window).scroll(function() {
+  if ($(window).scrollTop() > 300) {
+    btn.addClass('show');
+  } else {
+    btn.removeClass('show');
+  }
+});
+
+btn.on('click', function(e) {
+  e.preventDefault();
+  $('html, body').animate({scrollTop:0}, '300');
+});
+
+
+
+/* end goto top */
