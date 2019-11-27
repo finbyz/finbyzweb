@@ -43,6 +43,11 @@
 			{% if doctype == "Web Page" and name != "career" and doctype!="Ad Campaign" %}
 			{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
+			{% if doctype == "Web Page" and name == "homepage" %}
+			<div class="customer">
+				{% include 'www/customer.html' %}
+			</div>
+			{% endif %}
 		</div>
 		
 	</main>
