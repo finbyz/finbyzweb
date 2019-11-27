@@ -649,6 +649,8 @@ function finbyzNavDropdowns(e) {
 
      }
  },
+    
+
     finbyzNavDropdowns.prototype.openDropdown = function(e) {
         var t = this;
         if (this.activeDropdown === e) return;
@@ -679,7 +681,8 @@ function finbyzNavDropdowns(e) {
         
         this.dropdownBackgroundAlt.style.transform = "translateY(" + d + "px)"
 
-    }, finbyzNavDropdowns.prototype.closeDropdown = function() {
+    }, 
+    finbyzNavDropdowns.prototype.closeDropdown = function() {
     
         var e = this;
     
@@ -691,13 +694,7 @@ function finbyzNavDropdowns(e) {
     
         }), 
     
-        clearTimeout(this.enableTransitionTimeout), 
-    
-        this.disableTransitionTimeout = setTimeout(function() {
-    
-            e.container.classList.add("noDropdownTransition")
-    
-        }, 50), 
+        clearTimeout(this.enableTransitionTimeout),
     
         this.container.classList.remove("overlayActive"), 
     
@@ -706,17 +703,14 @@ function finbyzNavDropdowns(e) {
         this.activeDropdown = undefined
     
     }, finbyzNavDropdowns.prototype.toggleDropdown = function(e) {
-        // console.log(e);
         this.activeDropdown === e ? this.closeDropdown() : this.openDropdown(e)
     }, finbyzNavDropdowns.prototype.startCloseTimeout = function() {
         var e = this;
-        // console.log(e);
         e.closeDropdownTimeout = setTimeout(function() {
             e.closeDropdown()
         }, 180)
     }, finbyzNavDropdowns.prototype.stopCloseTimeout = function() {
         var e = this;
-        // console.log(e.closeDropdownTimeout)
         clearTimeout(e.closeDropdownTimeout)
     },  Strut.supports.pointerEvents, Strut.ready(function() {
         new finbyzNavDropdowns(".finbyzNav")
