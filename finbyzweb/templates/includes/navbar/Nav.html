@@ -461,7 +461,23 @@
                             </a>
                         </li>
                     </ul>
-                </div>
+                    <div class="linkGroup blogGroup">
+                        <a class="linkContainer" href="/jobs">
+                            <img class="nav-service-icon" src="/files/job-opening.svg" alt="Blog" title="Blog">
+                            <h5 class="link-underline mt-1">Job Opening</h5>
+                        </a>
+                        
+                        {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='publish desc',limit=3) -%}
+                        <ul class="blogPosts">
+                            {%- for d in jobopen -%}
+                            <li>
+                                <a href="{{ d.route }}">
+                                    <span>{{ d.job_title }}</span>
+                                </a>
+                            </li>
+                            {%- endfor -%}
+                        </ul>
+                    </div>
             </div>
             <div class="dropdownSection left logged-in" data-dropdown="finbyz-login">
                 <div class="dropdownContent">
