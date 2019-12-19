@@ -1,196 +1,196 @@
-
 <header class="finbyzNav noDropdownTransition">
-   
-        <ul class="navRoot">
-            <li class="navSection logo mt-2 ml-2">
-                <div class="finbyz-logo" style="margin: 4px 11px;">
-                    <a href="/"><img src="https://finbyz.tech/files/finbyz-tech.svg" class="img-responsive" alt="FinByz Tech Pvt Ltd" title="FinByz Tech Pvt Ltd"></a>
-                </div>
-            </li>
-            <li class="navSection primary">
-                <a class="rootLink item-industries hasDropdown colorize" data-dropdown="industries"> Industries </a>
-                <a class="rootLink item-developers hasDropdown colorize" data-dropdown="services">
+
+    <ul class="navRoot">
+        <li class="navSection logo mt-2 ml-2">
+            <div class="finbyz-logo" style="margin: 4px 11px;">
+                <a href="/"><img src="https://finbyz.tech/files/finbyz-tech.svg" class="img-responsive" alt="FinByz Tech Pvt Ltd" title="FinByz Tech Pvt Ltd"></a>
+            </div>
+        </li>
+        <li class="navSection primary">
+            <a class="rootLink item-industries hasDropdown colorize" data-dropdown="industries"> Industries </a>
+            <a class="rootLink item-developers hasDropdown colorize" data-dropdown="services">
                     Services
                 </a>
-                <a class="rootLink item-company hasDropdown colorize" data-dropdown="company">
+            <a class="rootLink item-company hasDropdown colorize" data-dropdown="company">
                     Company
                 </a>
-                <a class="rootLink item-support" href="/blog">
+            <a class="rootLink item-support" href="/blog">
                     Blog
                 </a>
-                <a class="rootLink hasDropdown item-support" data-dropdown="contact">
+            <a class="rootLink hasDropdown item-support" data-dropdown="contact">
                     Contact Us
                 </a>
-            </li>
-            <li class="navSection secondary">
-                {% if not hide_login %}
-                <a href="/login" class="rootLink btn-login-area">{{ _("Login") }}</a> 
-                {% endif %}
-                <a href="#" class="rootLink hasDropdown" data-dropdown="finbyz-login">
-                    <span class="user-image-wrapper"></span>
-                    <span class="full-name"></span>
-                    <b class="caret"></b>
-                </a>
-                <a href="#" class="d-none"></a>
-            </li>
-            <li class="navSection mobile">
-                <div id="content">
-                        <div id="navsidebarCollapse" class="navbar-btn">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
+        </li>
+        <li class="navSection secondary">
+            {% if not hide_login %}
+            <a href="/login" class="rootLink btn-login-area">{{ _("Login") }}</a> {% endif %}
+            <a href="#" class="rootLink hasDropdown" data-dropdown="finbyz-login">
+                <span class="user-image-wrapper"></span>
+                <span class="full-name"></span>
+                <b class="caret"></b>
+            </a>
+            <a href="#" class="d-none"></a>
+        </li>
+        <li class="navSection mobile">
+            <div id="content">
+                <div id="navsidebarCollapse" class="navbar-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="nav-wrapper">
+                <nav id="navsidebar" class="vh-100">
+                    <!-- navsidebar Links -->
+                    <div class="d-flex">
+                        <img src="/svg/FinbyzLogo.svg" alt="logo" title="Logo" height="80">
+                        <h3 class="mt-4 pl-3"><strong>FinByz</strong></h3>
                     </div>
-                <div class="nav-wrapper">
-                    <nav id="navsidebar" class="vh-100">
-                        <!-- navsidebar Links -->
-                        <div class="d-flex">
-                            <img src="/svg/FinbyzLogo.svg" alt="logo" title="Logo" height="80">
-                            <h3 class="mt-4 pl-3"><strong>FinByz</strong></h3>
-                        </div>
-                        <ul class="list-unstyled components">
-                            <li>
-                                <img src="/files/nav-home.svg" title="Home" alt="Home" class="nav-service-icon"><a href="/">Home</a>
-                            </li>
-                            <li>
-                                <a href="" data-ls="aboutsubmenu" class="go-tosub-menu" data-toggle="collapse" aria-expanded="false">
-                                    <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="About Company">
-                                    <img class="nav-service-icon" src="/files/nav-about-company.svg" alt="About Company" title="About Company">About Company</a>
-                                <img data-ls="aboutsubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
-                                <ul class="collapse list-unstyled ml-5" id='aboutsubmenu'>
-                                    <li>
-                                        <a href="/about"><img class="nav-service-icon" src="/files/au-about-us.svg" alt="About FinByz" title="About FinByz">About FinByz</a>
-                                    </li>
-                                    <li>
-                                        <a href="/clients"><img class="nav-service-icon" src="/files/au-customers.svg" alt="Customers" title="Customers">Customer</a>
-                                    </li>
-                                    <li>
-                                        <a href="/steer-your-vision"><img class="nav-service-icon" src="/files/au-steer-your-vision.svg" alt="Steer Your Vision" title="Steer Your Vision">Steer Your Vision</a>
-                                    </li>
-                                    <li>
-                                        <a href="/career"><img class="nav-service-icon" src="/files/nav-career.svg" alt="Jobs" title="Jobs">Career</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="" data-ls="industrysubmenu" data-toggle="collapse" aria-expanded="false" class="go-tosub-menu">
-                                    <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="Industries">
-                                    <img class="nav-service-icon " src="/files/nav-industry.svg" alt="Industries" title="Industries">Industries</a>
-                                <img data-ls="industrysubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
-                                <ul class="collapse list-unstyled ml-5" id='industrysubmenu'>
-                                    <li>    
-                                        <a href="/erp-software-dyechem-industry"><img class="nav-service-icon" src="/files/nav-chemical.svg" alt="Dyechem" title="Dyechem">Dyechem</a>
-                                    </li>
-                                    <li>
-                                        <a href="/erp-for-engineering-industry"><img class="nav-service-icon" src="/files/nav-engineering.svg" alt="Engineering" title="Engineering">Engineering</a>
-                                    </li>
-                                    <li>
-                                        <a href="/erp-for-logistics-industry"><img class="nav-service-icon" src="/files/nav-logistics.svg" alt="Logistics" title="Logistics">Logistics</a></li>
-                                    <li>
-                                        <a href="/erp-for-manufacturing-industry"><img class="nav-service-icon" src="/files/nav-manufacturing.svg" alt="Manufacturing" title="Manufacturing">Manufacturing</a>
-                                    </li>
-                                    <li>
-                                        <a href="/erp-for-agro-commodity"><img class="nav-service-icon" src="/files/nav-agro.svg" alt="Agro Commodity" title="Agro Commodity">Agro Commodity</a>
-                                    </li>
-                                    <li>
-                                        <a href="/erp-for-trading-industry"><img class="nav-service-icon" src="/files/nav-trading.svg" alt="Trading" title="Trading">Trading</a>
-                                    </li>
-                                    <li>
-                                        <a class="btn-next d-flex justify-content-end align-items-center ind-link" href="/erp-for-industry" target="_blank">
-                                            <span class="pr-3 t-blue opac-1">View
+                    <ul class="list-unstyled components">
+                        <li>
+                            <img src="/files/nav-home.svg" title="Home" alt="Home" class="nav-service-icon"><a href="/">Home</a>
+                        </li>
+                        <li>
+                            <a href="" data-ls="aboutsubmenu" class="go-tosub-menu" data-toggle="collapse" aria-expanded="false">
+                                <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="About Company">
+                                <img class="nav-service-icon" src="/files/nav-about-company.svg" alt="About Company" title="About Company">About Company</a>
+                            <img data-ls="aboutsubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
+                            <ul class="collapse list-unstyled ml-5" id='aboutsubmenu'>
+                                <li>
+                                    <a href="/about"><img class="nav-service-icon" src="/files/au-about-us.svg" alt="About FinByz" title="About FinByz">About FinByz</a>
+                                </li>
+                                <li>
+                                    <a href="/clients"><img class="nav-service-icon" src="/files/au-customers.svg" alt="Customers" title="Customers">Customer</a>
+                                </li>
+                                <li>
+                                    <a href="/steer-your-vision"><img class="nav-service-icon" src="/files/au-steer-your-vision.svg" alt="Steer Your Vision" title="Steer Your Vision">Steer Your Vision</a>
+                                </li>
+                                <li>
+                                    <a href="/career"><img class="nav-service-icon" src="/files/nav-career.svg" alt="Jobs" title="Jobs">Career</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="" data-ls="industrysubmenu" data-toggle="collapse" aria-expanded="false" class="go-tosub-menu">
+                                <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="Industries">
+                                <img class="nav-service-icon " src="/files/nav-industry.svg" alt="Industries" title="Industries">Industries</a>
+                            <img data-ls="industrysubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
+                            <ul class="collapse list-unstyled ml-5" id='industrysubmenu'>
+                                <li>
+                                    <a href="/erp-software-dyechem-industry"><img class="nav-service-icon" src="/files/nav-chemical.svg" alt="Dyechem" title="Dyechem">Dyechem</a>
+                                </li>
+                                <li>
+                                    <a href="/erp-for-engineering-industry"><img class="nav-service-icon" src="/files/nav-engineering.svg" alt="Engineering" title="Engineering">Engineering</a>
+                                </li>
+                                <li>
+                                    <a href="/erp-for-logistics-industry"><img class="nav-service-icon" src="/files/nav-logistics.svg" alt="Logistics" title="Logistics">Logistics</a>
+                                </li>
+                                <li>
+                                    <a href="/erp-for-manufacturing-industry"><img class="nav-service-icon" src="/files/nav-manufacturing.svg" alt="Manufacturing" title="Manufacturing">Manufacturing</a>
+                                </li>
+                                <li>
+                                    <a href="/erp-for-agro-commodity"><img class="nav-service-icon" src="/files/nav-agro.svg" alt="Agro Commodity" title="Agro Commodity">Agro Commodity</a>
+                                </li>
+                                <li>
+                                    <a href="/erp-for-trading-industry"><img class="nav-service-icon" src="/files/nav-trading.svg" alt="Trading" title="Trading">Trading</a>
+                                </li>
+                                <li>
+                                    <a class="btn-next d-flex justify-content-end align-items-center ind-link" href="/erp-for-industry" target="_blank">
+                                        <span class="pr-3 t-blue opac-1">View
                                                 More</span>
-                                            <svg class="finbyz-icon finbyz-icon-arrow-right1">
+                                        <svg class="finbyz-icon finbyz-icon-arrow-right1">
                                                 <use href="#finbyz-icon-arrow-right1"></use>
                                             </svg>
-                                            <svg class="finbyz-icon icon-hover finbyz-icon-arrow-right-1">
+                                        <svg class="finbyz-icon icon-hover finbyz-icon-arrow-right-1">
                                                 <use href="#finbyz-icon-arrow-right-1"></use>
                                             </svg>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a href="" data-ls="servicesubmenu" data-toggle="collapse" aria-expanded="false" class="go-tosub-menu">
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="" data-ls="servicesubmenu" data-toggle="collapse" aria-expanded="false" class="go-tosub-menu">
                                 <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="Web App Development">
                                 <img class="nav-service-icon" src="/files/nav-services.svg" alt="Services" title="Services">Services</a>
-                                <img data-ls="servicesubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
-                                <ul class="collapse list-unstyled ml-5" id='servicesubmenu'>
-                                    <li>
-                                        <img class="nav-service-icon" src="/files/ser-erp-implementation.svg" alt="ERP Implementation" title="ERP Implementation"> <a href="/erp-software" class="link-underline p-1">ERP Implementation</a>
-                                    </li>
-                                    <li>
-                                        <img class="nav-service-icon" src="/files/ser-software-development.svg" alt="Software Development" title="Software Development"><a href="/software-development" class="link-underline p-1">Software Development</a>
-                                    </li>
-                                    <li>
-                                        <img class="nav-service-icon" src="/files/ser-website-development.svg" alt="Website Development" title="Website Development"><a href="/website-development" class="link-underline p-1">Website Development</a>
-                                    </li>
-                                    <li>
-                                        <img class="nav-service-icon" src="/files/ser-it-consulting.svg" alt="IT Consulting" title="IT Consulting"><a href="/it-consulting" class="link-underline p-1">IT Consulting</a>
-                                    </li>
-                                    <li>
-                                        <img class="nav-service-icon" src="/files/ser-crm-system.svg" alt="CRM Software" title="CRM Software"><a class="link-underline p-1" href="/crm-software">CRM Software</a>
-                                    </li> 
-                                    <li>
-                                            <img class="nav-service-icon" src="/files/ser-data-analytics.svg" alt="Data Analytics" title="Data Analytics"><a class="link-underline p-1" href="/data-analytics">Data Analytics</a>
-                                    </li>
-                                    <li>
-                                        <img class="nav-service-icon" src="/files/ser-hr-system.svg" alt="HR System" title="HR System"><a class="link-underline p-1" href="/human-resource-system">HR System</a>
-                                    </li>
-                                    <li>
-                                        <img class="nav-service-icon" src="/files/ser-web-development.svg" alt="Web App Development" title="Web App Development"><a class="link-underline p-1" href="/web-application-development">Web App Development</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Blog" title="Blog"><a href="/blog">Blog</a>
-                            </li>
-                            <li>
-                                <img class="nav-service-icon" src="/files/nav-Gallery.svg" alt="Gallery" title="Gallery"><a href="/gallery">Gallery</a>
-                            </li>
-                            <li><img class="nav-service-icon" src="/files/nav-call.svg" alt="Conatct" title="Conatct"><a href="/contact">Contact</a></li>
-                            {% if not hide_login %}
-                            <li class="btn-login-area">
-                                <img class="nav-service-icon" src="/files/nav-login.svg" alt="Login" title="Login"><a href="/login">{{ _("Login") }}</a>
-                            </li>
-                            {% endif %}
-                            <li>
-                                <a data-ls="loginsubmenu" class="go-tosub-menu" data-toggle="collapse" aria-expanded="false">
-                                    <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="About Company">
-                                    <span class="user-image-wrapper"></span>
-                                    <span class="full-name"></span>
-                                    <b class="caret"></b>
-                                </a>
-                                <!-- <img data-ls="loginsubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15"> -->
-                                <ul class="collapse list-unstyled ml-5  " id='loginsubmenu'>
-                                    <li>
-                                        <a class="" href="/me" rel="nofollow">
-                                            <img class="nav-service-icon" src="/files/nav-my-account.svg" alt="About FinByz" title="About FinByz">
-                                            <h6 class="link-underline mt-1">{{ _('My Account') }}
-                                            </h6>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="linkContainer item-about" href="/?cmd=web_logout" rel="nofollow">
-                                            <img class="nav-service-icon" src="/files/nav-logout.svg" alt="About FinByz" title="About FinByz">
-                                            <h6 class="link-underline mt-1">{{ _('Logout') }}
-                                            </h6>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="linkContainer item-about" href="/desk" rel="nofollow">
-                                            <img class="nav-service-icon" src="/files/nav-switch-to-desk.svg" alt="About FinByz" title="About FinByz">
-                                            <h6 class="link-underline mt-1">{{ _('Switch To Desk') }}
-                                            </h6>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </nav>
-                    
-                </div>
-            </li>
-        </ul>
-    
+                            <img data-ls="servicesubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
+                            <ul class="collapse list-unstyled ml-5" id='servicesubmenu'>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/ser-erp-implementation.svg" alt="ERP Implementation" title="ERP Implementation"> <a href="/erp-software" class="link-underline p-1">ERP Implementation</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/ser-software-development.svg" alt="Software Development" title="Software Development"><a href="/software-development" class="link-underline p-1">Software Development</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/ser-website-development.svg" alt="Website Development" title="Website Development"><a href="/website-development" class="link-underline p-1">Website Development</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/ser-it-consulting.svg" alt="IT Consulting" title="IT Consulting"><a href="/it-consulting" class="link-underline p-1">IT Consulting</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/ser-crm-system.svg" alt="CRM Software" title="CRM Software"><a class="link-underline p-1" href="/crm-software">CRM Software</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/ser-data-analytics.svg" alt="Data Analytics" title="Data Analytics"><a class="link-underline p-1" href="/data-analytics">Data Analytics</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/ser-hr-system.svg" alt="HR System" title="HR System"><a class="link-underline p-1" href="/human-resource-system">HR System</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/ser-web-development.svg" alt="Web App Development" title="Web App Development"><a class="link-underline p-1" href="/web-application-development">Web App Development</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Blog" title="Blog"><a href="/blog">Blog</a>
+                        </li>
+                        <li>
+                            <img class="nav-service-icon" src="/files/nav-Gallery.svg" alt="Gallery" title="Gallery"><a href="/gallery">Gallery</a>
+                        </li>
+                        <li><img class="nav-service-icon" src="/files/nav-call.svg" alt="Conatct" title="Conatct"><a href="/contact">Contact</a></li>
+                        {% if not hide_login %}
+                        <li class="btn-login-area">
+                            <img class="nav-service-icon" src="/files/nav-login.svg" alt="Login" title="Login"><a href="/login">{{ _("Login") }}</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a data-ls="loginsubmenu" class="go-tosub-menu" data-toggle="collapse" aria-expanded="false">
+                                <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="About Company">
+                                <span class="user-image-wrapper"></span>
+                                <span class="full-name"></span>
+                                <b class="caret"></b>
+                            </a>
+                            <!-- <img data-ls="loginsubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15"> -->
+                            <ul class="collapse list-unstyled ml-5  " id='loginsubmenu'>
+                                <li>
+                                    <a class="" href="/me" rel="nofollow">
+                                        <img class="nav-service-icon" src="/files/nav-my-account.svg" alt="About FinByz" title="About FinByz">
+                                        <h6 class="link-underline mt-1">{{ _('My Account') }}
+                                        </h6>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="linkContainer item-about" href="/?cmd=web_logout" rel="nofollow">
+                                        <img class="nav-service-icon" src="/files/nav-logout.svg" alt="About FinByz" title="About FinByz">
+                                        <h6 class="link-underline mt-1">{{ _('Logout') }}
+                                        </h6>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="linkContainer item-about" href="/desk" rel="nofollow">
+                                        <img class="nav-service-icon" src="/files/nav-switch-to-desk.svg" alt="About FinByz" title="About FinByz">
+                                        <h6 class="link-underline mt-1">{{ _('Switch To Desk') }}
+                                        </h6>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+
+            </div>
+        </li>
+    </ul>
+
     <div class="dropdownRoot">
         <div class="dropdownBackground" style="transform: translateX(452px) scaleX(0.707692) scaleY(1.1075);">
             <div class="alternateBackground" style="transform: translateY(255.53px);"></div>
@@ -273,7 +273,7 @@
             <div class="dropdownSection active" data-dropdown="services">
                 <div class="dropdownContent">
                     <div class="linkGroup serviceGroup">
-                       
+
                         <div class="">
                             <div class="row">
                                 <div class="col-12 col-sm-6 col-md-12 col-lg-6">
@@ -307,22 +307,26 @@
                                         <div class="col-12 col-sm-8 col-md-6 col-lg-6">
                                             <ul>
                                                 <li>
-                                                    <img class="nav-service-icon" src="/files/ser-erp-implementation.svg" alt="ERP Implementation" title="ERP Implementation"> <a href="/erp-software" class="link-underline p-1">
+                                                    <img class="nav-service-icon" src="/files/ser-erp-implementation.svg" alt="ERP Implementation" title="ERP Implementation">
+                                                    <a href="/erp-software" class="link-underline p-1">
                                                         <h6 class="mt-1">ERP Implementation</h6>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <img class="nav-service-icon" src="/files/ser-software-development.svg" alt="Software Development" title="Software Development"><a href="/software-development" class="link-underline p-1">
+                                                    <img class="nav-service-icon" src="/files/ser-software-development.svg" alt="Software Development" title="Software Development">
+                                                    <a href="/software-development" class="link-underline p-1">
                                                         <h6 class="mt-1">Software Development</h6>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <img class="nav-service-icon" src="/files/ser-website-development.svg" alt="Website Development" title="Website Development"><a href="/website-development" class="link-underline p-1">
+                                                    <img class="nav-service-icon" src="/files/ser-website-development.svg" alt="Website Development" title="Website Development">
+                                                    <a href="/website-development" class="link-underline p-1">
                                                         <h6 class="mt-1">Website Development</h6>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <img class="nav-service-icon" src="/files/ser-it-consulting.svg" alt="IT Consulting" title="IT Consulting"><a href="/it-consulting" class="link-underline p-1">
+                                                    <img class="nav-service-icon" src="/files/ser-it-consulting.svg" alt="IT Consulting" title="IT Consulting">
+                                                    <a href="/it-consulting" class="link-underline p-1">
                                                         <h6 class="mt-1">IT Consulting</h6>
                                                     </a>
                                                 </li>
@@ -331,22 +335,26 @@
                                         <div class="col-12 col-sm-8 col-md-6 col-lg-6">
                                             <ul>
                                                 <li>
-                                                    <img class="nav-service-icon" src="/files/ser-crm-system.svg" alt="CRM Software" title="CRM Software"><a class="link-underline p-1" href="/crm-software">
+                                                    <img class="nav-service-icon" src="/files/ser-crm-system.svg" alt="CRM Software" title="CRM Software">
+                                                    <a class="link-underline p-1" href="/crm-software">
                                                         <h6 class="mt-1">CRM Software</h6>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <img class="nav-service-icon" src="/files/ser-data-analytics.svg" alt="Data Analytics" title="Data Analytics"><a class="link-underline p-1" href="/data-analytics">
+                                                    <img class="nav-service-icon" src="/files/ser-data-analytics.svg" alt="Data Analytics" title="Data Analytics">
+                                                    <a class="link-underline p-1" href="/data-analytics">
                                                         <h6 class="mt-1">Data Analytics</h6>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <img class="nav-service-icon" src="/files/ser-hr-system.svg" alt="HR System" title="HR System"><a class="link-underline p-1" href="/human-resource-system">
+                                                    <img class="nav-service-icon" src="/files/ser-hr-system.svg" alt="HR System" title="HR System">
+                                                    <a class="link-underline p-1" href="/human-resource-system">
                                                         <h6 class="mt-1">HR System</h6>
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <img class="nav-service-icon" src="/files/ser-web-development.svg" alt="Web App Development" title="Web App Development"><a class="link-underline p-1" href="/web-application-development">
+                                                    <img class="nav-service-icon" src="/files/ser-web-development.svg" alt="Web App Development" title="Web App Development">
+                                                    <a class="link-underline p-1" href="/web-application-development">
                                                         <h6 class="mt-1">Web App Development</h6>
                                                     </a>
                                                 </li>
@@ -430,8 +438,8 @@
                             <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Blog" title="Blog">
                             <h5 class="link-underline mt-1">From the blog</h5>
                         </a>
-                        
-                        {%- set blog =  frappe.get_list('Blog Post',filters={'published': 1},fields=["title","route"],order_by='published_on desc',limit=3) -%}
+
+                        {%- set blog = frappe.get_list('Blog Post',filters={'published': 1},fields=["title","route"],order_by='published_on desc',limit=3) -%}
                         <ul class="blogPosts">
                             {%- for d in blog -%}
                             <li>
@@ -466,8 +474,8 @@
                             <img class="nav-service-icon" src="/files/job-opening.svg" alt="Job Opening" title="Job Opening">
                             <h5 class="link-underline mt-1">Job Opening</h5>
                         </a>
-                        
-                        {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='publish desc',limit=3) -%}
+
+                        {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='modified desc',limit=3) -%}
                         <ul class="blogPosts">
                             {%- for d in jobopen -%}
                             <li>
