@@ -451,10 +451,17 @@ $(function () {
 	// element should be replaced with the actual target element on which you have applied scroll, use window in case of no target element.
 	window.addEventListener("scroll", function () { // or window.addEventListener("scroll"....
 		var st = window.pageYOffset || document.documentElement.scrollTop; // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
+		if(st <= 0){
+			setTimeout(() => {
+				$("header.finbyzNav").removeClass("nav-shadow");
+			},100)
+		}
 		if (st > lastScrollTop) {
+			$("header.finbyzNav").addClass("nav-shadow");
 			$('.navbar-main').removeClass('animated swingInX');
 			$('.navbar-main').addClass('animated swingOutX');
 		} else {
+			$("header.finbyzNav").addClass("nav-shadow");
 			$('.navbar-main').removeClass('animated swingOutX');
 			$('.navbar-main').addClass('animated swingInX');
 		}
@@ -465,15 +472,15 @@ $(function () {
 
 });
 $(window).bind('scroll', function() {
-  var scrollhight = $(window).height()*0.9
-        var navHeight = $(window).height() - scrollhight;
-  
-        if ($(window).scrollTop() > navHeight) {
-            $('.navbar.landing-navbar-main').addClass('on');
-     
-        } else {
-            $('.navbar.landing-navbar-main').removeClass('on');
-        }
+  	var scrollhight = $(window).height()*0.9
+	var navHeight = $(window).height() - scrollhight;
+
+	if ($(window).scrollTop() > navHeight) {
+		$('.navbar.landing-navbar-main').addClass('on');
+	
+	} else {
+		$('.navbar.landing-navbar-main').removeClass('on');
+	}
 });
 // for image zoom on hover with fadein effect
 $(".hover-zoom").hover(
