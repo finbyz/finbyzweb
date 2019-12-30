@@ -603,7 +603,7 @@ function finbyzNavDropdowns(e) {
             if (e.pointerType == "touch") return;
             t.startCloseTimeout()
         }), document.body.addEventListener(n.end, function(e) {
-            Strut.touch.isDragging || t.closeDropdown()
+            t.closeDropdown()
         })
     }
     /* end finbyznavDropdown */
@@ -795,7 +795,6 @@ $('#navsidebarCollapse').on('click', function() {
 /* Go to Top */
 
 var btn = $('a#gototop');
-
 $(window).scroll(function() {
   if ($(window).scrollTop() > 300) {
     btn.addClass('show');
@@ -808,7 +807,15 @@ btn.on('click', function(e) {
   e.preventDefault();
   $('html, body').animate({scrollTop:0}, '300');
 });
-
-
-
 /* end goto top */
+
+/* Issue Submit Button Listener */
+
+a = window.location.href.split("/")[3].split("?")[0];
+if (a == "issue-form") {	
+	$("button.finbyz-button").on("click",(e)=>{
+		console.log("hello");
+	});
+}
+
+/* End Submit Button Listener */
