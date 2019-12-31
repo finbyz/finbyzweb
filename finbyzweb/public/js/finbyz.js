@@ -810,11 +810,28 @@ btn.on('click', function(e) {
 /* end goto top */
 
 /* Issue Submit Button Listener */
+function notEmpty (args) {
+	status = false;
+	$element = args.find("input,textarea");
+	$.each($element, (i,v) => {
+		if (v.val() == "" || v.val() == undefined) {
+			return false;
+		}else{
+			status = true;
+		}
+	});
+	return status;
+};
 
 a = window.location.href.split("/")[3].split("?")[0];
 if (a == "issue-form") {	
-	$("button.finbyz-button").on("click",(e)=>{
-		console.log("hello");
+	$("button.finbyz-button").on("click",function(e){
+		form = $(this).parent("div").parent("div").parent("div").find("form");
+		if (notEmpty(form)) {
+			window.location.href = "/";
+		}else{
+			console.log("Field is empty");
+		}
 	});
 }
 
