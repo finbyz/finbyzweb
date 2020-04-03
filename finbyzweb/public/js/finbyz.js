@@ -544,7 +544,7 @@ $(document).ready(function () {
                     number: s = "+91 9925701446"
                 } = e,
                 {
-                    avatar: p = "https://finbyz.tech/files/finbyz-tech.svg"
+                    avatar: p = "https://finbyz.tech/svg/FinbyzLogo.svg"
                 } = e,
                 {
                     description: c = "Typically replies within an hour"
