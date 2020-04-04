@@ -85,9 +85,9 @@
    <link rel="stylesheet" type="text/css"
       href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
 	
-    {% if theme.theme_url %}
+    <!-- {% if theme.theme_url %}
 	<link type="text/css" rel="stylesheet" href="{{ theme.theme_url }}">
-   {% endif %}
+   {% endif %} -->
    {% for link in web_include_css %}
    {% if link not in ["assets/frappe/css/bootstrap.css","assets/erpnext/css/website.css","assets/css/frappe-web.css"] %}
    <link type="text/css" rel="stylesheet" href="{{ link|abs_url }}">
