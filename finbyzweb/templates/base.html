@@ -30,7 +30,7 @@
    {% endif %}
    {% if doctype == "Blog Post" and blog_intro or doctype == "Gallery" %}
    <script type="application/ld+json">
-		{"@context":"http://schema.org","@type":"BlogPosting","name":"{{ title }}","headline":"{{ blog_intro or small_description | replace('\n','. ') }}","author":{"@type":"Person","name":"{{ blogger or 'Mukesh Variyani'}}"},"datePublished":"{{ published_on or creation }}","dateModified":"{{ modified }}","image":"https://finbyz.tech{{ image_seo or image or animated_image}}","publisher":{"@type":"Organization","name":"FinByz Tech Pvt Ltd","sameAs":"https://finbyz.tech","email":"info@finbyz.com","logo":{"@type":"ImageObject","url":"https://finbyz.tech/files/FinbyzLogo.png","height":"300px","width":"300px"}}}      
+		{"@context":"http://schema.org","@type":"BlogPosting","name":"{{ title }}","headline":"{{ blog_intro or small_description | replace('\n','. ') }}","author":{"@type":"Person","name":"{{ blogger or 'Mukesh Variyani'}}"},"datePublished":"{{ published_on or creation }}","dateModified":"{{ modified }}","image":"https://finbyz.tech{{ image_seo or image or animated_image or '/files/FinbyzLogo.png'}}","publisher":{"@type":"Organization","name":"FinByz Tech Pvt Ltd","sameAs":"https://finbyz.tech","email":"info@finbyz.com","logo":{"@type":"ImageObject","url":"https://finbyz.tech/files/FinbyzLogo.png","height":"300px","width":"300px"}}}      
    </script>
    {% endif %}
    {% if doctype == "Blog Post" and blog_intro %}
