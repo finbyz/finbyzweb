@@ -12,7 +12,7 @@
    {% if small_description or blog_intro %}
    <meta name="description" content="{{ small_description or blog_intro }}" />
    {% endif %}
-   <link rel="manifest" href="/assets/finbyzweb/js/manifest.json">
+   <link rel="manifest" href="/assets/finbyzweb/js/manifest.min.json">
    <!-- Chrome, Firefox OS and Opera -->
    <meta name="theme-color" content="#286090">
    <!-- Windows Phone -->
@@ -79,20 +79,13 @@
    {% if head_html is defined %}
    {{ head_html or "" }}
    {% endif %}
-   <!-- <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"> -->
-   <link rel="stylesheet" type="text/css"
-      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css" crossorigin="">
-   <link rel="stylesheet" type="text/css"
-      href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" crossorigin="">
+
+      <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css,npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css">
 	
     {% if theme.theme_url %}
 	<link type="text/css" rel="stylesheet" href="{{ theme.theme_url }}">
    {% endif %}
-   {% for link in web_include_css %}
-   {% if link not in ["assets/frappe/css/bootstrap.css","assets/erpnext/css/website.css","assets/css/frappe-web.css"] %}
-   <link type="text/css" rel="stylesheet" href="{{ link|abs_url }}">
-   {%- endif -%}
-   {%- endfor -%}
+
    {% block head_include %}{{ head_include or "" }}{% endblock %}
    {% block style %}{%- endblock -%}
    {%- endblock -%}
@@ -114,12 +107,9 @@
   
    </script>
    {% endif %}
-   <!-- Facebook Pixel Code -->
-     
 
-   <!-- End Facebook Pixel Code -->
-
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin=""></script>
+   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin=""></script> -->
 </head>
 
 <body data-path="{{ path }}">
@@ -185,12 +175,11 @@
 
    {%- block base_scripts -%}
    
-   <script type="text/javascript" src="/assets/js/frappe-web.min.js"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin=""></script>
-   <!-- <script type="text/javascript"
-		src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script> -->
-   <script type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/js/bootstrap.min.js" crossorigin=""></script>
+   <!-- <script type="text/javascript" src="assets/js/frappe-web.min.js" ></script> -->
+   <script src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+
+
 
 	  
    {%- endblock -%}
@@ -207,18 +196,16 @@
    {%- endif -%}
    {%- endfor -%}
    {%- if name != "login" -%}
-   <script type="text/javascript" src="/assets/finbyzweb/js/combine.min.js"></script>
-   <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.6/plugins/debug.addIndicators.min.js"></script> -->
-   <script type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" crossorigin=""></script>
+   <!-- <script type="text/javascript" src="/assets/finbyzweb/js/combine.min.js"></script> -->
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/combine.min.js,npm/owl.carousel@2.3.4/dist/owl.carousel.min.js"></script>
+   <!-- <script src="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/owl.carousel.min.js"></script> -->
       {%- if script_path -%}<script type="text/javascript" src="{{ script_path }}"></script>{%- endif -%}
    {%- endif -%}
    
   
    {%- block script -%}{%- endblock -%}
-	
-   <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script>
-   
+
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/finbyz.min.js"></script>
     
    <!-- csrf_token -->
    {% block body_include %}{{ body_include or "" }}{% endblock %}
