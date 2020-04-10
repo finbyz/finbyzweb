@@ -79,7 +79,7 @@
    {% if head_html is defined %}
    {{ head_html or "" }}
    {% endif %}
-
+      
       <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css,npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css">
 	
     {% if theme.theme_url %}
@@ -176,8 +176,9 @@
    {%- block base_scripts -%}
    
    <!-- <script type="text/javascript" src="assets/js/frappe-web.min.js" ></script> -->
-   <script src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
 
+   <script src="/assets/js/frappe-web.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
 
 
 
