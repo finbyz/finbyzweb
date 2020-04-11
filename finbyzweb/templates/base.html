@@ -12,7 +12,7 @@
    {% if small_description or blog_intro %}
    <meta name="description" content="{{ small_description or blog_intro }}" />
    {% endif %}
-   <link rel="manifest" href="/assets/finbyzweb/js/manifest.min.json">
+   <link rel="manifest" href="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/manifest.min.json">
    <!-- Chrome, Firefox OS and Opera -->
    <meta name="theme-color" content="#286090">
    <!-- Windows Phone -->
@@ -100,7 +100,7 @@
     </script>
 	{%- if frappe.db.get_single_value('Website Settings', 'google_analytics_id') -%}
 	 
-   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js" async></script>
+   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/combine/ga-lite/latest/ga-lite.min.js" async></script>
    <script>
       var galite = galite || {};
       galite.UA = 'UA-70704275-2';
@@ -108,7 +108,6 @@
    </script>
    {% endif %}
 
-   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
 	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin=""></script> -->
 </head>
 
@@ -176,8 +175,9 @@
    {%- block base_scripts -%}
    
    <!-- <script type="text/javascript" src="assets/js/frappe-web.min.js" ></script> -->
+   <!-- <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script> -->
 
-   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/frappe-web.min.js,npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js"></script>
+   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/combine/npm/jquery@3.4.1/dist/jquery.min.js,gh/finbyz/finbyzweb@latest/finbyzweb/public/js/frappe-web.min.js,npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js"></script>
    <!-- <script src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js" crossorigin="anonymous"></script> -->
 
 
@@ -204,6 +204,7 @@
    
   
    {%- block script -%}{%- endblock -%}
+
    <script type="text/javascript" crossorigin="anonymous" src="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/combine.min.js,npm/owl.carousel@2.3.4/dist/owl.carousel.min.js,gh/finbyz/finbyzweb@latest/finbyzweb/public/js/finbyz.min.js"></script>
 
 
