@@ -108,7 +108,6 @@
    </script>
    {% endif %}
 
-	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin=""></script> -->
 </head>
 
 <body data-path="{{ path }}">
@@ -173,12 +172,8 @@
    </div>
 
    {%- block base_scripts -%}
-   
-   <!-- <script type="text/javascript" src="assets/js/frappe-web.min.js" ></script> -->
-   <!-- <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script> -->
 
    <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/combine/npm/jquery@3.4.1/dist/jquery.min.js,gh/finbyz/finbyzweb@latest/finbyzweb/public/js/frappe-web.min.js,npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js"></script>
-   <!-- <script src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js" crossorigin="anonymous"></script> -->
 
 
 
@@ -197,8 +192,7 @@
    {%- endif -%}
    {%- endfor -%}
    {%- if name != "login" -%}
-   <!-- <script type="text/javascript" src="/assets/finbyzweb/js/combine.min.js"></script> -->
-   <!-- <script src="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/owl.carousel.min.js"></script> -->
+
       {%- if script_path -%}<script type="text/javascript" src="{{ script_path }}"></script>{%- endif -%}
    {%- endif -%}
    
