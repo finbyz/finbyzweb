@@ -100,7 +100,7 @@
     </script>
 	{%- if frappe.db.get_single_value('Website Settings', 'google_analytics_id') -%}
 	 
-   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/combine/ga-lite/latest/ga-lite.min.js" async></script>
+   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js" async></script>
    <script>
       var galite = galite || {};
       galite.UA = 'UA-70704275-2';
