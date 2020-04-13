@@ -35,7 +35,7 @@
    {% endif %}
    {% if doctype == "Blog Post" and blog_intro %}
    <script type="application/ld+json">
-     {"@context":"https://schema.org/","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Finbyz","item":"https://finbyz.tech/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog"},{"@type":"ListItem","position":3,"name":"{{ blog_category }}","item":"/blog?blog_category={{blog_category}}"}]}
+     {"@context":"https://schema.org/","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Finbyz","item":"https://finbyz.tech/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://finbyz.tech/blog"},{"@type":"ListItem","position":3,"name":"{{ blog_category }}","item":"https://finbyz.tech/blog?blog_category={{blog_category}}"}]}
    </script>
    {% endif %}
    {% if doctype == "Job Opening" and description %}
