@@ -12,7 +12,7 @@
 			<ul class="list-unstyled float">
 			{%- for child in page.child_items -%}
 				<li class="footer-child-item right-line" data-label='{{ child.label }}'>
-				<p class="footer-txt-md mt-2 mb-2">
+				<p class="footer-txt-md my-1">
 					<a href="{{ child.url | abs_url }}"
 							{% if child.target %}target="_blank"{% endif %}><img src="/svg/fa-angle-right.svg" class="arrow-img" alt="Finbyz" title="Arrow">
 							<span class="t-graylight">
