@@ -280,13 +280,13 @@ $(document).ready(function () {
 				items: 1
 			},
 			600: {
-				items: 3
+				items: 2
 			},
 			960: {
-				items: 5
+				items: 3
 			},
 			1200: {
-				items: 5
+				items: 3
 			}
 		}
 	});
