@@ -30,9 +30,18 @@ def get_context(context):
 			flag = route_1 not in rb
 
 		if not page.no_sitemap and flag:
+			priority = 0.4
+			if page.route in ("about","contact","services"):
+				priority = 0.9
+			elif page.route == "clients":
+				priority = 0.6
+			else:
+				priority = 0.4
+
 			links.append({
 				"loc": urljoin(host, quote(page.name.encode("utf-8"))),
-				"lastmod": nowdate()
+				"lastmod": nowdate(),
+				"priority": priority
 			})
 
 	for route, data in iteritems(get_all_page_context_from_doctypes()):
@@ -45,9 +54,22 @@ def get_context(context):
 			flag = route_1 not in rb
 
 		if flag:
+			priority = 0.5
+			if data.get("doctype") == "Web Page":
+				priority = 0.9
+			elif data.get("doctype") == "Gallery":
+				priority = 0.6
+			elif data.get("doctype") == "Job Opening":
+				priority = 0.7
+			elif data.get("doctype") == "Blog Post":
+				priority = 0.8
+			else:
+				priority = 0.5
+			
 			links.append({
 				"loc": urljoin(host, quote((route or "").encode("utf-8"))),
-				"lastmod": get_datetime(data.get("modified")).strftime("%Y-%m-%d")
+				"lastmod": get_datetime(data.get("modified")).strftime("%Y-%m-%d"),
+				"priority": priority
 			})
 
 	return {"links":links}
