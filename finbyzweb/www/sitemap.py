@@ -16,7 +16,7 @@ base_template_path = "templates/www/sitemap.xml"
 
 def get_context(context):
 	"""generate the sitemap XML"""
-	host = get_request_site_address()
+	host = frappe.utils.get_host_name_from_request()
 	links = []
 	robots = frappe.db.get_single_value("Website Settings", 'robots_txt').replace('Disallow: /', '').split('\n')
 
