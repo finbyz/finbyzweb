@@ -1,5 +1,7 @@
 .DS_Store
 *.pyc
+*.pyo
+**/__pycache__
 *.egg-info
 *.swp
 tags
