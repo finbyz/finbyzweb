@@ -26,7 +26,11 @@
    <link rel="canonical" href="/">
    <script type="application/ld+json" crossorigin="anonymous">
 		{"@context":"http://schema.org/","@type":"Organization","name":"Finbyz","legalName":"Finbyz Tech Pvt Ltd","url":" https://finbyz.tech","description":"Looking for Software developer company in Ahmadabad? Based in Gujarat, India we are one of the best ERP software development company. We also provide services of custom software development, mobile application, website development.","sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://plus.google.com/s/finbyz","https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz"],"logo":"/files/FinbyzLogo.png","address":{"@type":"PostalAddress","addressLocality":"Ahmedabad","addressRegion":"Gujarat","postalCode":"380009","streetAddress":"FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura"},"openingHours":"Mo, Tu, We, Th, Fr, Sa 10.00:00-19:00","geo":{"@type":"GeoCoordinates","latitude":"23.046477","longitude":"72.558351"},"contactPoint":{"@type":"ContactPoint","contactType":"sales","telephone":"+91 07948912428","email":"info@finbyz.com"}}
-		</script>
+        </script>
+    {% elif(doctype == "Web Page") %}
+    <script type="application/ld+json" crossorigin="anonymous">
+        {"@context":"http://www.schema.org","@type":"ProfessionalService","provider":{"@type":"Organization","name":"FinByz Tech Pvt Ltd","@id":"https://finbyz.tech/"},"name":"{{ seo_title }}","url":"https://finbyz.tech/{{ route }}","logo":"https://finbyz.tech/files/FinbyzLogo.png","image":"{% if image_seo %}{{ image_seo }}{% else %} {{ image }} {% endif %}","description":"{{ small_description | replace('\n','. ') }}","priceRange":"INR","address":{"@type":"PostalAddress","streetAddress":"504,Addor Ambition, Navrang Cir, near Vimal House, Navrangpura, Ahmedabad, Gujarat 380009","addressLocality":"Ahmedabad","addressRegion":"Gujarat","postalCode":"382330","addressCountry":"India"},"telephone":"+919033427719","openingHours":"Mo, Tu, We, Th, Fr, Sa 10.00:00-19:00","contactPoint":[{"@type":"ContactPoint","telephone":"+91 79 48912428","contactType":"customer support","areaServed":["IN"],"availableLanguage":["Hindi","Gujarati","English"]}],"sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz","https://www.instagram.com/finbyz/"]}
+    </script>
    {% endif %}
    {% if doctype == "Blog Post" and blog_intro or doctype == "Gallery" %}
    <script type="application/ld+json">
