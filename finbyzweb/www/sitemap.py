@@ -18,9 +18,10 @@ def get_context(context):
 	"""generate the sitemap XML"""
 	host = frappe.utils.get_host_name_from_request()
 	links = []
-	robots = frappe.db.get_single_value("Website Settings", 'robots_txt').replace('Disallow: /', '').split('\n')
+	robots = frappe.db.get_single_value("Website Settings", 'robots_txt').replace('Disallow: /', '').replace('\r','').split('\n')
 
 	for route, page in iteritems(get_pages()):
+		print(route)
 		flag = route not in robots
 
 		if '/' in route:
@@ -28,8 +29,10 @@ def get_context(context):
 			rb = [d.split('/')[0] for d in robots if '/*' in d]
 
 			flag = route_1 not in rb
+		
+		print(flag)
 
-		if not page.no_sitemap and flag:
+		if flag:
 			priority = 0.4
 			if page.route in ("about","contact","services"):
 				priority = 0.9
