@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GrapesJS Plugin Boilerplate</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/grapesjs@0.16.12/dist/css/grapes.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css">
+
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="gjs">
+    
+        </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/grapesjs@0.16.12/dist/grapes.min.js"></script>
+
+
+    <script type="text/javascript">
+
+        const myNewComponentTypes = editor => {
+            const bm = editor.BlockManager;
+            const dc = editor.DomComponents;
+            const compId = 'my-input-type';
+
+            editor.DomComponents.addType('my-input-type', {
+                // Make the editor understand when to bind `my-input-type`
+                isComponent: el => el.tagName === 'DIV',
+
+                // Model definition
+                model: {
+                    // Default properties
+                    defaults: {
+                        
+                        draggable:  true, // Can be dropped only inside `form` elements
+                        droppable: false, // Can't drop other elements inside
+                        attributes: { // Default attributes
+                            type: 'text',
+                            name: 'default-name',
+                            content: 'Fruits',
+                        },
+                        traits: [
+                            
+                            'placeholder',
+                            { type: 'checkbox', name: 'required' },
+                            { type: 'select' , label: 'Name' , name: 'name' ,
+                            options: [
+                            
+                                    { id:"mango", name: ''},
+                           
+                                ]
+                            }
+                            
+                        ],
+                        
+                    },
+                    init() {
+                        this.on('change:attributes:name', this.handleTypeChange);
+                     },
+                     handleTypeChange() {
+                       this.components(this.getAttributes().name);
+        },
+                }
+            });
+            bm.add(compId, {
+                label: 'Customers',
+                content: {
+                    type: compId,
+                    components: "new customer",
+                }
+            });
+        };
+
+        var editor = grapesjs.init({
+            container: '#gjs',
+            plugins: ['gjs-preset-newsletter', myNewComponentTypes],
+            pluginsOpts: {
+                'gjs-preset-newsletter': {
+                    modalTitleImport: 'Import template',
+                    // ... other options
+                }
+            }
+
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>

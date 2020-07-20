@@ -1,0 +1,36 @@
+{
+ "creation": "2020-07-20 12:20:18.377933",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "gallery",
+  "title"
+ ],
+ "fields": [
+  {
+   "fieldname": "gallery",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Gallery",
+   "options": "Gallery"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title"
+  }
+ ],
+ "istable": 1,
+ "modified": "2020-07-20 12:27:13.460972",
+ "modified_by": "Administrator",
+ "module": "Finbyzweb",
+ "name": "Gallery Links",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
