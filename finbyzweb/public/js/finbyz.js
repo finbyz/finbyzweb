@@ -291,6 +291,34 @@ $(document).ready(function () {
 		}
 	});
 
+	// Homepage Module carousel Init
+	var galleryOwl = $('.gallery-module-owl-carousel');
+	galleryOwl.owlCarousel({
+		autoplay: true,
+		autoplayHoverPause: true,
+		smartSpeed: 1200,
+		loop: true,
+		nav: false,
+		dots: true,
+		margin: 10,
+		slideBy: 1,
+		responsive: {
+			0: {
+				items: 1
+			},
+			600: {
+				items: 2
+			},
+			960: {
+				items: 4
+			},
+			1200: {
+				items: 4
+			}
+		}
+	});
+
+
 	//Client
 	var owl = $('.finbyz-customer .owl-carousel');
 	owl.owlCarousel({

@@ -1,0 +1,57 @@
+<section class="modules-e mt-100">
+
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<h2 align="center" class="title-underline">Related Read</h2>
+						</div>
+					</div>
+					<div class="row row-flex mt-20">
+						{% for link in related_links%}
+						{% if loop.index <= 3 %}
+						<div class="mg-bottom col-md-4 col-sm-6 col-12 finbyz-fadeinup"
+							style="opacity: 1; transform: matrix(1, 0, 0, 1, 0, 0);">
+							<div class="content-box text-center">
+								<div class="item">
+									<div class="module-item-box">
+										<div class="module-img">
+											<img alt="{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'title') or  link.title }}"
+												src="{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'image') or link.image }}"
+												title="{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'title') or  link.title }}">
+										</div>
+										<div class="module-detail">
+											<a class=""
+												href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}">
+												<br>
+												<h3 class="link-underline ">
+													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'title') or  link.title }}
+												</h3><br>
+												<p class="">
+													{% if link.reference_doctype == "Blog Post" %}
+													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'blog_intro') }}
+													{% else %}
+													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'small_description') or  link.description }}
+													{% endif %}
+												</p>
+											</a>
+										</div>
+									</div>
+									<div class="row pt-20 pr-5">
+										<a class="btn-next ml-auto d-flex align-items-center"
+											href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}"
+											target="_blank"><span class="pr-3 t-blue">View More</span><svg
+												class="finbyz-icon icon-hover finbyz-icon-arrow-right-1">
+												<use href="#finbyz-icon-arrow-right-1"></use>
+											</svg> <svg class="finbyz-icon finbyz-icon-arrow-right1">
+												<use href="#finbyz-icon-arrow-right1"></use>
+											</svg></a>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+		</div>
+		</section>

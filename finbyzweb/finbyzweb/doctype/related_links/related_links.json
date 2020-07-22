@@ -5,7 +5,11 @@
  "engine": "InnoDB",
  "field_order": [
   "reference_doctype",
-  "reference_name"
+  "reference_name",
+  "title",
+  "image",
+  "description",
+  "route"
  ],
  "fields": [
   {
@@ -21,10 +25,36 @@
    "in_list_view": 1,
    "label": "Reference Name",
    "options": "reference_doctype"
+  },
+  {
+   "fetch_from": "reference_name.title",
+   "fetch_if_empty": 1,
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Image"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fetch_from": "reference_name.route",
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Route"
   }
  ],
  "istable": 1,
- "modified": "2020-07-20 12:24:43.126433",
+ "modified": "2020-07-21 11:38:50.615338",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Related Links",

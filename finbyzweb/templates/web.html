@@ -36,8 +36,16 @@
 				{% block header_actions %}{% endblock %}
 			</div>
 			{% endif %}
-			{% if page_type == "Industry" %}			
-				{% include "templates/includes/other_erp_module.html" %}
+			{% if related_links %}
+			{% include "templates/includes/related_links.html" %}
+
+			{% endif %}
+			{% if gallery_links %}
+			{% include "templates/includes/gallery_links.html" %}
+
+			{% endif %}
+			{% if page_type == "Industry" %}
+			{% include "templates/includes/other_erp_module.html" %}
 			{% endif %}
 			{% if doctype == "Web Page" and name != "career" and doctype!="Ad Campaign" %}
 			{% include "templates/includes/form/inquiry_form.html" %}
@@ -48,7 +56,8 @@
 			</div>
 			{% endif %}
 			
-		</div>
+			
+
 		
 	</main>
 	{% endblock %}
