@@ -23,14 +23,14 @@
 											<a class=""
 												href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}">
 												<br>
-												<h3 class="link-underline ">
+												<p class="link-underline font-weight-bold">
 													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'title') or  link.title }}
-												</h3><br>
-												<p class="">
+												</p><br>
+												<p class="small-text">
 													{% if link.reference_doctype == "Blog Post" %}
 													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'blog_intro') }}
 													{% else %}
-													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'small_description') or  link.description }}
+													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'small_description')  or  link.description }}
 													{% endif %}
 												</p>
 											</a>
