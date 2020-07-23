@@ -16,7 +16,7 @@
 									<div class="module-item-box">
 										<div class="module-img">
 											<img alt="{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'title') or  link.title }}"
-												src="{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'image') or link.image }}"
+												src="{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'image') or /files/steer-your-vision.svg }}"
 												title="{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'title') or  link.title }}">
 										</div>
 										<div class="module-detail">
