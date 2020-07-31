@@ -7,10 +7,10 @@
                 <div class="item">
                     <div class="module-item-box mt-20">
                         <a class="" href="/{{ frappe.db.get_value('Gallery',gallery.gallery,'route') }}">
-                        <div class="gallery-img" style="height: 140px;">
+                        <div class="gallery-img">
                             <img alt="{{ frappe.db.get_value('Gallery',gallery.gallery,'title') or  gallery.title }}"
                                 src="{{ frappe.db.get_value('Gallery',gallery.gallery,'svg_image') or  gallery.gallery }}"
-                                title="{{ frappe.db.get_value('Gallery',gallery.gallery,'title') or  gallery.title }}">
+                                title="{{ frappe.db.get_value('Gallery',gallery.gallery,'title') or  gallery.title }}" height="140">
                         </div>
                         
                         <div class="module-detail">
