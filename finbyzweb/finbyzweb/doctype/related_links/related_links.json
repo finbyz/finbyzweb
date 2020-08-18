@@ -35,6 +35,8 @@
    "label": "Title"
   },
   {
+   "fetch_from": "reference_name.image",
+   "fetch_if_empty": 1,
    "fieldname": "image",
    "fieldtype": "Attach",
    "in_list_view": 1,
@@ -54,7 +56,7 @@
   }
  ],
  "istable": 1,
- "modified": "2020-07-21 11:38:50.615338",
+ "modified": "2020-08-17 14:53:53.614523",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Related Links",

@@ -34,3 +34,26 @@ def set_form_data(lead_name, company_name, mobile_no, title, email):
 	data.save(ignore_permissions=True)
 	
 	frappe.db.commit()
+
+
+def related_link_query(doctype, txt, searchfield, start, page_len, filters):
+	cond = ""
+	args = {
+
+	}
+	meta = frappe.get_meta(filters.get("reference_doctype"))
+	if meta.get_field('published'):
+		return frappe.db.sql("""select name
+				from `tab{ref_doc}` where published = 1 and `{key}` LIKE %(txt)s {cond}
+			"""
+			.format(ref_doc=filters.get("reference_doctype"), key=searchfield, cond=cond), {
+				'txt': '%' + txt + '%',
+			})
+	else:
+		return frappe.db.sql("""select name
+				from `tab{ref_doc}` where `{key}` LIKE %(txt)s {cond}
+			"""
+			.format(ref_doc=filters.get("reference_doctype"), key=searchfield, cond=cond), {
+				'txt': '%' + txt + '%',
+			})
+	
