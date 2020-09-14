@@ -9,9 +9,8 @@
    <meta name="generator" content="finbyz">
    {% if keywords %}
    <meta name="keywords" content="{{ keywords }}">{% endif %}
-   {% if small_description or blog_intro %}
-   <meta name="description" content="{{ small_description or blog_intro }}" />
-   {% endif %}
+   {% if small_description or blog_intro %}<meta name="description" content="{{ small_description or blog_intro }}" />  {% endif %}
+   {% block description %}{% endblock %}
    <link rel="manifest" href="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/manifest.min.json">
    <!-- Chrome, Firefox OS and Opera -->
    <meta name="theme-color" content="#286090">
@@ -128,7 +127,7 @@
    <!-- <div id="hellopreloader" style="display: block; position: fixed;z-index: 5;top: 0;left: 0;width: 100%;height: 100%;min-width: 100%;background: url(svg/FinbyzLogo.svg) center center no-repeat;background-size: 41px;opacity: 1;">
 		</div> -->
    <div class="main-section">
-      <a id="gototop"><img src="/files/upwards-arrow.svg"></a>
+      <a id="gototop"><img src="/files/upwards-arrow.svg" alt="upwards-arrow" title="upwards-arrow"</a>
       <div>
          {%- if doctype!="Ad Campaign" -%}
             <header>
