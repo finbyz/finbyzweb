@@ -5,7 +5,7 @@
 <head>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1.0">
-   <title>{% block title %} {{ seo_title or title }} {% endblock %}</title>
+   <title>{% block title %}{% if seo_title %} {{ seo_title }} {% else %}Finbyz {{ title }}{% endif %}{% endblock %}</title>
    <meta name="generator" content="finbyz">
    {% if keywords %}
    <meta name="keywords" content="{{ keywords }}">{% endif %}
@@ -24,14 +24,9 @@
    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
    {% if (doctype == "Web Page" and name == "homepage") %}<link rel="canonical" href="/"> {% endif %}
    
-   {% if (doctype == "Web Page" and name == "homepage") %} 
-   <script type="application/ld+json" crossorigin="anonymous">
-      {"@context":"http://schema.org","@type":"Organization","name":"Finbyz Tech Pvt Ltd","image":"https://finbyz.tech/files/finbyz-tech.svg","@id":"https://finbyz.tech","url":" https://finbyz.tech","location":[{"@type":"LocalBusiness","parentOrganization":{"name":"Finbyz Tech Pvt Ltd"},"name":"Finbyz Tech Pvt Ltd - Ahmedabad","image":"https://finbyz.tech/files/finbyz-tech.svg","address":{"@type":"PostalAddress","addressLocality":"Ahmedabad","addressRegion":"Gujarat","postalCode":"380009","streetAddress":"FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura"},"geo":{"@type":"GeoCoordinates","latitude":23.046477,"longitude":72.558351},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"09:30","closes":"18:30"}],"telephone":"+91 07948912428","sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://plus.google.com/s/finbyz","https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz"],"priceRange":"$$"}],"description":"Looking for Software developer company in Ahmadabad? Based in Gujarat, India we are one of the best ERP software development company. We also provide services of custom software development, mobile application, website development."}
-   </script>
-   {% endif %}
    {% if (doctype == "Web Page" and name == "homepage") or (doctype == "Web Form" and name == "contact") %}
    <script type="application/ld+json" crossorigin="anonymous">
-     {"@context":"http://schema.org/","@type":"Organization","name":"Finbyz","legalName":"Finbyz Tech Pvt Ltd","url":" https://finbyz.tech","description":"Looking for Software developer company in Ahmadabad? Based in Gujarat, India we are one of the best ERP software development company. We also provide services of custom software development, mobile application, website development.","sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://plus.google.com/s/finbyz","https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz"],"logo":"/files/FinbyzLogo.png","address":{"@type":"PostalAddress","addressLocality":"Ahmedabad","addressRegion":"Gujarat","postalCode":"380009","streetAddress":"FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura"},"openingHours":"Mo, Tu, We, Th, Fr, Sa 10.00:00-19:00","geo":{"@type":"GeoCoordinates","latitude":"23.046477","longitude":"72.558351"},"contactPoint":{"@type":"ContactPoint","contactType":"sales","telephone":"+91 07948912428","email":"info@finbyz.com"}}
+      {"@context":"http://schema.org","@type":"Organization","name":"Finbyz Tech Pvt Ltd","image":"https://finbyz.tech/files/finbyz-tech.svg","@id":"https://finbyz.tech","url":" https://finbyz.tech","location":[{"@type":"LocalBusiness","parentOrganization":{"name":"Finbyz Tech Pvt Ltd"},"name":"Finbyz Tech Pvt Ltd - Ahmedabad","image":"https://finbyz.tech/files/finbyz-tech.svg","address":{"@type":"PostalAddress","addressLocality":"Ahmedabad","addressRegion":"Gujarat","postalCode":"380009","streetAddress":"FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura"},"geo":{"@type":"GeoCoordinates","latitude":23.046477,"longitude":72.558351},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"09:30","closes":"18:30"}],"telephone":"+91 07948912428","sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://plus.google.com/s/finbyz","https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz"],"priceRange":"$$"}],"description":"Looking for Software developer company in Ahmadabad? Based in Gujarat, India we are one of the best ERP software development company. We also provide services of custom software development, mobile application, website development."} 
    </script>
    {% elif(doctype == "Web Page") %}
    <script type="application/ld+json" crossorigin="anonymous">
