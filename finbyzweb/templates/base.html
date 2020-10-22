@@ -145,6 +145,7 @@
             </div>
             {% endif %}
             {%- endblock -%}
+             <!-- {% include "templates/includes/header-contact.html" %} -->
             {%- block navbar -%}
             {% include "templates/includes/navbar/Nav.html" %}
             {%- endblock -%}
@@ -216,9 +217,9 @@
       </script>
 
 
-   <!-- <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script> -->
-   <script type="text/javascript" crossorigin="anonymous"
-      src="https://cdn.jsdelivr.net/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/finbyz.min.js"></script>
+   <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script>
+   <!-- <script type="text/javascript" crossorigin="anonymous"
+      src="https://cdn.jsdelivr.net/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/finbyz.min.js"></script> -->
 
    <!-- csrf_token -->
    {% block body_include %}{{ body_include or "" }}{% endblock %}

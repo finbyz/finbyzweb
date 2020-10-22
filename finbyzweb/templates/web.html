@@ -36,6 +36,9 @@
 				{% block header_actions %}{% endblock %}
 			</div>
 			{% endif %}
+			{% if page_type == "Industry" %}
+			{% include "templates/includes/other_erp_module.html" %}
+			{% endif %}
 			{% if related_links %}
 			{% include "templates/includes/related_links.html" %}
 			<div class="svg-container">
@@ -63,9 +66,7 @@
 			{% include "templates/includes/gallery_links.html" %}
 
 			{% endif %}
-			{% if page_type == "Industry" %}
-			{% include "templates/includes/other_erp_module.html" %}
-			{% endif %}
+			
 			{% if doctype == "Web Page" and name != "career" and doctype!="Ad Campaign" %}
 			{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
