@@ -18,8 +18,7 @@ $(".tabanchor").click(
 // other module section
 $(".ind-module .nav-pills .nav-link").click(
 	function () {
-		TweenMax.from('.tab-pane', 0.8, {
-			y: 150,
+		TweenMax.from('.tab-pane', 0.5, {
 			opacity: 0,
 			ease: Power1.easeIn
 		})
