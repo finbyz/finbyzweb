@@ -23,12 +23,15 @@
         </li>
         <li class="navSection secondary">
             {% if not hide_login %}
-            <a href="/login" class="rootLink btn-login-area">{{ _("Login") }}</a> {% endif %}
+            <a href="/login" class="rootLink btn-login-area">{{ _("Login") }}</a> 
+            {% endif %}
+            {% if frappe.session.user != 'Guest' %}
             <a href="#" class="rootLink hasDropdown" data-dropdown="finbyz-login">
                 <span class="user-image-wrapper"></span>
                 <span class="full-name"></span>
                 <b class="caret"></b>
             </a>
+            {% endif %}
             <a href="#" class="d-none"></a>
         </li>
         <li class="navSection mobile">
@@ -152,6 +155,7 @@
                             <img class="nav-service-icon" src="/files/nav-login.svg" alt="Login" title="Login"><a href="/login">{{ _("Login") }}</a>
                         </li>
                         {% endif %}
+                        
                         <li>
                             <a data-ls="loginsubmenu" class="go-tosub-menu" data-toggle="collapse" aria-expanded="false">
                                 <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="About Company">
@@ -488,6 +492,7 @@
                     </div>
                 </div>
             </div>
+            {% if frappe.session.user != 'Guest' %}
             <div class="dropdownSection left logged-in" data-dropdown="finbyz-login">
                 <div class="dropdownContent">
                     <ul class="linkGroup linkList loginGroup">
@@ -515,6 +520,7 @@
                     </ul>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </header>
