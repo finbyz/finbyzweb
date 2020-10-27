@@ -134,7 +134,9 @@
       <a id="gototop"><img src="/files/upwards-arrow.svg" alt="upwards-arrow" title="upwards-arrow"></a>
       <div>
          {%- if doctype!="Ad Campaign" -%}
+      
          <header>
+         
             {%- block banner -%}
             {% include "templates/includes/banner_extension.html" ignore missing %}
             {% if banner_html %}
@@ -146,6 +148,7 @@
             {% endif %}
             {%- endblock -%}
             {%- block navbar -%}
+            
             {% include "templates/includes/navbar/Nav.html" %}
             {%- endblock -%}
          </header>
