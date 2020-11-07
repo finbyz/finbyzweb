@@ -1409,20 +1409,25 @@ if (a == "issue-form") {
 	});
 }
 //header contact
-
+$(document).ready(function() {
 var currentScrollTop = window.pageYOffset || document.documentElement.scrollTop,
   isVisible = true;
+
+  var Controller = new ScrollMagic.Controller(); 
+	
 			function show(){
 			if(!isVisible){
-				TweenLite.to(".finbyzNav", 1, { y: "0%"}, 0);
-				TweenLite.to(".header-hide-content", 1, {y: "0%"}, 0);
+				TweenLite.to(".finbyzNav", 1, { y: "0%"}, 0)
+				TweenLite.to(".header-hide-content", 1, {y: "0%"}, 0)
+				TweenLite.to(".navRoot", 1, { y: "0%"}, 0)
 				isVisible = true;
 			}
 			}
 			function hide(){
 			if(isVisible){
 				TweenLite.to(".finbyzNav", 1, { y: "-30%"}, 0);
-				TweenLite.to(".header-hide-content", 1, { y: "-100%"}, 0);
+				TweenLite.to(".header-hide-content", 8, { y: "-100%"}, 0);
+				TweenLite.to(".navRoot", 1, { y: "0%"}, 0);
 				isVisible = false;
 			}
 			}
@@ -1431,9 +1436,9 @@ function refresh() {
   var newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
   
   if (newScrollTop > currentScrollTop) {
-	hide();
+    hide();
   } else if (newScrollTop < currentScrollTop) {
-	show();
+    show();
   }
   currentScrollTop = newScrollTop;
 }
@@ -1441,5 +1446,5 @@ function refresh() {
 window.addEventListener("scroll", refresh, {
   passive: true
 });
- refresh();
-
+refresh();
+});
