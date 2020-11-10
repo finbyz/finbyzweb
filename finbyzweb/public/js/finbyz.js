@@ -8,12 +8,13 @@ $(".nav .nav-item a.nav-active").each(function () {
 
 $(".tabanchor").click(
 	function () {
-		TweenMax.from('.flex-inner', 0.8, {
+		TweenMax.from('.flex-inner', 0.4, {
 			scale: 0,
 			ease: Power1.easeIn
 		})
 	}
 )
+
 
 // other module section
 $(".ind-module .nav-pills .nav-link").click(
@@ -37,17 +38,6 @@ $(window).on('load', function () {
 })
 
 $(document).ready(function () {
-
-	$('.tabanchor').on('click', function (e) {
-		var getTab = $(this).attr('href');
-		$('.circle-icon').removeClass('active');
-		$(this).parent().addClass('active');
-		$('.flex-inner').removeClass('active')
-		$(getTab).addClass('active')
-		e.preventDefault();
-
-	})
-
 	/* phase js */
 	$('.tabanchor').on('click', function (e) {
 		var getTab = $(this).attr('href');
@@ -56,8 +46,8 @@ $(document).ready(function () {
 		$('.flex-inner').removeClass('active')
 		$(getTab).addClass('active')
 		e.preventDefault();
-
 	})
+
 
 	var $tab = window.location.hash.replace('#', '');
 	showProjects($tab, 20);
@@ -1409,25 +1399,20 @@ if (a == "issue-form") {
 	});
 }
 //header contact
-$(document).ready(function() {
+
 var currentScrollTop = window.pageYOffset || document.documentElement.scrollTop,
   isVisible = true;
-
-  var Controller = new ScrollMagic.Controller(); 
-	
 			function show(){
 			if(!isVisible){
-				TweenLite.to(".finbyzNav", 1, { y: "0%"}, 0)
-				TweenLite.to(".header-hide-content", 1, {y: "0%"}, 0)
-				TweenLite.to(".navRoot", 1, { y: "0%"}, 0)
+				TweenLite.to(".finbyzNav", 1, { y: "0%"}, 0);
+				TweenLite.to(".header-hide-content", 1, {y: "0%"}, 0);
 				isVisible = true;
 			}
 			}
 			function hide(){
 			if(isVisible){
 				TweenLite.to(".finbyzNav", 1, { y: "-30%"}, 0);
-				TweenLite.to(".header-hide-content", 8, { y: "-100%"}, 0);
-				TweenLite.to(".navRoot", 1, { y: "0%"}, 0);
+				TweenLite.to(".header-hide-content", 1, { y: "-100%"}, 0);
 				isVisible = false;
 			}
 			}
@@ -1436,9 +1421,9 @@ function refresh() {
   var newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
   
   if (newScrollTop > currentScrollTop) {
-    hide();
+	hide();
   } else if (newScrollTop < currentScrollTop) {
-    show();
+	show();
   }
   currentScrollTop = newScrollTop;
 }
@@ -1446,5 +1431,24 @@ function refresh() {
 window.addEventListener("scroll", refresh, {
   passive: true
 });
-refresh();
-});
+ refresh();
+
+//  nav tabanchor
+$(".tabanchor-nav").click(
+	function () {
+		TweenMax.from('.flex-inner-nav', 0.4, {
+			scale: 0,
+			ease: Power1.easeIn,
+		}) 
+	}
+)
+$(document).ready(function () {
+$('.tabanchor-nav').on('click', function (e) {
+		var getTab = $(this).attr('href');
+		$('.circle-icon').removeClass('active');
+		$(this).parent().addClass('active');
+		$('.flex-inner-nav').removeClass('active')
+		$(getTab).addClass('active')
+		e.preventDefault();
+	})
+})
