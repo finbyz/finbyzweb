@@ -201,7 +201,7 @@ $(document).ready(function () {
 			});
 		}
 	});
-
+	
 	//Main Slider Owl init
 
 	var mainOwl = $('.owl-carousel.main-carousel');
@@ -1452,3 +1452,35 @@ $('.tabanchor-nav').on('click', function (e) {
 		e.preventDefault();
 	})
 })
+//floating inquiry
+function lead_creation_campaign() {
+	frappe.call({
+		method: "finbyzweb.api.set_form_data",
+		args: {
+			'lead_name': $('#lead_name_campaign').val(),
+			'company_name': $('#company_name_campaign').val(),
+			'mobile_no': $('#mobile_no_campaign').val(),
+			'title': document.title + '</br>' + window.location.href,
+			'email': $('#email_campaign').val()
+		},
+		callback: function (r) {
+			$('#lead_name_campaign').val('');
+			$('#company_name_campaign').val('');
+			$('#mobile_no_campaign').val('');
+			$('#email_campaign').val('');
+			frappe.msgprint("Your interest is inspiring us to do better...<br>Finbyz Tech expert shall reach you shortly");
+		}
+	});
+	$('#inquiry-form-section-campaign').removeClass('slide-right');
+};
+var form = $('#inquiry-campaign'),
+		submit = form.find('[name="submit"]');
+
+	    form.on('submit', function (e) {
+			setTimeout(function () {
+				lead_creation_campaign();
+				let label = $('.inquiry-label');
+				label.removeClass('show');
+			}, 100);
+		e.preventDefault();
+		})

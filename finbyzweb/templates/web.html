@@ -63,21 +63,22 @@
 			</div>
 			{% endif %}
 			{% if gallery_links %}
-			{% include "templates/includes/gallery_links.html" %}
-
+				% include "templates/includes/gallery_links.html" %}
 			{% endif %}
-			
+
 			{% if doctype == "Web Page" and name != "career" and doctype!="Ad Campaign" %}
 			{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
+			
 			{% if doctype == "Web Page" and name == "homepage" %}
 			<div class="customer">
 				{% include 'www/customer.html' %}
 			</div>
 			{% endif %}
 
-
-
+			{% if doctype == "Web Page" or  doctype != "Web Page"%}
+				{% include 'templates/includes/form/campaign_inquiry_form.html' %}
+			{% endif %}
 
 	</main>
 	{% endblock %}

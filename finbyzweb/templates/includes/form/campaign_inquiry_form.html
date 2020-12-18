@@ -1,40 +1,36 @@
-<section id="inquiry-form-section" class="inquiry-form-section ad-campaign-form">
+<section id="inquiry-form-section-campaign" class="inquiry-form-section ad-campaign-form">
     <div class="container">
         <div class="row p-5">
             <div class="col-md-6 bg-white inquiry-form-fields">
                 <div id="inquiry-form">
-                    <form id="inquiry" name="contact" class="inquiry-main bg-white ml-auto position-relative"
+                    <form id="inquiry-campaign" name="contact" class="inquiry-main bg-white ml-auto position-relative"
                         accept-charset="utf-8">
                         <h3 class="pb-2">
                             Free Demo
                         </h3>
-                        <input class="form-control inquiry-input" name="lead_name" type="text" id="lead_name"
+                        <input class="form-control inquiry-input" name="lead_name" type="text" id="lead_name_campaign"
                             placeholder="Name">
                         <label class="inquiry-label"><span>Name</span>
                         </label>
 
-                        <input class="form-control inquiry-input" name="company_name" type="text" id="company_name"
+                        <input class="form-control inquiry-input" name="company_name" type="text" id="company_name_campaign"
                             placeholder="Organization Name">
                         <label class="inquiry-label"><span>Organization Name</span>
                         </label>
-                        <input class="form-control inquiry-input" name="email" type="email" id="email"
+                        <input class="form-control inquiry-input" name="email" type="email" id="email_campaign"
                             placeholder="Email">
                         <label class="inquiry-label"><span>Email</span>
                         </label>
-                        <input class="form-control inquiry-input" data-bind="value:mobile_no" id="mobile_no"
+                        <input class="form-control inquiry-input" data-bind="value:mobile_no" id="mobile_no_campaign"
                             name="mobile_no" min="0" required="" placeholder="Mobile No" type="text"
                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                             maxlength="15">
-                            <!-- <input class="form-control inquiry-input" data-bind="value:mobile_no" id="mobile_no" name="mobile_no" min="0"
-                                required="" placeholder="Mobile No" type="number"
-                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                maxlength="10"> -->
                         <label class="inquiry-label"><span>Mobile No</span>
                         </label>
 
                         <!-- <input name="submit" type="submit" value="Send"/> -->
                         <div class="text-center mt-2">
-                            <button class="btn finbyz-button" name="submit" type="submit" value="Send">Submit</button>
+                            <button class="btn finbyz-button"  name="submit" type="submit" value="Send">Submit</button>
                         </div>
                         <div id="campaign_enquire_btn" class="enquire-btn d-flex">
                             <p class="pr-2">
@@ -47,4 +43,33 @@
             </div>
         </div>
     </div>
+    <script>
+        $('#campaign_enquire_btn').on('click', function () {
+            
+            if ($("#inquiry-form-section-campaign").hasClass('slide-right active')) {
+                $('#inquiry-form-section-campaign').removeClass('active').toggleClass('slide-right');
+            }
+            else if ($("#inquiry-form-section-campaign").hasClass('active')) {
+                $('#inquiry-form-section-campaign').removeClass('active');
+            }
+            else if ($("#inquiry-form-section-campaign").hasClass('slide-right')) {
+            $('#inquiry-form-section-campaign').toggleClass('slide-right');
+            }
+            else {
+                $('#inquiry-form-section-campaign').toggleClass('slide-right');
+            }
+        })
+        if(window.location.pathname == '/'){
+            var isOpened = false;
+                    $(function() {
+                        $(window).scroll(function() {
+                            var scroll = $(window).scrollTop();
+                            if (scroll >= 2000 && !isOpened) {
+                                isOpened = true;
+                                $("#inquiry-form-section-campaign").addClass("slide-right");
+                            }
+                        })
+                    })
+        }
+    </script>
 </section>
