@@ -65,9 +65,10 @@
 			{% if gallery_links %}
 				{% include "templates/includes/gallery_links.html" %}
 			{% endif %}
-
-			{% if doctype == "Web Page" and name != "career" and doctype!="Ad Campaign" %}
+			
+			{% if doctype == "Web Page" and (name != "career" or name!="contact") and doctype!="Ad Campaign" %}
 			{% include "templates/includes/form/inquiry_form.html" %}
+			
 			{% endif %}
 			
 			{% if doctype == "Web Page" and name == "homepage" %}
