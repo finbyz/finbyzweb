@@ -70,3 +70,5 @@ def related_link_query(doctype, txt, searchfield, start, page_len, filters):
 				'txt': '%' + txt + '%',
 			})
 	
+def add_preload_headers(response):
+	pass
