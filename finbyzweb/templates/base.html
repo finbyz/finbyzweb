@@ -22,7 +22,7 @@
    <meta name="apple-mobile-web-app-status-bar-style" content="#286090">
    <!--  <meta name="theme-color" content="#A1CC3A"/> -->
    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-   {% if (doctype == "Web Page" and name == "homepage") %}<link rel="canonical" href="/"> {% endif %}
+   {% if (doctype == "Web Page" and name == "homepage") %}<link rel="canonical" href="https://finbyz.tech/"> {% endif %}
    
    {% if (doctype == "Web Page" and name == "homepage") or (doctype == "Web Form" and name == "contact") %}
    <script type="application/ld+json" crossorigin="anonymous">
@@ -49,6 +49,7 @@
    {% endif %}
 
    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+   <link rel="apple-touch-icon" href="/files/favicon.png">
 
    <meta property="og:locale" content="en_US" />
    <meta property="og:type" content="article" />
@@ -87,8 +88,10 @@
    {{ head_html or "" }}
    {% endif %}
 
-   <link rel="stylesheet" crossorigin="anonymous"
-      href="https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css,npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css">
+   <link rel="preload" href="https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css,npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css,npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css"></noscript>
+   
+ 
 
    {% if theme.theme_url %}
    <link type="text/css" rel="stylesheet" href="{{ theme.theme_url }}">
@@ -130,8 +133,9 @@
       {% endif %} -->
    <!-- <div id="hellopreloader" style="display: block; position: fixed;z-index: 5;top: 0;left: 0;width: 100%;height: 100%;min-width: 100%;background: url(svg/FinbyzLogo.svg) center center no-repeat;background-size: 41px;opacity: 1;">
 		</div> -->
+
    <div class="main-section">
-      <a id="gototop"><img src="/files/upwards-arrow.svg" alt="upwards-arrow" title="upwards-arrow"></a>
+      <a id="gototop"><img src="/files/upwards-arrow.svg" alt="upwards-arrow" title="upwards-arrow" height="20" width="25"></a>
       <div>
          {%- if doctype!="Ad Campaign" -%}
       
