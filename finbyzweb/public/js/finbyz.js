@@ -1,9 +1,29 @@
+$(window).on('load',()=>{
+	$('.owl-carousel').each(function() {
+	  //Find each set of dots in this carousel
+	$(this).find('.owl-dot').each(function(index) {
+	  //Add one to index so it starts from 1
+	  $(this).attr('aria-label', index + 1);
+	});
+  });
+})
+
 var loc = window.location.pathname;
 
 $(".nav .nav-item a.nav-active").each(function () {
 	$(this).parent('li').toggleClass('active', $(this).attr('href') == loc);
 });
 
+
+$(window).on('load',()=>{
+	$('.owl-carousel').each(function() {
+	  //Find each set of dots in this carousel
+	$(this).find('.owl-dot').each(function(index) {
+	  //Add one to index so it starts from 1
+	  $(this).attr('aria-label', index + 1);
+	});
+  });
+})
 // logistics-industry circle design
 
 $(".tabanchor").click(
