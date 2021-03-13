@@ -5,7 +5,8 @@
     {
       "src":"https://finbyz.tech/files/FinbyzLogo.png",
       "sizes": "550X550",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "background_color": "#1AA8E2",
