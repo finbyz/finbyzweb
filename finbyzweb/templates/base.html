@@ -12,8 +12,7 @@
    {% if small_description or blog_intro %}
    <meta name="description" content="{{ small_description or blog_intro }}" /> {% endif %}
    {% block description %}{% endblock %}
-   <link rel="manifest"
-      href="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/manifest.min.json">
+   <link rel="manifest" href="https://github.com/finbyz/finbyzweb/blob/master/finbyzweb/public/js/manifest.min.json">
    <!-- Chrome, Firefox OS and Opera -->
    <meta name="theme-color" content="#286090">
    <!-- Windows Phone -->
@@ -189,7 +188,7 @@
    {%- block base_scripts -%}
 
    <script crossorigin="anonymous"
-      src="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/frappe-web.min.js,npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js"></script>
+      src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js"></script>
 
 
 
