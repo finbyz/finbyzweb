@@ -1,13 +1,3 @@
-$(window).on('load',()=>{
-	$('.owl-carousel').each(function() {
-	  //Find each set of dots in this carousel
-	$(this).find('.owl-dot').each(function(index) {
-	  //Add one to index so it starts from 1
-	  $(this).attr('aria-label', index + 1);
-	});
-  });
-})
-
 var loc = window.location.pathname;
 
 $(".nav .nav-item a.nav-active").each(function () {
@@ -1472,6 +1462,9 @@ $('.tabanchor-nav').on('click', function (e) {
 		e.preventDefault();
 	})
 })
+
+
+
 //floating inquiry
 function lead_creation_campaign() {
 	frappe.call({
