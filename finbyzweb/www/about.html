@@ -10,8 +10,8 @@
 {% block page_content %}
 
 <article itemscope itemtype="http://schema.org/AboutPage" class="about-content">
-	<div itemprop="description" class="container">
-		{{ doc.company_introduction or """<p>Some Introduction about your company that you would
+	<div itemprop="description" class="container-fluid">
+		{{ doc.company_introduction or """<p class="p-lr-50">Some Introduction about your company that you would
 			like your website visitor to know.
 			More people than you think will read your About page.
 			People always like to know who the are doing business with.
@@ -21,7 +21,7 @@
 
 
 		{% if doc.get({"doctype":"Company History"}) %}
-		<div class="row">
+		<div class="row p-lr-50">
 			<div class="col-sm-12">
 				<div class="text-center pb-20">
 					<div class="title-underline">
@@ -30,7 +30,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="timeline">
+		<div class="timeline p-lr-50">
 			{% for d in doc.get({"doctype":"Company History"}) %}
 			<div class="container {{ loop.cycle('left', 'right') }}">
 				<div class="timeline-icon">
@@ -55,8 +55,8 @@
 			<div class="text-center pb-20">
 				<h2 class="title-underline">{{ doc.team_members_heading or "Team Members" }}</h2>
 			</div>
-			<div class="team-member">
-				<div class="row" itemscope itemtype="http://schema.org/Person">
+			<div class="team-member ">
+				<div class="row p-lr-50" itemscope itemtype="http://schema.org/Person">
 					{% for d in doc.get({"doctype":"About Us Team Member"}) %}
 					<span class="mg-bottom col-md-6 col-sm-6 col-xs-12">
 						<div class="row">
