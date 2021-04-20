@@ -1501,7 +1501,6 @@ var form = $('#inquiry-campaign'),
 	// module counter
 	var counted = 0;
 $(window).scroll(function() {
-	console.log('hh');
   var oTop = $('#Modules').offset().top - window.innerHeight;
   if (counted == 0 && $(window).scrollTop() > oTop) {
     $('.count-number').each(function() {
