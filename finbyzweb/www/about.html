@@ -1,8 +1,9 @@
 {% extends "templates/web.html" %}
 
 {% block title %}About Finbyz Tech Software Development Company{% endblock %}
-{% block description %} 
-<meta name="description" content="Finbyz Tech is a software development company known to build scalable and innovative software solutions that streamlines your business processes and make your work more efficient." />
+{% block description %}
+<meta name="description"
+	content="Finbyz Tech is a software development company known to build scalable and innovative software solutions that streamlines your business processes and make your work more efficient." />
 {% endblock %}
 {% block page_sidebar %}
 {% include "templates/pages/web_sidebar.html" %}
@@ -11,8 +12,28 @@
 
 <article itemscope itemtype="http://schema.org/AboutPage" class="about-content">
 	<div itemprop="description" class="container-fluid">
+		<div class="container-fluid mt-50">
+			<div class="row p-lr-50">
+				<div class="col-lg-4 col-xl-4 web-title">
+					<div class="title-font pt-100 pl-45">
+						<h1 class="title-underline">About Us</h1>
+					</div>
+				</div>
+				<div class="col-lg-8 col-xl-8">
+					<img alt="about us" height="auto" src="/svg/banner-about-us.svg" class="float-right"
+						title="About Us">
+				</div>
+			</div>
+		</div>
 		<p class="p-lr-50">
-			{{ doc.company_introduction or """Some Introduction about your company that you would
+			{{ """ At Finbyz Tech, we are passionate about revolutionizing businesses through latest technology. We
+			build scalable and innovative software solutions that streamlines your business processes efficiently. We
+			value collaboration and strive to create a positive working environment by celebrating innovation. We
+			believe Information Technology can play significant role in improving productivity. IT can reduce the cost
+			of operations by significantly improving human productivity. We strive to make adopting to advance
+			technology less stressful by seamless implementation of custom tech solutions. We deliver a distinct cost
+			advantage in business operations of our clients though superior technology and industry expertise.""" or
+			"""Some Introduction about your company that you would
 			like your website visitor to know.
 			More people than you think will read your About page.
 			People always like to know who the are doing business with.
@@ -20,7 +41,7 @@
 			Be sure to update your company history and
 			list of key team members in Website > About Us Settings""" }}
 		</p>
-		
+
 
 
 		{% if doc.get({"doctype":"Company History"}) %}
@@ -63,22 +84,22 @@
 					{% for d in doc.get({"doctype":"About Us Team Member"}) %}
 					<span class="mg-bottom col-md-6 col-sm-6 col-xs-12">
 						<div class="row">
-						<div class="col-lg-4 col-xl-4 col-md-4 col-sm-4 col-4 ">
-							<div>
-								{% if d.image_link %}
-								<img src="{{ d.image_link }}" alt="{{ d.full_name }}" title="{{ d.full_name }}"
-									itemprop="image" class="grayscale-img" height="185" width="160">
-								{% else %}
-								<img src="/files/person-image.jpg" alt="{{ d.full_name }}" title="{{ d.full_name }}"
-									itemprop="image" class="grayscale-img" height="185" width="160">
-								{% endif %}
+							<div class="col-lg-4 col-xl-4 col-md-4 col-sm-4 col-4 ">
+								<div>
+									{% if d.image_link %}
+									<img src="{{ d.image_link }}" alt="{{ d.full_name }}" title="{{ d.full_name }}"
+										itemprop="image" class="grayscale-img" height="185" width="160">
+									{% else %}
+									<img src="/files/person-image.jpg" alt="{{ d.full_name }}" title="{{ d.full_name }}"
+										itemprop="image" class="grayscale-img" height="185" width="160">
+									{% endif %}
+								</div>
 							</div>
-						</div>
-						<div class="col-lg-8 col-xl-8 col-md-8 col-sm-8 col-8">
-							<h3 style="margin-top:-3px" itemprop="name">{{ d.full_name }}</h3>
-							<h5>{{ d.designation }}</h5>
-							<p itemprop="description" class="about_bio">{{ d.bio }}</p>
-						</div>
+							<div class="col-lg-8 col-xl-8 col-md-8 col-sm-8 col-8">
+								<h3 style="margin-top:-3px" itemprop="name">{{ d.full_name }}</h3>
+								<h5>{{ d.designation }}</h5>
+								<p itemprop="description" class="about_bio">{{ d.bio }}</p>
+							</div>
 						</div>
 					</span>
 					{% endfor %}

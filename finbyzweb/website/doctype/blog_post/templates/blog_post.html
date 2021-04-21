@@ -1,15 +1,15 @@
 {% extends "templates/web.html" %}
 
 {% block page_content %}
-<div class="finbyz-blog-container mt-5">
-<article class="blog-content">
+<div class="container-fluid mt-5">
+<article class="blog-content p-lr-50">
 	<!-- <meta itemprop="datePublished" content="{{ frappe.format_date(published_on) }}"></meta>
 	<meta itemprop="author" content="{{ full_name }}"></meta> -->
 	<!-- begin blog content -->
 	<div class="blog-info">
 	<h1 class="blog-header">{{ title }}</h1>
 	<p class="post-by text-muted">
-		<a href="/blog?blogger={{ blogger }}" class="no-decoration pr-2">{{ _("By") }} {{ blogger_info and blogger_info.full_name or full_name }}</a>
+		<a href="/blog?blogger={{ blogger }}" class="no-decoration pr-2">{{ _("By") }} {{ blogger_info and blogger_info.full_name or full_name }} </a>
 		<span><i class="spacer-dot pr-2"></i> {{ frappe.format_date(published_on) }}</span>
 		<span><i class="spacer-dot pr-2"></i> <a href="/blog?blog_category={{ blog_category }}" class="no-decoration">{{ category.title }}</a></span>
 	<!-- 	<i class="spacer-dot"></i> {{ comment_text }} -->
@@ -24,7 +24,7 @@
 		<a class="a2a_button_pinterest"></a>
 	</div> -->
 	<div class="footer-social mt-20">
-		<ul class="footer-social">
+		<ul class="footer-social d-flex justify-content-start">
 			
 			<li>
 				<a class="zoom" href="http://www.facebook.com/sharer.php?u=https://finbyz.tech/{{ route }}/&p[title]={{ title }}&p[summary]={{ blog_intro }}" target="_blank">
