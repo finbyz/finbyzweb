@@ -8,12 +8,12 @@
 </div>
 {% else %}
 <div class="container-fluid">
-	<div class="website-list" data-doctype="{{ doctype }}" data-txt="{{ txt or '[notxt]' }}">
+	<div class="website-list test" data-doctype="{{ doctype }}" data-txt="{{ txt or '[notxt]' }}">
 		<!-- {% if not hide_filters -%}
             {% include "templates/includes/list/filters.html" %}
         {%- endif %} -->
 		{% if result_heading_template %}{% include result_heading_template %}{% endif %}
-		<div class="row result p-lr-50">
+		<div class="row result p-lr-50 test">
 			{% for item in result %}
 			{{ item }}
 			{% endfor %}
