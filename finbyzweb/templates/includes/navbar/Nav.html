@@ -1,4 +1,3 @@
-
 <header class="finbyzNav noDropdownTransition">
     {% include "templates/includes/header-contact.html" %}
     <ul class="navRoot">
@@ -29,7 +28,7 @@
             {% if frappe.session.user != 'Guest' %}
             <a href="#" class="rootLink hasDropdown" data-dropdown="finbyz-login">
                 <span class="user-image-wrapper"></span>
-                <span class="full-name"></span>
+                <span class="full-name ml-1"></span>
                 <b class="caret"></b>
             </a>
             {% endif %}
