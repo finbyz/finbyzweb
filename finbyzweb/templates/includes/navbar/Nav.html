@@ -23,7 +23,7 @@
         </li>
         <li class="navSection secondary">
             {% if not hide_login %}
-            <a href="/login" class="rootLink btn-login-area">{{ _("Login") }}</a> 
+            <a href="/login" class="rootLink btn-login-area" style="display: block !important;">{{ _("Login") }}</a> 
             {% endif %}
             {% if frappe.session.user != 'Guest' %}
             <a href="#" class="rootLink hasDropdown" data-dropdown="finbyz-login">
