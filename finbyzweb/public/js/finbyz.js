@@ -1,10 +1,7 @@
 var loc = window.location.pathname;
-
 $(".nav .nav-item a.nav-active").each(function() {
     $(this).parent('li').toggleClass('active', $(this).attr('href') == loc);
 });
-
-
 $(window).on('load', () => {
         $('.owl-carousel').each(function() {
             //Find each set of dots in this carousel
@@ -962,6 +959,7 @@ $(function() {
             .addTo(scrollController)
     })
 
+    
     // flip box on small screen trigger at comes to view 
     $(".card").each(function() {
         var tl_card = new TimelineMax();
@@ -993,14 +991,23 @@ $(function() {
         if (st <= 0) {
             setTimeout(() => {
                 $("header.finbyzNav").removeClass("nav-shadow");
+                if(loc == '/' || loc == '/index' || loc == '/homepage'){
+                    $("header.finbyzNav").addClass("bg_transparent");
+                }
             }, 100)
         }
         if (st > lastScrollTop) {
             $("header.finbyzNav").addClass("nav-shadow");
+            if(loc == '/' || loc == '/index' || loc == '/homepage'){
+                $("header.finbyzNav").removeClass("bg_transparent");
+            }
             $('.navbar-main').removeClass('animated swingInX');
             $('.navbar-main').addClass('animated swingOutX');
         } else {
             $("header.finbyzNav").addClass("nav-shadow");
+            if(loc == '/' || loc == '/index' || loc == '/homepage'){
+                $("header.finbyzNav").removeClass("bg_transparent");
+            }
             $('.navbar-main').removeClass('animated swingOutX');
             $('.navbar-main').addClass('animated swingInX');
         }
@@ -1020,6 +1027,7 @@ $(window).bind('scroll', function() {
     } else {
         $('.navbar.landing-navbar-main').removeClass('on');
     }
+    
 });
 // for image zoom on hover with fadein effect
 $(".hover-zoom").hover(
@@ -1501,4 +1509,22 @@ form.on('submit', function(e) {
 $(document).ready(()=>{
     $(".full-name").html(frappe.get_cookie("full_name"));
     $(".block_login").attr('style', 'display: block !important');
+    if($( "section" ).hasClass( "hexa-fade-up" )){
+        var scrollController = new ScrollMagic.Controller();
+        var fade_all = new TimelineMax();
+        fade_all	
+            .from(".finbyz-fadeinup1",0.5, { y: 50, opacity: 0, ease: Power1.easeIn },1)
+            .from(".finbyz-fadeinup2", 0.5 , { y: 50, opacity: 0, ease: Power1.easeIn },1.3)
+            .from(".finbyz-fadeinup3",0.5, { y: 50, opacity: 0, ease: Power1.easeIn },1.5)
+            .from(".finbyz-fadeinup4",0.5 , { y: 50, opacity: 0, ease: Power1.easeIn },1.7)
+            .from(".finbyz-fadeinup5",0.5 , { y: 50, opacity: 0, ease: Power1.easeIn },1.9)
+                
+        new ScrollMagic.Scene({
+                triggerElement: ".hexa-fade-up",
+                triggerHook:0.8,
+                reverse:true
+            })
+            .setTween(fade_all)
+            .addTo(scrollController);
+    }
 })

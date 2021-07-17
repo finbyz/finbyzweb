@@ -1,4 +1,4 @@
-<header class="finbyzNav noDropdownTransition">
+<header class="finbyzNav noDropdownTransition {% if route == "homepage" or route == "index"%}bg_transparent {% endif %}">
     {% include "templates/includes/header-contact.html" %}
     <ul class="navRoot">
         <li class="navSection logo mt-2 mt-lg-0 ml-2">
@@ -6,7 +6,7 @@
                 <a href="/"><img src="https://finbyz.tech/files/finbyz-tech.svg" class="img-responsive" alt="FinByz Tech Pvt Ltd" title="FinByz Tech Pvt Ltd"></a>
             </div>
         </li>
-        <li class="navSection primary my-2">
+        <li class="navSection primary  my-2  ">
             <a class="rootLink item-industries hasDropdown colorize" data-dropdown="industries" href="#"> Industries </a>
             <a class="rootLink item-developers hasDropdown colorize" data-dropdown="services" href="#">
                     Services

@@ -27,7 +27,7 @@
 
 		</div>
 
-		<div class="page_content">
+		<div class="page_content {% if route == "homepage" or route == "index" %} remove_padding_top  {% endif %}" >
 			{% include "templates/includes/finbyz-banner.html" %}
 			{%- block page_content -%}{%- endblock -%}
 
