@@ -54,7 +54,8 @@ function showPwaAlert(message, seconds = 7) {
 if ('serviceWorker' in navigator) {
     if ('{{ vapid_public_key }}') {
         console.log('[PWA] Set VAPID key for push notifications');
-        window.vapidPublicKey = new Uint8Array('{{ vapid_public_key }}');
+          // for notification
+        // window.vapidPublicKey = new Uint8Array('{{ vapid_public_key }}');
     }
 
     window.addEventListener('load', function () {
@@ -162,21 +163,7 @@ if ('serviceWorker' in navigator) {
             });
     }
 
-    // Request to allow push notifications
-    if (window.vapidPublicKey) {
-        if (!("Notification" in window)) {
-            console.error("[PWA] This browser does not support desktop notification");
-        } else if (Notification.permission === "granted") {
-            console.log("[PWA] Permission to receive notifications has been granted");
-        } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission(function (permission) {
-                // If the user accepts, let's create a notification
-                if (permission === "granted") {
-                    console.log("[PWA] Permission to receive notifications has been granted");
-                }
-            });
-        }
-    }
+  
 } else if (window.location.protocol !== 'https:') {
     console.warn('[PWA] Requires secure HTTPS connection');
 } else {
