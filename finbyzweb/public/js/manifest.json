@@ -1,6 +1,8 @@
 {
   "short_name": "finbyz",
   "name": "FinByz Tech Pvt Ltd",
+  "start_url": "/",  
+  "scope": "/",
   "icons": [
     {
       "src":"https://finbyz.tech/files/FinbyzLogo.png",

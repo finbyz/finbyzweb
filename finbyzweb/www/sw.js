@@ -3,7 +3,7 @@ var CACHE_NAME = 'frappe-cache-v1';
 
 var urlsToCache = [
     '/',
-    'https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb/finbyzweb/public/js/manifest.json',
+    '/assets/finbyzweb/js/manifest.json',
     '{{ (favicon or "/assets/frappe/images/favicon.png") | abs_url }}',
     // CSS
     'https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css',
