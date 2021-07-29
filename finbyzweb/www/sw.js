@@ -127,9 +127,11 @@ function fromCache(request) {
 }
 
 function updateCache(request, response) {
-    return caches.open(CACHE_NAME).then(function (cache) {
-        return cache.put(request, response);
-    });
+    if(response.status == 200){
+        return caches.open(CACHE_NAME).then(function (cache) {
+            return cache.put(request, response);
+        });
+    }
 }
 
 function clearCache(key) {
