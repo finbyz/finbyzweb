@@ -12,8 +12,7 @@
    {% if small_description or blog_intro %}
    <meta name="description" content="{{ small_description or blog_intro }}" /> {% endif %}
    {% block description %}{% endblock %}
-   <link rel="manifest"
-      href="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/manifest.min.json">
+   <link rel="manifest" href="/assets/finbyzweb/js/manifest.json">
    <!-- Chrome, Firefox OS and Opera -->
    <meta name="theme-color" content="#286090">
    <!-- Windows Phone -->
