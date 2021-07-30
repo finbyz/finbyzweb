@@ -7,15 +7,11 @@ var urlsToCache = [
     '{{ (favicon or "/assets/frappe/images/favicon.png") | abs_url }}',
     // CSS
     'https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css',
-    {%- for link in web_include_css %}
-    '{{ link|abs_url }}',
-    {%- endfor %}
+  
     // JS
     'https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb/finbyzweb/public/js/frappe-web.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js',
     'https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js',
-	{%- for link in web_include_js %}
-    '{{ link|abs_url }}',
-    {%- endfor %}
+	
 ];
 
 // Install stage sets up the index page (home page) in the cache and opens a new cache
@@ -49,7 +45,10 @@ this.addEventListener('fetch', function (event) {
                 // Update cache record in the background
                 fetchFromNetworkAndCache(event);
                 // Reply with stale data
-                return response
+                if(response.status == 400){
+                    return;
+                }
+                return response;
             })
     );
 });
@@ -94,8 +93,8 @@ function fetchFromNetworkAndCache(event) {
         if (new URL(res.url).origin !== location.origin) {
             return res;
         }
-
         // If request was success, add or update it in the cache
+      
         updateCache(event.request, res.clone());
         // TODO: figure out if the content is new and therefore the page needs a reload.
 
@@ -127,11 +126,16 @@ function fromCache(request) {
 }
 
 function updateCache(request, response) {
-    if(response.status == 200){
-        return caches.open(CACHE_NAME).then(function (cache) {
-            return cache.put(request, response);
-        });
-    }
+   
+        if (request.url.includes("/assets/css/") || request.url.includes("/assets/js/") || request.url.includes("report") || request.url.includes("finbyzerp") || request.url.includes("erpnext") || request.url.includes("api/method") || request.url.includes("/socket.io/") || request.url.includes("desk")  ||  request.url.includes("app") || request.url.includes("login")){
+           return 
+        }else{
+            if(response.status == 200){
+                return caches.open(CACHE_NAME).then(function (cache) {
+                    return cache.put(request, response);
+                });
+            }
+        }
 }
 
 function clearCache(key) {

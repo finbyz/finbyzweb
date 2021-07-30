@@ -155,39 +155,40 @@
                             <img class="nav-service-icon" src="/files/nav-login.svg" alt="Login" title="Login"><a href="/login">{{ _("Login") }}</a>
                         </li>
                         {% endif %}
-                        
-                        <li>
-                            <a data-ls="loginsubmenu" class="go-tosub-menu" data-toggle="collapse" aria-expanded="false" href="#">
-                                <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="About Company">
-                                <span class="user-image-wrapper"></span>
-                                <span class="full-name"></span>
-                                <b class="caret"></b>
-                            </a>
-                            <!-- <img data-ls="loginsubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15"> -->
-                            <ul class="collapse list-unstyled ml-5  " id='loginsubmenu'>
-                                <li>
-                                    <a class="" href="/me" rel="nofollow">
-                                        <img class="nav-service-icon" src="/files/nav-my-account.svg" alt="About FinByz" title="About FinByz">
-                                        <h6 class="link-underline mt-1">{{ _('My Account') }}
-                                        </h6>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="linkContainer item-about" href="/?cmd=web_logout" rel="nofollow">
-                                        <img class="nav-service-icon" src="/files/nav-logout.svg" alt="About FinByz" title="About FinByz">
-                                        <h6 class="link-underline mt-1">{{ _('Logout') }}
-                                        </h6>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="linkContainer item-about" href="/desk" rel="nofollow">
-                                        <img class="nav-service-icon" src="/files/nav-switch-to-desk.svg" alt="About FinByz" title="About FinByz">
-                                        <h6 class="link-underline mt-1">{{ _('Switch To Desk') }}
-                                        </h6>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                        {% if frappe.session.user != 'Guest' %}
+                            <li>
+                                <a data-ls="loginsubmenu" class="go-tosub-menu" data-toggle="collapse" aria-expanded="false" href="#">
+                                    <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="About Company">
+                                    <span class="user-image-wrapper"></span>
+                                    <span class="full-name"></span>
+                                    <b class="caret"></b>
+                                </a>
+                                <!-- <img data-ls="loginsubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15"> -->
+                                <ul class="collapse list-unstyled ml-5  " id='loginsubmenu'>
+                                    <li>
+                                        <a class="" href="/me" rel="nofollow">
+                                            <img class="nav-service-icon" src="/files/nav-my-account.svg" alt="About FinByz" title="About FinByz">
+                                            <h6 class="link-underline mt-1">{{ _('My Account') }}
+                                            </h6>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="linkContainer item-about" href="/?cmd=web_logout" rel="nofollow">
+                                            <img class="nav-service-icon" src="/files/nav-logout.svg" alt="About FinByz" title="About FinByz">
+                                            <h6 class="link-underline mt-1">{{ _('Logout') }}
+                                            </h6>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="linkContainer item-about" href="/desk" rel="nofollow">
+                                            <img class="nav-service-icon" src="/files/nav-switch-to-desk.svg" alt="About FinByz" title="About FinByz">
+                                            <h6 class="link-underline mt-1">{{ _('Switch To Desk') }}
+                                            </h6>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
                     </ul>
                 </nav>
 
