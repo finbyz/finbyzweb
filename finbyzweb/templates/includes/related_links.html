@@ -12,6 +12,9 @@
 						<div class="mg-bottom col-md-4 col-sm-6 col-12 finbyz-fadeinup"
 							style="opacity: 1; transform: matrix(1, 0, 0, 1, 0, 0);">
 							<div class="content-box text-center">
+								<a
+											href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}"
+											target="_blank">
 								<div class="item">
 									<div class="module-item-box">
 										<div class="module-img">
@@ -37,16 +40,16 @@
 										</div>
 									</div>
 									<div class="row pt-20 pr-5">
-										<a class="btn-next ml-auto d-flex align-items-center"
-											href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}"
-											target="_blank"><span class="pr-3 t-blue">View More</span><svg
+										<div class="btn-next ml-auto d-flex align-items-center">
+											<span class="pr-3 t-blue">View More</span><svg
 												class="finbyz-icon icon-hover finbyz-icon-arrow-right-1">
 												<use href="#finbyz-icon-arrow-right-1"></use>
 											</svg> <svg class="finbyz-icon finbyz-icon-arrow-right1">
 												<use href="#finbyz-icon-arrow-right1"></use>
-											</svg></a>
+											</svg></div>
 									</div>
 								</div>
+								</a>
 							</div>
 						</div>
 						{% endif %}
