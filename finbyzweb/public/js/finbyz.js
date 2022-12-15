@@ -609,7 +609,7 @@ $(document).ready(function() {
                     number: s = "+91 9925701446"
                 } = e,
                 {
-                    avatar: p = "/svg/FinbyzLogo.svg"
+                    avatar: p = "/files/FinbyzLogo.svg"
                 } = e,
                 {
                     description: c = "Typically replies within an hour"
