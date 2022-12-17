@@ -187,9 +187,9 @@
     <!-- <script type="text/javascript" src="/assets/js/frappe-web.min.js"></script>
    <script crossorigin="anonymous"
       src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js"></script> -->
-
-   <script crossorigin="anonymous"
-      src="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/frappe-web-v13.min.js,npm/popper.js@1.12.9/dist/umd/popper.min.js,npm/bootstrap@4.1.0/dist/js/bootstrap.min.js"></script>
+   {{ include_script('frappe-web.bundle.js') }}
+   <!-- <script crossorigin="anonymous"
+      src="npm/popper.js@1.12.9/dist/umd/popper.min.js"></script> -->
 
    {%- endblock -%}
    {%- if js_globals is defined -%}
@@ -200,7 +200,7 @@
    </script>
    {%- endif -%}
    {%- for link in web_include_js -%}
-   {%- if link not in ["website_script.js","assets/js/erpnext-web.min.js"] -%}
+   {%- if link not in ["website_script.js","erpnext-web.bundle.js"] -%}
    <script type="text/javascript" src="{{ link|abs_url }}"></script>
    {%- endif -%}
    {%- endfor -%}
@@ -219,7 +219,7 @@
       src="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/combine.min.js,npm/owl.carousel@2.3.4/dist/owl.carousel.min.js">
       </script>
 
-
+   
    <script type="text/javascript" src="/assets/finbyzweb/js/finbyz.js"></script>
    <script type="text/javascript" src="/pwa.js" ></script>
    <!-- <script type="text/javascript" crossorigin="anonymous"
