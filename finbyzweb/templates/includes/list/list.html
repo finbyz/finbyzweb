@@ -7,15 +7,17 @@
 	{{ no_result_message or _("Nothing to show") }}
 </div>
 {% else %}
-<div class="container-fluid">
+<div class="container">
 	<div class="website-list test" data-doctype="{{ doctype }}" data-txt="{{ txt or '[notxt]' }}">
-		<!-- {% if not hide_filters -%}
-            {% include "templates/includes/list/filters.html" %}
-        {%- endif %} -->
+		<!-- {% if not hide_filters -%} -->
+             <!-- {% include "templates/includes/list/filters.html" %} -->
+        <!-- {%- endif %} -->
 		{% if result_heading_template %}{% include result_heading_template %}{% endif %}
 		<div class="row result p-lr-50 test">
 			{% for item in result %}
-			{{ item }}
+			<div class="col-6">
+				{{ item }}
+			</div>				
 			{% endfor %}
 		</div>
 		<div class="more-block {% if not show_more -%} hide {%- endif %}">

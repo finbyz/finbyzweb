@@ -1365,7 +1365,7 @@ $('#navsidebarCollapse').on('click', function() {
     });
     if ($(this).hasClass('active')) {
         $("header.finbyzNav div.nav-wrapper").css({
-            "left": "-50px",
+            "left": "-1000px",
         });
     }
     $(this).toggleClass('active');
