@@ -7,7 +7,7 @@
 	{{ no_result_message or _("Nothing to show") }}
 </div>
 {% else %}
-<div class="container">
+<!-- <div class="container"> -->
 	<div class="website-list test" data-doctype="{{ doctype }}" data-txt="{{ txt or '[notxt]' }}">
 		<!-- {% if not hide_filters -%} -->
              <!-- {% include "templates/includes/list/filters.html" %} -->
@@ -15,7 +15,7 @@
 		{% if result_heading_template %}{% include result_heading_template %}{% endif %}
 		<div class="row result p-lr-50 test">
 			{% for item in result %}
-			<div class="col-6">
+			<div class="col-12">
 				{{ item }}
 			</div>				
 			{% endfor %}
@@ -24,7 +24,7 @@
 			<button class="btn btn-default btn-more btn-sm">{{ _("More") }}</button>
 		</div>
 	</div>
-</div>
+<!-- </div> -->
 {%- endif %}
 
 <style>

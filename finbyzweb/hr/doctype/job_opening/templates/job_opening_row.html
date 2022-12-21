@@ -1,34 +1,47 @@
-<div class="my-3 col-12 col-sm-12">
+ <div class="my-3 col-12 col-sm-12">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-12 col-sm-12">
-                <h3>{{ doc.job_title }}</h3>
-            </div>
-            <div class="col-12 col-md-8">
-                <p>{{ doc.description }}</p>
-                <!-- <p>{{ doc.skills }}</p> -->
-                <div class="d-md-flex d-sm-block d-block text-center">
-                    <div class="m-2">
-                        <a class="finbyz-button" href="{{ frappe.db.get_value('Job Opening',doc.name,'route') }}">
-                            Know More
-                        </a>
-                    </div>
-                    <div class="m-2">
-                        <a class="finbyz-button" href="/job-application-form?new=1&job_title={{ doc.name }}">
-                            {{ _("Apply Now") }}
-                        </a>
-                    </div>
-
+            <div class="row p-lr-50">
+                <div class="col-lg-4 col-xl-4 web-title">
+                    <h3 class="title-font pt-100 pl-45">{{ doc.job_title }}</h3>
                 </div>
-            </div>
-            {% if frappe.db.get_value("Job Opening",doc.name,"image")  %}
-            <div class="col-12 col-md-4">
-                <div class="text-center mt-0 pt-0">
-                    <img alt="{{ doc.get(title_field) }}" title="{{ doc.get(title_field) }}" class="img-fluid"
+                {% if frappe.db.get_value("Job Opening",doc.name,"image")  %}
+                <div class="col-lg-8 col-xl-8 text-center banner-jobs">
+                    <!-- <div class="text-center mt-0 pt-0"> -->
+                        <img alt="{{ doc.get(title_field) }}" height="100%"title="{{ doc.get(title_field) }}" class="img-fluid"
                     src="{{ frappe.db.get_value('Job Opening',doc.name,'image') }}">
+                    <!-- </div> -->
+                    {%- endif -%}
                 </div>
             </div>
-            {%- endif -%}
-        </div>
+            <div class="container-fluid">
+                <div class="row  mt-50 p-lr-50">
+                    <div class="col-12 pl-45">
+                        <h3>Job Description</h3>
+                        <p>{{ doc.description }}</p> 
+                    </div>
+                 </div>   
+                <div class="row  mt-50 p-lr-50">
+                    <div class="col-12 pl-45">
+                        <h3>Key Skills</h3>
+                        <p>{{ doc.skills }}</p> 
+                    </div>
+                </div>
+                <div class="d-flex justify-content-around mt-50 p-lr-50">
+                    <!-- <div class="col"> -->
+                        <div class="m-2">
+                            <a class="finbyz-button" href="{{ frappe.db.get_value('Job Opening',doc.name,'route') }}">
+                                Know More
+                            </a>
+                        </div>
+                    <!-- </div> -->
+                    <!-- <div class="col"> -->
+                        <div class="m-2">
+                            <a class="finbyz-button" href="/job-application-form?new=1&job_title={{ doc.name }}">
+                                {{ _("Apply Now") }}
+                            </a>
+                        </div>
+                    <!-- </div> -->
+                </div>
+            </div>               
     </div>
 </div>
