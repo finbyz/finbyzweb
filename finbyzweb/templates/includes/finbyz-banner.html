@@ -15,14 +15,14 @@
 {%- elif image and doctype !="Blog Post" -%} {%- if doctype == "Job Opening" -%}
 <div class="container-fluid">
     <div class="row p-lr-50">
-        <div class="col-lg-4 col-xl-4 web-title">
+        <div class="col-lg-12 col-xl-12 web-title">
             <div class="title-font pt-100 pl-45">
                 <h1 class="title-underline">{{ title }}</h1>
             </div>
         </div>
-        <div class="col-lg-8 col-xl-8 text-center banner-jobs">
+        <!-- <div class="col-lg-8 col-xl-8 text-center banner-jobs">
             <img alt="{{ title }}" height="100%" src="{{ image }}" title="{{ title }}">
-        </div>
+        </div> -->
     </div>
 </div>
 {%- else -%}

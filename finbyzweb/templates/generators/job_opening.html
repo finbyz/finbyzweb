@@ -3,8 +3,29 @@
 	{% include "templates/includes/breadcrumbs.html" %}
 {% endblock %}
 {% block page_content %}
-<div class="container-fluid mt-50">
-	{%- if description -%}
+<div class="container-fluid">
+	<div class="row">
+			<div class="col-lg-4 col-xl-4 p-lr-50 l-5">
+				<div class="container">
+					<div class="row">
+						<div class="col pt-100 pl-45">
+							<h3>Job Description</h3>
+							{{ description }}
+						</div>
+					</div>
+					<div class="row">
+						<div class="col pt-5 pl-45">
+							<h3>Key Skills</h3>
+							{{ skills }}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-8 col-xl-8 text-center banner-jobs">
+				<img alt="{{ title }}" height="100%" src="{{ image }}" title="{{ title }}">
+			</div>		
+	</div>
+	<!-- {%- if description -%}
 	<div class="row mt-50 p-lr-50">
 		<div class="col-md-12 pl-45">
 		<h3>Job Description</h3>
@@ -19,10 +40,10 @@
 			{{ skills }}
 		</div>
 	</div>
-	{% endif %}
+	{% endif %} -->
 </div>
 
-<div style='margin-top: 30px' class="button container">
+<div style='margin-top: 40px' class="button container">
 	<a class='finbyz-button'
 	href='/job-application-form?new=1&job_title={{ doc.name }}'>
 	{{ _("Apply Now") }}</a>
