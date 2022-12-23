@@ -2,28 +2,28 @@
 {% block breadcrumbs %}
 	{% include "templates/includes/breadcrumbs.html" %}
 {% endblock %}
+
+
+
+
 {% block page_content %}
 <div class="container-fluid">
 	<div class="row">
-			<div class="col-lg-4 col-xl-4 p-lr-50 l-5">
 				<div class="container">
-					<div class="row">
-						<div class="col pt-100 pl-45">
-							<h3>Job Description</h3>
-							{{ description }}
-						</div>
+					<div class="text-center banner-jobs">
+						<img alt="{{ title }}" height="100%" src="{{ image }}" title="{{ title }}" style="float: right;margin-left: 30px; margin-bottom: 10px;">
 					</div>
-					<div class="row">
-						<div class="col pt-5 pl-45">
-							<h3>Key Skills</h3>
-							{{ skills }}
-						</div>
+					<div class="mt-3">
+							<h3 style="text-align: justify;">Job Description</h3>
+							<span class="justify-word"> {{ description }}</span>
+						
+				
+							<h3 style="text-align: justify;">Key Skills</h3>
+							<span class="justify-word">{{ skills }}</span>
 					</div>
 				</div>
 			</div>
-			<div class="col-lg-8 col-xl-8 text-center banner-jobs">
-				<img alt="{{ title }}" height="100%" src="{{ image }}" title="{{ title }}">
-			</div>		
+				
 	</div>
 	<!-- {%- if description -%}
 	<div class="row mt-50 p-lr-50">
