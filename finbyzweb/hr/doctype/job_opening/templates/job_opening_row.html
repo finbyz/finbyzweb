@@ -78,18 +78,18 @@
                             <div class="text-center banner-jobs">
                                 {% if frappe.db.get_value("Job Opening",doc.name,"image")  %}
                                 <div class="text-center mt-0 pt-0">
-                                    <img alt="{{ doc.get(title_field) }}" title="{{ doc.get(title_field) }}" class="img-fluid"
-                                src="{{ frappe.db.get_value('Job Opening',doc.name,'image') }}" style="float: right;margin-left: 30px; margin-bottom: 10px;">
+                                    <img alt="{{ doc.get(title_field) }}" title="{{ doc.get(title_field) }}" class="img-fluid ml-3 mb-3"
+                                src="{{ frappe.db.get_value('Job Opening',doc.name,'image') }}" style="float: right;">
                                 </div>
                                 {%- endif -%}
                             </div>
                            <div class="mt-3">
-                            <h3 style="text-align: justify;">Job Description</h3>
-                            <span class="justify-word">{{ doc.description }}</span>   
+                            <h3 class="justify">Job Description</h3>
+                            <span class="justify " >{{ doc.description }}</span>   
                            
                        
-                            <h3 style="text-align: justify">Key Skills</h3>
-                            <span class="justify-word">{{ frappe.db.get_value("Job Opening", doc.name, "Skills") or ''}}</span>
+                            <h3 class="justify mt-5">Key Skills</h3>
+                            <span class="justify ">{{ frappe.db.get_value("Job Opening", doc.name, "Skills") or ''}}</span>
                            </div>
                                 
                                    
