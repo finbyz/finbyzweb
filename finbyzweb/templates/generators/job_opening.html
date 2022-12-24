@@ -3,16 +3,14 @@
 	{% include "templates/includes/breadcrumbs.html" %}
 {% endblock %}
 
-
-
-
 {% block page_content %}
 <div class="container-fluid">
 	<div class="row">
-				<div class="container">
-					<div class="text-center banner-jobs">
+				<div class="container-fluid px-sm-5">
+					<div class="text-center banner-jobs web-title">
 						<img alt="{{ title }}" height="100%" src="{{ image }}" title="{{ title }}" style="float: right;" class="ml-3 mb-3">
 					</div>
+					<br/>
 					<div class="mt-3">
 							<h3 class="justify">Job Description</h3>
 							<span class="justify"> {{ description }}</span>
