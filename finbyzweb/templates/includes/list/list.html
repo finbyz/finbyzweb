@@ -15,9 +15,9 @@
 		{% if result_heading_template %}{% include result_heading_template %}{% endif %}
 		<div class="row result test">
 			{% for item in result %}
-			<div class="col-12">
+			
 				{{ item }}
-			</div>				
+	
 			{% endfor %}
 		</div>
 		<div class="more-block {% if not show_more -%} hide {%- endif %}">
