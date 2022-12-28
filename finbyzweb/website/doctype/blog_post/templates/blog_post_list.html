@@ -28,7 +28,10 @@
 			{% endfor %}
 		</div>
 		{% endif %}
-		<button class="btn btn-light btn-more btn {% if not show_more -%} hidden {%- endif %}">{{ _("Load More") }}</button>
+		<div class="more-block {% if not show_more -%} hide {%- endif %}">
+			<button class="btn btn-light btn-more btn ">{{ _("Load More") }}</button>
+		</div>
+		<!-- <button class="btn btn-light btn-more btn {% if not show_more -%} hidden {%- endif %}">{{ _("Load More") }}</button> -->
 	</div>
 </div>
 {% endblock %}
