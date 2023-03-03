@@ -1,0 +1,65 @@
+{% extends "templates/web.html" %} 
+{% block page_content %} 
+
+<div class="client-wrapper">
+	<section class="mt-50">
+		<div class="container-fluid mt-50">
+			<div class="row p-lr-50">
+				<div class="col-md-4 web-title">
+					<div class="title-font pt-100 pl-45">
+						<h1 class="title-underline">
+							Clients
+						</h1>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<img src="/files/banner-client.svg" alt="Client List" title="Client List" style="float: right;"
+						width="700px" height="auto">
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="customer" class="mt-70">
+		<div class="container-fluid">
+			<div class="row p-lr-50">
+				<div class="col-sm-12">
+					<h2 class="text-center">
+						Some of The Loyal Clients of FinByz.
+					</h2>
+				</div>
+			</div>
+			<div class="row p-lr-50">
+				<div class="col-sm-12 text-center">
+					<p class="sub-text back-quote pl-45">
+						The Best Way to Look at Any Business is From The Standpoint of The Clients.-Jamie Dimon
+					</p>
+				</div>
+			</div>
+			<div class="p-lr-50">
+				<div class="client-row"
+					style="display: grid!important;grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));grid-gap: 2rem;">
+					{% if doc.get({"doctype":"Customer Details List"}) %}
+					{% for i in doc.get({"doctype":"Customer Details List"}) %}
+					<div class="client-grid-wrapper">
+						<div class="client-grid-wrap">
+							<div class="client-grid-wrap-inner">
+								<div class="client-img-main grid-front">
+									<img src="{{ i.image }}" alt="{{ i.customer }}" class="client-image"
+										title='{{ i.customer }}'>
+								</div>
+								<div class="client-info grid-back">
+									<h3 class="client-info-txt">
+										{{ i.customer }}
+									</h3>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</section>	
+</div>
+{% endblock %}

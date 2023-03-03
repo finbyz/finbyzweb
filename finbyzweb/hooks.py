@@ -12,9 +12,9 @@ app_email = "info@finbyz.com"
 app_license = "GPL 3.0"
 
 # override bcz getting 404 error in thirt party files
-from frappe.website import utils
-from finbyzweb.api import add_preload_headers as my_add_preload_headers
-utils.add_preload_headers = my_add_preload_headers
+# from frappe.website import utils
+# from finbyzweb.api import add_preload_headers as my_add_preload_headers
+# utils.add_preload_headers = my_add_preload_headers
 
 # app_include_js = [
 # 	"assets/js/summernote.min.js",

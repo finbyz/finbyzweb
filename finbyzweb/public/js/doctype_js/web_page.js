@@ -1,10 +1,10 @@
-cur_frm.fields_dict.related_links.grid.get_field("reference_doctype").get_query = function (doc) {
-    return {
-        filters: {
-            "has_web_view": 1,
-        }
-    }
-};
+// cur_frm.fields_dict.related_links.grid.get_field("reference_doctype").get_query = function (doc) {
+//     return {
+//         filters: {
+//             "has_web_view": 1,
+//         }
+//     }
+// };
 
 cur_frm.cscript.onload = function (frm) {
     this.frm.set_query("reference_name", "related_links", function (doc,cdt,cdn) {
