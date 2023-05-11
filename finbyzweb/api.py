@@ -49,7 +49,7 @@ def set_form_data(lead_name, company_name, mobile_no, title, email):
 	
 	frappe.db.commit()
 
-
+@frappe.whitelist(allow_guest=True)
 def related_link_query(doctype, txt, searchfield, start, page_len, filters):
 	cond = ""
 	args = {
