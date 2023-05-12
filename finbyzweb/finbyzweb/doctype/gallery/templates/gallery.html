@@ -11,8 +11,8 @@
 			{% endif %}
 			{%if youtube_link %}
 			{% set list1 = youtube_link.split('/') %}
-			{% set src = "https://www.youtube.com/embed/" + list1[-1] %}
-			<iframe src="{{src}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+			{% set src = "https://www.youtube.com/embed/" + list1[-1] + "?rel=0&amp;autoplay=1&mute=0" %}
+			<iframe src="{{src}}" title="YouTube video player" frameborder="0" id="movie_player" allowfullscreen></iframe>
 			{% endif %}
 			
 			
