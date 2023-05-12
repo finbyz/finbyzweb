@@ -128,10 +128,10 @@
   }
  ],
  "has_web_view": 1,
- "image_field": "animated_image",
+ "image_field": "svg_image",
  "is_published_field": "published",
  "links": [],
- "modified": "2023-05-12 12:25:16.187471",
+ "modified": "2023-05-12 18:22:04.290619",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Gallery",
