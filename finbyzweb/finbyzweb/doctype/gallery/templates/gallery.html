@@ -6,11 +6,35 @@
 		<div class="col-md-12 text-center">
 			<h1>{{ gallery_title }}</h1>
 			{% if quote %}<div class="inline-block"><p class="sub-text back-quote pl-45">{{ quote }}</p></div>{% endif %}
+			{% if animated_image%}
 			<image src={{ animated_image }} title="{{ title }}" alt="{{ title}}" width="70%">
+			{% endif %}
+			{%if youtube_link %}
+			{% set list1 = youtube_link.split('/') %}
+			{% set src = "https://www.youtube.com/embed/" + list1[-1] %}
+			<iframe src="{{src}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+			{% endif %}
+			
+			
 			{% if description %}<p class="pl-45">{{ description }}</p>{% endif %}
 		</div>
 	</div>
 </div>
+<style>
+	iframe{
+		width: 70%;
+		height: auto;
+		aspect-ratio: 16/9;
+	}
+	@media screen and (max-width: 1000px){ 
+        iframe{ 
+      width: calc(100%);
+       height:auto;
+       aspect-ratio: 16 / 9;
+    } 
+   
+  }	
+</style>
 {% endblock %}
 
 <!-- this is a sample default web page template -->
