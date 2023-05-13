@@ -17,7 +17,8 @@
                            
                                 <br>
                                 <p class="link-underline">
-                                    {{ frappe.db.get_value('Gallery',gallery.gallery,'title') or  gallery.title }}
+                                    {{frappe.db.get_value('Gallery', gallery.gallery, 'gallery_title') or gallery.title}}
+                                    <!-- {{ frappe.db.get_value('Gallery',gallery.gallery,'title') or  gallery.title }} -->
                                 </p><br>
                            
                         </div>
