@@ -54,9 +54,18 @@ app_license = "GPL 3.0"
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+
+override_doctype_class = {
+	"Website Theme": "finbyzweb.website_theme_override.CustomWebsiteTheme"
+}
+
+
+
 doctype_js = {
 	"Web Page": "public/js/doctype_js/web_page.js"
 }
+
+
 # Home Pages
 # ----------
 
