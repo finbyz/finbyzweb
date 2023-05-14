@@ -26,17 +26,14 @@ class CustomWebsiteTheme(WebsiteTheme):
 		if self.custom:
 			self.delete_old_theme_files(folder_path)
 
-
-		#FinByz Changes to remove suffix
 		# add a random suffix
-		# suffix = frappe.generate_hash(length=8) if self.custom else "style"
-
-		file_name = frappe.scrub(self.name) + ".css"
+		suffix = "standard" if self.custom else "style"
+		file_name = frappe.scrub(self.name) + "_" + suffix + ".css"
 		output_path = join_path(folder_path, file_name)
 
 		self.theme_scss = content = get_scss(self)
 		content = content.replace("\n", "\\n")
-		command = ["/home/finbyz/.nvm/versions/node/v14.21.2/bin/node", "generate_bootstrap_theme.js", output_path, content]
+		command = ["node", "generate_bootstrap_theme.js", output_path, content]
 
 		process = Popen(command, cwd=frappe.get_app_path("frappe", ".."), stdout=PIPE, stderr=PIPE)
 
@@ -50,5 +47,4 @@ class CustomWebsiteTheme(WebsiteTheme):
 			self.theme_url = "/files/website_theme/" + file_name
 
 		frappe.msgprint(_("Compiled Successfully"), alert=True)
-
 
