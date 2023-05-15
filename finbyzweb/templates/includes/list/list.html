@@ -7,10 +7,34 @@
 	{{ no_result_message or _("Nothing to show") }}
 </div>
 {% else %}
-<!-- <div class="container"> -->
+<div class="container-fuild p-lr-50 mt-3">
+	
 	<div class="website-list test" data-doctype="{{ doctype }}" data-txt="{{ txt or '[notxt]' }}">
 		<!-- {% if not hide_filters -%} -->
-             <!-- {% include "templates/includes/list/filters.html" %} -->
+		<div class="website-list-filters">
+			<div class="row">
+				<div class="col-6  mx-5 mx-md-0">
+					<form class="form-inline form-search" action="/{{ pathname }}">
+						<div class="input-group" style="width:100%">
+							<input class="form-control" doctype="text" name="txt"
+								placeholder="Search..." value="{{ txt or '' }}" width="70%">
+							<span class="input-group-btn">
+								<button class="btn btn-light" type="submit">
+									<img class=" pl-2" src="/files/search-gery.svg" height="23"></button>
+							</span>
+							<!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+						</div>
+					</form>
+				</div>
+				{% if txt %}
+			<div class="col-6">
+				<div class="filter-message small text-muted">Results filtered by <b>{{ txt }}</b>.
+					<a href="/{{ pathname }}" class="text-muted">( <span class="close-inline">&times;</span> {{ _("clear") }} )</a></div>
+			</div>
+			{% endif %}
+			</div>
+			
+		</div>
         <!-- {%- endif %} -->
 		{% if result_heading_template %}{% include result_heading_template %}{% endif %}
 		<div class="row result test">
@@ -24,7 +48,7 @@
 			<button class="btn btn-default btn-more btn-sm">{{ _("More") }}</button>
 		</div>
 	</div>
-<!-- </div> -->
+</div>
 {%- endif %}
 
 <style>

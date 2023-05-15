@@ -26,7 +26,8 @@
   "svg_image",
   "inter_linking",
   "gallery_links",
-  "related_links"
+  "related_links",
+  "gallery_sidebar"
  ],
  "fields": [
   {
@@ -125,13 +126,19 @@
    "fieldtype": "Table",
    "label": "Related Links",
    "options": "Related Links"
+  },
+  {
+   "fieldname": "gallery_sidebar",
+   "fieldtype": "Table",
+   "label": "Gallery Sidebar",
+   "options": "Gallery Sidebar"
   }
  ],
  "has_web_view": 1,
  "image_field": "svg_image",
  "is_published_field": "published",
  "links": [],
- "modified": "2023-05-12 18:22:04.290619",
+ "modified": "2023-05-15 15:34:57.970460",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Gallery",

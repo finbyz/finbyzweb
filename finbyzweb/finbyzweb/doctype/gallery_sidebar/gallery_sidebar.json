@@ -1,0 +1,58 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-05-15 15:01:26.580815",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "gallery",
+  "title",
+  "route",
+  "svg_image"
+ ],
+ "fields": [
+  {
+   "fetch_from": "gallery.gallery_title",
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "gallery.route",
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Route",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gallery",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Gallery ",
+   "options": "Gallery"
+  },
+  {
+   "fetch_from": "gallery.svg_image",
+   "fieldname": "svg_image",
+   "fieldtype": "Attach Image",
+   "label": "Svg Image",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-05-15 17:33:52.272412",
+ "modified_by": "Administrator",
+ "module": "Finbyzweb",
+ "name": "Gallery Sidebar",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,6 +1,46 @@
 {% extends "templates/web.html" %}
 
 {% block page_content %}
+{% if gallery_sidebar %}
+<div class="container-fuild">
+	<div class="row p-lr-50">
+		<div class="pt-100 mt-50 col-sm-3 border-right sidebar-column d-none d-sm-block">
+				{% for item in gallery_sidebar -%}
+				<div class="row">
+				<div class="col-5 my-4">
+					<a href="/{{item.route}}" class='no-decoration'><img src="{{item.svg_image}}" alt="{{item.svg_image}}" height=auto width="100%"></a>
+				</div>
+				<div class="col-7 my-4">
+					<p class="m-0"><a href="/{{item.route}}" class='no-decoration'>{{ item.title}}</a></p>
+				</div>
+				</div>
+				{%- endfor %}
+			
+		</div>
+		<div class="col-sm-9 main-column">
+			<div class="container-fluid">
+				<div class="row mt-100 p-lr-50">
+					<div class="col-md-12 text-center">
+						<h1>{{ gallery_title }}</h1>
+						{% if quote %}<div class="inline-block"><p class="sub-text back-quote pl-45">{{ quote }}</p></div>{% endif %}
+						{% if animated_image%}
+						<image src={{ animated_image }} title="{{ title }}" alt="{{ title}}" width="70%">
+						{% endif %}
+						{%if youtube_link %}
+						{% set list1 = youtube_link.split('/') %}
+						{% set src = "https://www.youtube.com/embed/" + list1[-1] + "?rel=0&amp;autoplay=1&mute=0" %}
+						<iframe src="{{src}}" title="YouTube video player" frameborder="0" id="movie_player" allowfullscreen></iframe>
+						{% endif %}
+						
+						
+						{% if description %}<p class="pl-45">{{ description }}</p>{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% else %}
 <div class="container-fluid">
 	<div class="row mt-100 p-lr-50">
 		<div class="col-md-12 text-center">
@@ -20,6 +60,7 @@
 		</div>
 	</div>
 </div>
+{% endif %}
 <style>
 	iframe{
 		width: 70%;
