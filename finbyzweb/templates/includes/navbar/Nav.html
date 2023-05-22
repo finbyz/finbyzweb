@@ -268,64 +268,22 @@
                 <div class="dropdownContent">
                     <div class="linkGroup">
                         <ul class="industryGroup">
+                            {%- set industry = frappe.db.get_all('Web Page',filters={'page_type': "Industry"},fields=["title","navigation_description","navigation_logo","route"]) -%}
+                            {%- for d in industry -%}
+                            {% if d.title != "ERPNext Certified Partner" %}
                             <li>
-                                <a class="linkContainer item-chemical" href="/erp-for-chemical-industry">
-                                    <img src="/files/nav-chemical.svg" title="Chemical" alt="Chemical" class="nav-icon">
+                                <a class="linkContainer" href="{{d.route}}">
+                                    <img src="{{d.navigation_logo}}" title="{{d.navigation_logo}}" alt="{{d.navigation_logo}}" class="nav-icon">
                                     <div>
-                                        <h6 class="link-underline m-0 p-0">Chemical</h6>
-                                        <p class="nav-subtext m-0">Change the way you manage the samples, recipe, and inventory.
+                                        <h6 class="link-underline m-0 p-0">{{d.title}}</h6>
+                                        <p class="nav-subtext m-0">{{d.navigation_description or ''}}
                                         </p>
                                     </div>
                                 </a>
                             </li>
-                            <li>
-                                <a class="linkContainer item-manufacturing" href="/erp-for-manufacturing-industry">
-                                    <img src="/files/nav-manufacturing.svg" title="Manufacturing" alt="Manufacturing" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline  m-0 p-0">Manufacturing</h6>
-                                        <p class="nav-subtext m-0 ">Cut down costs, get a vast array of benefits.</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-engineering" href="/erp-for-engineering-industry">
-                                    <img src="/files/nav-engineering.svg" title="Engineering" alt="Engineering" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline m-0 p-0">Engineering</h6>
-                                        <p class="nav-subtext m-0">Systematic data storage to help you make the right decisions.
-                                        </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-logistics" href="/erp-for-logistics-industry">
-                                    <img src="/files/nav-logistics.svg" title="Logistics" alt="Logistics" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline m-0 p-0">Logistics</h6>
-                                        <p class="nav-subtext m-0">Manage all fleet-related activities with ease.</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-agro-commodity" href="/erp-for-agro-commodity">
-                                    <img src="/files/nav-agro.svg" title="Agro Commodity" alt="Agro Commodity" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline m-0 p-0">Agro Commodity</h6>
-                                        <p class="nav-subtext m-0">Innovative solution to simplify your agro-business.
-                                        </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-trading" href="/erp-for-trading-industry">
-                                    <img src="/files/nav-trading.svg" title="Trading" alt="Trading" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline m-0 p-0">Trading</h6>
-                                        <p class="nav-subtext m-0">Let go of traditional ways of managing sales and distribution.
-                                        </p>
-                                    </div>
-                                </a>
-                            </li>
+                            {% endif %}
+                            {% endfor %}
+                          
                         </ul>
                     </div>
                     <ul class="linkGroup linkList prodsubGroup">
@@ -479,21 +437,7 @@
                        
                             <div class="row" style="width:100%">
                                 <div class="col-12 col-sm-6 col-md-12 col-lg-6">
-                                    <!-- <ul class="p-3">
-                                        <li class="flex-inner-nav o_tip active" id="c1">
-                                            <h5>Team of qualified professionals</h5>
-                                            <p class="nav-subtext ">Our dedicated and skilled workforce is committed to providing services of the highest quality. </p>
-                                        </li>
-                                        <li class="flex-inner-nav o_tip" id="c2">
-                                            <h5>Powerful and agile</h5>
-                                            <p class="nav-subtext">We are well acquainted with the latest technologies and build fast and responsive solutions exactly according to your needs.</p>
-                                        </li>
-                                        <li class="flex-inner-nav o_tip" id="c3">
-                                            <h5>Assured satisfaction</h5>
-                                            <p class="nav-subtext">Age-long experience in the software industry has helped us deliver on-time results with utmost client satisfaction.
-                                            </p>
-                                        </li>
-                                    </ul> -->
+
                                     <ul class="erpnextGroup" >
                                         <li>
                                             <a class="linkContainer " href="/erpnext-certified-partner">
@@ -693,69 +637,6 @@
                     </ul>
                     </div>
                 </div>
-                <!-- <div class="dropdownContent">
-                    <div class="linkGroup">
-                        <ul class="Outsource">
-                            <li>
-                                <a class="linkContainer item-chemical" href="/erp-for-chemical-industry">
-                                    <img src="/files/nav-chemical.svg" title="Chemical" alt="Chemical" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline">Chemical</h6>
-                                        <p class="nav-subtext">Change the way you manage the samples, recipe, and inventory.
-                                        </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-manufacturing" href="/erp-for-manufacturing-industry">
-                                    <img src="/files/nav-manufacturing.svg" title="Manufacturing" alt="Manufacturing" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline">Manufacturing</h6>
-                                        <p class="nav-subtext">Cut down costs, get a vast array of benefits.</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-engineering" href="/erp-for-engineering-industry">
-                                    <img src="/files/nav-engineering.svg" title="Engineering" alt="Engineering" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline">Engineering</h6>
-                                        <p class="nav-subtext">Systematic data storage to help you make the right decisions.
-                                        </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-logistics" href="/erp-for-logistics-industry">
-                                    <img src="/files/nav-logistics.svg" title="Logistics" alt="Logistics" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline">Logistics</h6>
-                                        <p class="nav-subtext">Manage all fleet-related activities with ease.</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-agro-commodity" href="/erp-for-agro-commodity">
-                                    <img src="/files/nav-agro.svg" title="Agro Commodity" alt="Agro Commodity" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline">Agro Commodity</h6>
-                                        <p class="nav-subtext">Innovative solution to simplify your agro-business.
-                                        </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="linkContainer item-trading" href="/erp-for-trading-industry">
-                                    <img src="/files/nav-trading.svg" title="Trading" alt="Trading" class="nav-icon">
-                                    <div>
-                                        <h6 class="link-underline">Trading</h6>
-                                        <p class="nav-subtext">Let go of traditional ways of managing sales and distribution.
-                                        </p>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div> -->
             </div>
             <div class="dropdownSection right" data-dropdown="contact">
                 <div class="dropdownContent">
@@ -825,48 +706,3 @@
         </div>
     </div>
 </header>
-<style>
-    /* .finbyzNav .Outsource {
-	display: flex;
-	flex-wrap: wrap;
-	width: 600px;
-	margin: -5px -10px;
-}
-.Outsource li{
-    width:50%;
-    line-height:7em;
-}
-.nav-service-icon{
-    height:50px;
-}
-img{
-    vertical-align:middle;
-    border-style:none;
-}
-.nav-subtext{
-    font-size: 16px;
-}
-p{
-    margin:10px 0px;
-}
-.finbyzNav .Outsource .linkContainer .item{
-    paddind:18px,10px;
-    align-items: center;
-    flex:1;
-    
-} */
-.finbyzNav .Outsource {
-    display: flex;
-    flex-wrap: wrap;
-    width: 640px;
-    max-width: calc(100vw - 85px);
-    margin: -5px -10px;
-}
-.finbyzNav .Outsource .linkContainer, .finbyzNav .Outsource>li{
-    webkit-box-flex: 1;
-    display: flex;
-}
-.finbyzNav .Outsource>li {
-    flex: 1 0 50%;
-}
-</style>
