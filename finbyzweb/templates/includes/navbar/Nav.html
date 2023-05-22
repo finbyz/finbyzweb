@@ -268,9 +268,8 @@
                 <div class="dropdownContent">
                     <div class="linkGroup">
                         <ul class="industryGroup">
-                            {%- set industry = frappe.db.get_all('Web Page',filters={'page_type': "Industry"},fields=["title","navigation_description","navigation_logo","route"]) -%}
+                            {%- set industry = frappe.db.get_all('Web Page',filters={'page_type': "Industry",'hide_from_the_navigation':0},fields=["title","navigation_description","navigation_logo","route"]) -%}
                             {%- for d in industry -%}
-                            {% if d.title != "ERPNext Certified Partner" %}
                             <li>
                                 <a class="linkContainer" href="{{d.route}}">
                                     <img src="{{d.navigation_logo}}" title="{{d.navigation_logo}}" alt="{{d.navigation_logo}}" class="nav-icon">
@@ -281,7 +280,6 @@
                                     </div>
                                 </a>
                             </li>
-                            {% endif %}
                             {% endfor %}
                           
                         </ul>
