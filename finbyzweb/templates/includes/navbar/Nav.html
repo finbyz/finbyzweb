@@ -85,25 +85,14 @@
                                 <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="Industries">
                                 <img class="nav-service-icon " src="/files/nav-industry.svg" alt="Industries" title="Industries">Industries</a>
                             <img data-ls="industrysubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
+                            {%- set industry_list = frappe.db.get_all('Web Page',filters={'page_type': "Industry",'hide_from_the_navigation':0},fields=["title","navigation_logo","route"]) -%}
+                            
                             <ul class="collapse list-unstyled ml-5" id='industrysubmenu'>
+                                {%- for d in industry_list -%}
                                 <li>
-                                    <a href="/erp-for-chemical-industry"><img class="nav-service-icon" src="/files/nav-chemical.svg" alt="Chemical" title="Chemical">Chemical</a>
+                                    <a href="/{{d.route}}"><img class="nav-service-icon" src="{{d.navigation_logo}}" alt="Chemical" title="Chemical">{{d.title}}</a>
                                 </li>
-                                <li>
-                                    <a href="/erp-for-engineering-industry"><img class="nav-service-icon" src="/files/nav-engineering.svg" alt="Engineering" title="Engineering">Engineering</a>
-                                </li>
-                                <li>
-                                    <a href="/erp-for-logistics-industry"><img class="nav-service-icon" src="/files/nav-logistics.svg" alt="Logistics" title="Logistics">Logistics</a>
-                                </li>
-                                <li>
-                                    <a href="/erp-for-manufacturing-industry"><img class="nav-service-icon" src="/files/nav-manufacturing.svg" alt="Manufacturing" title="Manufacturing">Manufacturing</a>
-                                </li>
-                                <li>
-                                    <a href="/erp-for-agro-commodity"><img class="nav-service-icon" src="/files/nav-agro.svg" alt="Agro Commodity" title="Agro Commodity">Agro Commodity</a>
-                                </li>
-                                <li>
-                                    <a href="/erp-for-trading-industry"><img class="nav-service-icon" src="/files/nav-trading.svg" alt="Trading" title="Trading">Trading</a>
-                                </li>
+                                {% endfor %}
                                 <li>
                                     <a class="btn-next d-flex justify-content-end align-items-center ind-link" href="/erp-for-industry" target="_blank">
                                         <span class="pr-3 t-blue opac-1">View
