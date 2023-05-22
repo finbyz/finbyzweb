@@ -86,10 +86,15 @@
                                 <img class="nav-service-icon " src="/files/nav-industry.svg" alt="Industries" title="Industries">Industries</a>
                             <img data-ls="industrysubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
                             <ul class="collapse list-unstyled ml-5" id='industrysubmenu'>
+                                {%- set industry = frappe.get_list('Web Page',filters={'page_type': "Industry"},fields=["title","navigation_description","navigation_logo","route"]) -%}
+                                {%- for d in industry -%}
+                                {% if d.title != "ERPNext Certified Partner" %}
                                 <li>
-                                    <a href="/erp-for-chemical-industry"><img class="nav-service-icon" src="/files/nav-chemical.svg" alt="Chemical" title="Chemical">Chemical</a>
+                                    <a href="/{{d.route}}"><img class="nav-service-icon" src="{{d.navigation_logo}}" alt="{{d.title}}" title="{{d.title}}">{{d.title}}</a>
                                 </li>
-                                <li>
+                                {% endif %}
+                                {% endfor %}
+                                <!-- <li>
                                     <a href="/erp-for-engineering-industry"><img class="nav-service-icon" src="/files/nav-engineering.svg" alt="Engineering" title="Engineering">Engineering</a>
                                 </li>
                                 <li>
@@ -103,7 +108,7 @@
                                 </li>
                                 <li>
                                     <a href="/erp-for-trading-industry"><img class="nav-service-icon" src="/files/nav-trading.svg" alt="Trading" title="Trading">Trading</a>
-                                </li>
+                                </li> -->
                                 <li>
                                     <a class="btn-next d-flex justify-content-end align-items-center ind-link" href="/erp-for-industry" target="_blank">
                                         <span class="pr-3 t-blue opac-1">View
@@ -191,10 +196,13 @@
                                 <img class="nav-service-icon" src="/files/outsource.svg" alt="Out Source" title="Out Source">Outsourcing</a>
                             <img data-ls="outsource" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
                             <ul class="collapse list-unstyled ml-5" id='outsource'>
+                                {%- set outsource = frappe.get_list('Web Page',filters={'page_type': "Outsourcing"},fields=["title","navigation_description","outsource_logo","route"]) -%}
+                                {%- for d in outsource -%}
                                 <li>
-                                    <a href="/hire-python-developer"><img class="nav-service-icon" src="/files/pythondevloper.svg" alt="About FinByz" title="About FinByz">Hire Python Developer</a>
+                                    <a href="/{{d.route}}"><img class="nav-service-icon" src="{{d.outsource_logo}}" alt="{{d.title}}" title="{{d.title}}">{{d.title}}</a>
                                 </li>
-                                <li>
+                                {% endfor %}
+                                <!-- <li>
                                     <a href="/hire-django-developer"><img class="nav-service-icon" src="/files/django devloper.svg" alt="Customers" title="Customers">Hire Djnago Devloper</a>
                                 </li>
                                 <li>
@@ -202,7 +210,7 @@
                                 </li>
                                 <li>
                                     <a href="/hire-web-application-developers"><img class="nav-service-icon" src="/files/webapplicationdevloper.svg" alt="About FinByz" title="About FinByz">Hire Web Application Devloper</a>
-                                </li>
+                                </li> -->
                             </ul>
                         </li>
                         <li>
@@ -268,17 +276,22 @@
                 <div class="dropdownContent">
                     <div class="linkGroup">
                         <ul class="industryGroup">
+                            {%- set industry = frappe.get_list('Web Page',filters={'page_type': "Industry"},fields=["title","navigation_description","navigation_logo","route"]) -%}
+                            {%- for d in industry -%}
+                            {% if d.title != "ERPNext Certified Partner" %}
                             <li>
-                                <a class="linkContainer item-chemical" href="/erp-for-chemical-industry">
-                                    <img src="/files/nav-chemical.svg" title="Chemical" alt="Chemical" class="nav-icon">
+                                <a class="linkContainer" href="{{d.route}}">
+                                    <img src="{{d.navigation_logo}}" title="{{d.navigation_logo}}" alt="{{d.navigation_logo}}" class="nav-icon">
                                     <div>
-                                        <h6 class="link-underline m-0 p-0">Chemical</h6>
-                                        <p class="nav-subtext m-0">Change the way you manage the samples, recipe, and inventory.
+                                        <h6 class="link-underline m-0 p-0">{{d.title}}</h6>
+                                        <p class="nav-subtext m-0">{{d.navigation_description or ''}}
                                         </p>
                                     </div>
                                 </a>
                             </li>
-                            <li>
+                            {% endif %}
+                            {% endfor %}
+                            <!-- <li>
                                 <a class="linkContainer item-manufacturing" href="/erp-for-manufacturing-industry">
                                     <img src="/files/nav-manufacturing.svg" title="Manufacturing" alt="Manufacturing" class="nav-icon">
                                     <div>
@@ -325,7 +338,7 @@
                                         </p>
                                     </div>
                                 </a>
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                     <ul class="linkGroup linkList prodsubGroup">
@@ -646,18 +659,21 @@
                 <div class="dropdownContent">
                 <div class="linkGroup">
                     <ul class="industryGroup">
+                        {%- set outsource = frappe.get_list('Web Page',filters={'page_type': "Outsourcing"},fields=["title","navigation_description","navigation_logo","route"]) -%}
+                        {%- for d in outsource -%}
                         <li>
-                            <a class="linkContainer item-about" href="/hire-python-developer">
-                                <img class="nav-service-icon" src="/files/pythondevloper.svg" alt="pythondevloper" title="pythondevloper" style="height:50px">
+                            <a class="linkContainer item-about" href="/{{d.route}}">
+                                <img class="nav-service-icon" src="{{d.navigation_logo}}" alt="{{d.title}}" title="{{d.title}}" style="height:50px">
                                 <div>
-                                <h6 class="link-underline m-0 p-0">Hire Python Developer
+                                <h6 class="link-underline m-0 p-0">{{d.title}}
                                 </h6>
-                                <p class="nav-subtext m-0"> Our team of expert Python developers is dedicated to delivering high-quality.
+                                <p class="nav-subtext m-0"> {{d.navigation_description or ''}}
                                 </p>
                                 </div>
                             </a>
                         </li>
-                        <li>
+                        {%- endfor -%}
+                        <!-- <li>
                             <a class="linkContainer item-customers" href="/hire-django-developer">
                                 <img class="nav-service-icon" src="/files/django devloper.svg" alt="django devloper" title="django devloper" style="height:50px">
                                 <div>
@@ -689,7 +705,7 @@
                                 </p>
                                 </div>
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
                     </div>
                 </div>
@@ -780,7 +796,7 @@
                             <h5 class="link-underline mt-1">Job Opening</h5>
                         </a>
 
-                        {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='modified desc',limit=3) -%}
+                        {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route","valid_till"],order_by='valid_till desc',limit=3) -%}
                         <ul class="blogPosts">
                             {%- for d in jobopen -%}
                             <li>
@@ -825,48 +841,3 @@
         </div>
     </div>
 </header>
-<style>
-    /* .finbyzNav .Outsource {
-	display: flex;
-	flex-wrap: wrap;
-	width: 600px;
-	margin: -5px -10px;
-}
-.Outsource li{
-    width:50%;
-    line-height:7em;
-}
-.nav-service-icon{
-    height:50px;
-}
-img{
-    vertical-align:middle;
-    border-style:none;
-}
-.nav-subtext{
-    font-size: 16px;
-}
-p{
-    margin:10px 0px;
-}
-.finbyzNav .Outsource .linkContainer .item{
-    paddind:18px,10px;
-    align-items: center;
-    flex:1;
-    
-} */
-.finbyzNav .Outsource {
-    display: flex;
-    flex-wrap: wrap;
-    width: 640px;
-    max-width: calc(100vw - 85px);
-    margin: -5px -10px;
-}
-.finbyzNav .Outsource .linkContainer, .finbyzNav .Outsource>li{
-    webkit-box-flex: 1;
-    display: flex;
-}
-.finbyzNav .Outsource>li {
-    flex: 1 0 50%;
-}
-</style>
