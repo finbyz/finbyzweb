@@ -190,19 +190,14 @@
                                 <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="Out Source">
                                 <img class="nav-service-icon" src="/files/outsource.svg" alt="Out Source" title="Out Source">Outsourcing</a>
                             <img data-ls="outsource" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
+                            {%- set outsource_list = frappe.db.get_all('Web Page',filters={'page_type': "Outsourcing",'hide_from_the_navigation':0},fields=["title","navigation_logo","route"]) -%}
                             <ul class="collapse list-unstyled ml-5" id='outsource'>
+                                {%- for d in outsource_list -%}
                                 <li>
-                                    <a href="/hire-python-developer"><img class="nav-service-icon" src="/files/pythondevloper.svg" alt="About FinByz" title="About FinByz">Hire Python Developer</a>
+                                    <a href="/{{d.route}}"><img class="nav-service-icon" src="{{d.navigation_logo}}">{{d.title}}</a>
                                 </li>
-                                <li>
-                                    <a href="/hire-django-developer"><img class="nav-service-icon" src="/files/django devloper.svg" alt="Customers" title="Customers">Hire Djnago Devloper</a>
-                                </li>
-                                <li>
-                                    <a href="/hire-javascript-developer"><img class="nav-service-icon" src="/files/content.svg" alt="Steer Your Vision" title="Steer Your Vision">Hire JS Devloper</a>
-                                </li>
-                                <li>
-                                    <a href="/hire-web-application-developers"><img class="nav-service-icon" src="/files/webapplicationdevloper.svg" alt="About FinByz" title="About FinByz">Hire Web Application Devloper</a>
-                                </li>
+                                {% endfor %}
+                                
                             </ul>
                         </li>
                         <li>
