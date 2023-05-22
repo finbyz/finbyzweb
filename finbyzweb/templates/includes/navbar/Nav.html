@@ -587,51 +587,23 @@
             <div class="dropdownSection right" data-dropdown="outsource">
                 <div class="dropdownContent">
                 <div class="linkGroup">
+                    {%- set outsource = frappe.db.get_all('Web Page',filters={'page_type': "Outsourcing",'hide_from_the_navigation':0},fields=["title","navigation_description","navigation_logo","route"]) -%}
                     <ul class="industryGroup">
+                        
+                        {%- for d in outsource -%}
                         <li>
-                            <a class="linkContainer item-about" href="/hire-python-developer">
-                                <img class="nav-service-icon" src="/files/pythondevloper.svg" alt="pythondevloper" title="pythondevloper" style="height:50px">
+                            <a class="linkContainer item-about" href="/{{d.route}}">
+                                <img class="nav-service-icon" src="{{d.navigation_logo}}" alt="{{d.title}}" title="{{d.title}}" style="height:50px">
                                 <div>
-                                <h6 class="link-underline m-0 p-0">Hire Python Developer
+                                <h6 class="link-underline m-0 p-0">{{d.title}}
                                 </h6>
-                                <p class="nav-subtext m-0"> Our team of expert Python developers is dedicated to delivering high-quality.
+                                <p class="nav-subtext m-0"> {{d.navigation_description or ''}}
                                 </p>
                                 </div>
                             </a>
                         </li>
-                        <li>
-                            <a class="linkContainer item-customers" href="/hire-django-developer">
-                                <img class="nav-service-icon" src="/files/django devloper.svg" alt="django devloper" title="django devloper" style="height:50px">
-                                <div>
-                                <h6 class="link-underline m-0 p-0">Hire Djnago Devloper</h6>
-                           
-                             <p class="nav-subtext m-0">Our cutting-edge Django development services are designed to cater with ease.
-                                </p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="linkContainer item-customers" href="/hire-javascript-developer">
-                                <img class="nav-service-icon" src="/files/content.svg" alt="Hire JS Devloper" title="Hire JS Devloper" style="height:50px">
-                                <div>
-                                <h6 class="link-underline m-0 p-0">Hire JS Devloper</h6>
-                           
-                             <p class="nav-subtext m-0">We are a team of highly skilled and experienced full-stack Java Script developers.
-                                </p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="linkContainer item-customers" href="/hire-web-application-developers">
-                                <img class="nav-service-icon" src="/files/webapplicationdevloper.svg" alt="webapplicationdevloper" title="webapplicationdevloper" style="height:50px">
-                                <div>
-                                <h6 class="link-underline m-0 p-0">Hire Web Application Devloper</h6>
-                          
-                             <p class="nav-subtext m-0">Our mission is to unlock the full potential of the digital landscape for our clients.
-                                </p>
-                                </div>
-                            </a>
-                        </li>
+                        {%- endfor -%}
+                      
                     </ul>
                     </div>
                 </div>
