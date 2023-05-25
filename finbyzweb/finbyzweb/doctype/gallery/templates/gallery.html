@@ -6,7 +6,7 @@
 	<div class="row p-lr-50">
 		<div class="pt-100 mt-50 col-sm-3 border-right sidebar-column d-none d-sm-block">
 				{% for item in gallery_sidebar -%}
-				<div class="row">
+				<div class="row {% if item.title == gallery_title%}active-bg{% endif %}">
 				<div class="col-5 my-4">
 					<a href="/{{item.route}}" class='no-decoration'><img src="{{item.svg_image}}" alt="{{item.svg_image}}" height=auto width="100%"></a>
 				</div>
@@ -75,6 +75,10 @@
     } 
    
   }	
+  .active-bg{
+	/* rgb(228,239,255) */
+	background-color:rgb(228,239,255);
+  }
 </style>
 {% endblock %}
 
