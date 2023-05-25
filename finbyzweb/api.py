@@ -73,3 +73,18 @@ def related_link_query(doctype, txt, searchfield, start, page_len, filters):
 	
 def add_preload_headers(response):
 	pass
+
+@frappe.whitelist(allow_guest=True)
+def select_category(gallery_category=None,gallery_sub_category=None):
+	condition = ""
+	if str(gallery_category) != "All":
+		condition += f"where gallery_category ='{gallery_category}'"
+	if gallery_sub_category:
+		condition += f"and gallery_sub_category ='{gallery_sub_category}'"
+	result = frappe.db.sql(f"""select * from `tabGallery` {condition}""", as_dict = 1)
+
+	output = ""
+	for row in result:
+		doc_dict = {'doc' :row}
+		output += frappe.render_template("finbyzweb/doctype/gallery/templates/gallery_row.html", doc_dict)
+	return output

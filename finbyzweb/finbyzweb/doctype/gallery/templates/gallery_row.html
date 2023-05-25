@@ -1,11 +1,19 @@
 <!-- this is a sample default list template -->
 {%- if doc.svg_image -%}
-<div class="col-lg-3 col-sm-6 col-xs-12 gallery-filter all {{doc.gallery_category}} {{doc.sub_category_name or ''}}">
+<div class=" col-lg-3 col-md-6 col-sm-6 col-xs-12 image-row gallery-filter all {{doc.gallery_category}} {{doc.sub_category_name or ''}}">
 	<div class="gallery-list-main">
 	     	<a class='normal' href="{{ route }}">
-				<div class="text-center bold"><p class="link-underline mb-0 mt-30">{{ gallery_title }}</p></div>
-	       		<img class="center" src="{{ svg_image or animated_image }}"  height="200" width="350" alt="{{ gallery_title }}" title="{{ gallery_title }}">
+				<div class="text-center bold"><p class=" display-flex link-underline mb-0 mt-30">{{ doc.gallery_title }}</p></div>
+	       		<img class="img-fluid center" src="{{ doc.svg_image or doc.animated_image }}"  height="200" width="350" alt="{{ doc.gallery_title }}" title="{{ gallery_title }}">
 	      	</a> 
 	</div>
 </div>
-{%- endif -%}
+
+{%- endif -%} 
+<script>
+.image-row {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+    }
+</script>
