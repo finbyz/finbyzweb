@@ -88,3 +88,8 @@ def select_category(gallery_category=None,gallery_sub_category=None):
 		doc_dict = {'doc' :row}
 		output += frappe.render_template("finbyzweb/doctype/gallery/templates/gallery_row.html", doc_dict)
 	return output
+
+@frappe.whitelist(allow_guest=True)
+def get_sub_category(category=None):
+	output = frappe.db.get_all('Gallery Sub Category',filters={'category':category},fields=['name','category'])
+	return output
