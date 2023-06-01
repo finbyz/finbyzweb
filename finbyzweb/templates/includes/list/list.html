@@ -10,113 +10,32 @@
 
 <div class="container-fuild p-lr-50 mt-3">
 	{% if doctype == "Gallery"%}
-	<div class="website-list test" data-doctype="{{ doctype }}" data-txt="{{ txt or '[notxt]' }}">
-	<!-- {% if not hide_filters -%} -->
-		<!-- <div class="website-list-filters">
-			<div class="row">
-				<div class="col-6  mx-5 mx-md-0">
-					<form class="form-inline form-search" action="/{{ pathname }}">
-						<div class="input-group" style="width:100%">
-							<input class="form-control" doctype="text" name="txt" placeholder="Search..."
-								value="{{ txt or '' }}" width="70%">
-							<span class="input-group-btn">
-								<button class="btn btn-light" type="submit">
-									<img class=" pl-2" src="/files/search-gery.svg" height="23"></button>
-							</span> -->
-							<!-- <i class="fa-solid fa-magnifying-glass"></i> -->
-						<!-- </div>
-					</form>
-				</div>
-				{% if txt %}
-				<div class="col-6">
-					<div class="filter-message small text-muted">Results filtered by <b>{{ txt }}</b>.
-						<a href="/{{ pathname }}" class="text-muted">( <span class="close-inline">&times;</span> {{
-							_("clear") }} )</a>
-					</div>
-				</div>
-				{% endif %}
-			</div>
-		</div> -->
+	<div class="test" data-doctype="{{ doctype }}" data-txt="{{ txt or '[notxt]' }}">
+	
 		<div class="row mt-2">
-			<!-- <div class="col-3  mx-5 mx-md-0">
-				<form class="form-inline">
-					<div class="input-group" style="width:100%">
-						<label for="category" class="mx-3">Choose a category:</label>
-						<select name="category" id="category" class="field">
-							<option value="all" id="blank">
-								All
-							</option>
-							{% for i in frappe.db.get_all('Gallery Category') %}
-							<option value="{{i.name}}" id="value">
-								{{i.name}}
-							</option>
-							{% endfor %}
-						</select>
-					</div>
-				</form>
-			</div> -->
-			<!-- <div class="col-3  mx-5 mx-md-0">
-				<form class="form-inline">
-					<div class="input-group" style="width:100%">
-						<label for="category" class="mx-3">Sub-Category:</label>
-						<select name="category" id="category" class="field">
-							<option value="all" id="blank">
-								All
-							</option>
-							{% for i in frappe.db.get_all('Gallery Sub Category') %}
-							<option value="{{i.name}}" id="value">
-								{{i.name}}
-							</option>
-							{% endfor %}
-						</select>
-
-					</div>
-				</form>
-			</div> -->
+		
 		</div>
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-12">
-		<ul id="nav">
-			<li id="li_value"><a href="#" class="text-center active">All</a></li>
-			{% for i in frappe.db.get_all('Gallery Category') %}
-			<li ><a href="#" class="text-center" id ="li_value">{{i.name}}</a>
-				{% set sc_list = frappe.db.get_all('Gallery Sub Category',filters={'category': i.name},fields=['name','category']) %}
-					{% if sc_list|length >0%}
-			  <ul>
-				{% for j in sc_list%}
-				<li><a rel="{{j.category}}" class="text-center" id="li_sub_value">{{j.name}}</a></li>
-				{% endfor %}
-				
-			  </ul>
-			  {% endif %}
-			  </li>
-			  {% endfor %}
-			 
-		  </ul>
-		  </div>
-		  </div>
-		  </div>
-		<!-- <div class="row">
-			<div class="col-12">
-				<ul class="d-flex m-0 field" style="list-style: None; width:100%" id="ul_category">
-				<li id="li_value" class="active mx-1"><p class="px-4 py-2" id="value">All</p></li>
-				{% for i in frappe.db.get_all('Gallery Category') %}
-				<li id="li_value" class="mx-1" > <p class="px-4 py-2" id="value">{{i.name}} </p>
-					{% set sc_list = frappe.db.get_all('Gallery Sub Category',{'category': i.name}) %}
-					{% if sc_list|length >0%}
-					<ul style="list-style: None;" id="ul_sub_category" class="d-flex p-0 m-0">
-						{% for j in sc_list%}
-						<li id="li_sub_value" class="mx-1 sub_cat"><p class="px-4 py-2">{{j.name}}</p></li>
+					<ul id="nav" class="d-flex flex-wrap justify-content-center">
+						<li id="li_value"><a href="#" class="text-center active">All</a></li>
+						{% for i in frappe.db.get_all('Gallery Category') %}
+						<li ><a href="#" class="text-center" id ="li_value">{{i.name}}</a>
+							
+						</li>
 						{% endfor %}
+						
 					</ul>
-					{% endif %}
-				</li>
-				{% endfor %}
-				</ul>
-			</div>
-		</div> -->
-		<!-- {%- endif %} -->
+				</div>
+				<div class="col-12" id ="sub_cat_div">
+				
+					
+						
+				</div>
+		  	</div>
+		</div>
+		
 	</div>
 	{% endif %}
 
@@ -137,37 +56,6 @@
 {%- endif %}
 
 <style>
-	/* .website-list p {
-		margin-left: auto;
-	}
-	.web-list-item {
-		border-bottom: none;
-	}
-	.web-list-item .right-line {
-		display: inline-block;
-	}
-	#ul_category .active p{
-		background: #1aa8e2;
-    	color: #fff;
-	}
-	#ul_category #li_value p{ 
-		box-shadow: 5px 8px 1px #0c4d66;
-	}
-	/* #li_value :hover{
-		background: #1aa8e2;
-		color: #fff;
-	} */
-	/* #ul_category li> ul li :hover{
-		background: #1aa8e2;
-		color: #fff;
-	}
-
-	#ul_category li ul{ 
-		display: none;
-	}
-	#ul_category #li_value:hover ul{
-		display: block;
-	} */ 
 	#nav {
   list-style: none inside;
   margin: 0;
@@ -179,7 +67,8 @@
   display: block;
   position: relative;
   float: left;
-  background: #1aa8e2;
+  margin : 10px 5px;
+  /* background: #1aa8e2; */
   /* menu background color */
 }
 
@@ -190,17 +79,26 @@
   width: 200px;
   /* this is the width of the menu items */
   line-height: 35px;
+  box-shadow:0 2px 10px rgba(0,0,0,.16), 0 3px 6px rgba(0,0,0,.1)
   /* this is the hieght of the menu items */
-  color: white;
+  /* color: white; */
   /* list item font color */
 }
 #nav .active{
   
-  background: #051a22;
+  background: #1aa8e2;
   /* this is the hieght of the menu items */
   color: white;
   /* list item font color */
 }
+.sub_ul .active{
+  
+  background: #1aa8e2;
+  /* this is the hieght of the menu items */
+  color: white;
+  /* list item font color */
+}
+
 
 #nav li li a {
   font-size: 80%;
@@ -209,8 +107,12 @@
 
 /* smaller font size for sub menu items */
 
-#nav li:hover {
-  background: #051a22;
+#nav li a:hover {
+  background: #1aa8e2;
+  /* background: #051a22; */
+  /* color: white; */
+  color: white;
+
 }
 
 
@@ -224,86 +126,89 @@
   /* hides sublists */
 }
 
-#nav li:hover ul ul {
-  display: none;
-}
 
-
-/* hides sub-sublists */
-
-#nav li:hover ul {
-  display: block;
-}
-
-
-/* shows sublist on hover */
-
-#nav li li:hover ul {
-  display: block;
-  /* shows sub-sublist on hover */
-  margin-left: 200px;
-  /* this should be the same width as the parent list item */
-  margin-top: -35px;
-  /* aligns top of sub menu with top of list item */
-}
 </style>
 <script>
-
+	
 	$("#nav li a").click(function(){	
 		$('#nav li a').removeClass('active')
-			$(this).addClass('active');
+		$(this).addClass('active');
+			let test = $(this).text();
+			let a = [];
+
+			frappe.call({
+			method: 'finbyzweb.api.get_sub_category',
+			args: {
+				'category': test
+
+			},
+			callback: function(res) {
+				
+				for (i=0; i<res.message.length;i++){
+					
+					a.push(res.message[i]);
+					
+				}
+				
+				let sub_ul_html=myfunction(a)
+				
+				document.getElementById("sub_cat_div").innerHTML = sub_ul_html;
+				
+			}
+			})
+	});
+	
+	
+	
+	
+	function myfunction(ctrl) {
+		let sub_ul='';
+		sub_ul += "<ul id='nav' class='sub_ul d-flex flex-wrap justify-content-center'>";
+		if(ctrl.length>0){
+		for (i in ctrl){
+			sub_ul+=`<li id='sub_li'><a rel='${ctrl[i].category}' class='text-center' id='li_sub_value'>${ctrl[i].name}</a></li>`;
+		}
+		}
+		sub_ul+="</ul>"
+	
+		return sub_ul
+	}
+
+
+
+
+
+
+	$(document).on("click", "a", function(){
+    	$('#nav #sub_li a').removeClass('active')
+		$(this).addClass('active');
+		
+		let value =$(this).text();
+		let value1 =$(this).attr('rel');
+		if(value1 && value){
+			console.log("fdsff")
+			frappe.call({
+				method: 'finbyzweb.api.select_category',
+				args: {
+					'gallery_category': value1,
+					'gallery_sub_category': value
+
+				},
+				callback: function(res) {
+					document.getElementById("show").innerHTML = res.message;
+				}
+			});
+		}
+    
 	});
 
 	
-	// $(window).on('load', function() {
-
-	// setTimeout(function() {
-	// 	if ($(".web-form-actions button").hasClass('btn btn-primary btn-sm')) {
-	// 		$(".web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
-	// 	}
-	// 	if ($(".website-list .result a").hasClass('btn btn-primary btn-sm')) {
-	// 		$(".website-list .result a").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
-	// 	}
-	// }, 100);
-	// })
-	function myfunction(ctrl) {
-		var a = document.getElementsByTagName("a").value
-
-		// var TextInsideLi = ctrl.getElementsByTagName('p')[0].innerHTML;
-		return a
-	}
-	// function val() {
-	// 	myfunction(this)
-	// 	// var e = document.getElementById("category");
-	// 	let e =myfunction(this);
-	// 	console.log(e)
-	// 	// let e = $('#value').text();
-		
-	// 	var value = e.options[e.selectedIndex].value;
-	// 	let args = {
-	// 		method: 'finbyzweb.api.select_category',
-	// 		args: {
-	// 			'gallery_category': value
-
-	// 		},
-	// 	};
-	// 	return frappe.call(args)
-	// }
-
 	$(document).ready(function () {
-		$("#nav #li_value ").click(function (e) {		
-				// val().then((res) => {
-
-		// 	document.getElementById("show").innerHTML = res.message;
-		// });
-		// var e = document.getElementById("category");
-		console.log("dfd");
-		// e.preventDefault();
-                console.log($(this).text());
-		// let value =myfunction(this);
+		$("#nav #li_value").click(function (e) {		
+				
 		let value =$(this).text();
 		
-		// console.log(value);
+		
 
 		frappe.call({
 		method: 'finbyzweb.api.select_category',
@@ -316,30 +221,7 @@
 		}
 		});
 		});
-		$("#nav #li_sub_value ").click(function () {
-			// val().then((res) => {
-
-			// 	document.getElementById("show").innerHTML = res.message;
-			// });
-		// var e = document.getElementById("category");
-		// let value =myfunction(this);
-		// console.log(value);
-		console.log("dfCDDd");
-		let value =$(this).text();
-		let value1 =$(this).attr('rel');
-		console.log(value1);
-		frappe.call({
-            method: 'finbyzweb.api.select_category',
-			args: {
-				'gallery_category': value1,
-				'gallery_sub_category': value
-
-			},
-            callback: function(res) {
-				document.getElementById("show").innerHTML = res.message;
-            }
-        });
-        });
+		
 
 	});
 
