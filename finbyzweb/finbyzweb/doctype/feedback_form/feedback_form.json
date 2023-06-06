@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "autoname": "Feedback-.####",
  "creation": "2023-05-23 12:37:54.661450",
  "default_view": "List",
  "doctype": "DocType",
@@ -17,12 +18,15 @@
   {
    "fieldname": "document",
    "fieldtype": "Data",
-   "label": "Document"
+   "label": "Document",
+   "read_only": 1
   },
   {
    "fieldname": "document_name",
-   "fieldtype": "Data",
-   "label": "Document Name"
+   "fieldtype": "Link",
+   "label": "Document Name",
+   "options": "Issue",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_3",
@@ -43,16 +47,16 @@
   {
    "fieldname": "feedback",
    "fieldtype": "Small Text",
-   "label": "Feedback",
-   "reqd": 1
+   "label": "Feedback"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-05 09:37:06.530915",
+ "modified": "2023-06-06 11:24:25.018803",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Feedback Form",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

@@ -160,3 +160,7 @@ doc_events = {
 		"before_save": "finbyzweb.api.customer_before_save"
 	}
 }
+
+override_doctype_dashboards = {
+	"Issue":"finbyzweb.finbyzweb.dashboard.issue.get_data",
+}
