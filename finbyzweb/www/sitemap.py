@@ -6,9 +6,10 @@ from __future__ import unicode_literals
 import urllib
 import frappe
 from frappe.utils import get_request_site_address, get_datetime, nowdate
-from frappe.website.router import get_pages, get_all_page_context_from_doctypes
+from frappe.website.router import get_pages,get_doctypes_with_web_view
 from six import iteritems
 from six.moves.urllib.parse import quote, urljoin
+from frappe.model.document import get_controller
 
 no_cache = 1
 no_sitemap = 1
@@ -21,7 +22,6 @@ def get_context(context):
 	robots = frappe.db.get_single_value("Website Settings", 'robots_txt').replace('Disallow: /', '').replace('\r','').split('\n')
 
 	for route, page in iteritems(get_pages()):
-		print(route)
 		flag = route not in robots
 
 		if '/' in route:
@@ -76,3 +76,55 @@ def get_context(context):
 			})
 
 	return {"links":links}
+
+
+def get_all_page_context_from_doctypes():
+	"""
+	Get all doctype generated routes (for sitemap.xml)
+	"""
+	routes = frappe.cache().get_value("website_generator_routes")
+	if not routes:
+		routes = get_page_info_from_doctypes()
+		frappe.cache().set_value("website_generator_routes", routes)
+
+	return routes
+
+
+def get_page_info_from_doctypes(path=None):
+	"""
+	Find a document with matching `route` from all doctypes with `has_web_view`=1
+	"""
+	routes = {}
+	for doctype in get_doctypes_with_web_view():
+		filters = {}
+		controller = get_controller(doctype)
+		meta = frappe.get_meta(doctype)
+
+		condition_field = (
+			meta.is_published_field
+			or
+			# custom doctypes dont have controllers and no website attribute
+			(controller.website.condition_field if not meta.custom else None)
+		)
+
+		if condition_field:
+			filters[condition_field] = 1
+
+		if path:
+			filters["route"] = path
+
+		try:
+			for r in frappe.get_all(
+				doctype, fields=["name", "route", "modified"], filters=filters, limit=1
+			):
+
+				routes[r.route] = {"doctype": doctype, "name": r.name, "modified": r.modified}
+
+				# just want one path, return it!
+				if path:
+					return routes[r.route]
+		except Exception as e:
+			if not frappe.db.is_missing_column(e):
+				raise e
+
+	return routes
