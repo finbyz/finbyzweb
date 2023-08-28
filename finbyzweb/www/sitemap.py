@@ -13,14 +13,14 @@ from frappe.model.document import get_controller
 
 no_cache = 1
 no_sitemap = 1
-base_template_path = "templates/www/sitemap.xml"
+base_template_path = "www/sitemap.xml"
 
-def get_context(context):
+def get_context(context=None):
 	"""generate the sitemap XML"""
 	host = frappe.utils.get_host_name_from_request()
 	links = []
 	robots = frappe.db.get_single_value("Website Settings", 'robots_txt').replace('Disallow: /', '').replace('\r','').split('\n')
-
+	
 	for route, page in iteritems(get_pages()):
 		flag = route not in robots
 
@@ -30,7 +30,6 @@ def get_context(context):
 
 			flag = route_1 not in rb
 		
-		print(flag)
 
 		if flag:
 			priority = 0.4
@@ -47,7 +46,7 @@ def get_context(context):
 				"priority": priority
 			})
 
-	for route, data in iteritems(get_all_page_context_from_doctypes()):
+	for route, data in get_public_pages_from_doctypes().items():
 		flag = route not in robots
 
 		if '/' in route:
@@ -74,7 +73,6 @@ def get_context(context):
 				"lastmod": get_datetime(data.get("modified")).strftime("%Y-%m-%d"),
 				"priority": priority
 			})
-
 	return {"links":links}
 
 
@@ -128,3 +126,43 @@ def get_page_info_from_doctypes(path=None):
 				raise e
 
 	return routes
+
+
+def get_public_pages_from_doctypes():
+	
+	"""Returns pages from doctypes that are publicly accessible"""
+
+	def get_sitemap_routes():
+		routes = {}
+		doctypes_with_web_view = frappe.get_all(
+			"DocType",
+			filters={"has_web_view": True, "allow_guest_to_view": True},
+			pluck="name",
+		)
+
+		for doctype in doctypes_with_web_view:
+			controller = get_controller(doctype)
+			meta = frappe.get_meta(doctype)
+			condition_field = meta.is_published_field or controller.website.condition_field
+
+			if not condition_field:
+				continue
+
+			try:
+				res = frappe.get_all(
+					doctype,
+					fields=["route", "name", "modified"],
+					filters={condition_field: True},
+				)
+			except Exception as e:
+				if not frappe.db.is_missing_column(e):
+					raise e
+			for r in res:
+				routes[r.route] = {
+					"doctype": doctype,
+					"name": r.name,
+					"modified": r.modified,
+				}
+		return routes
+
+	return frappe.cache().get_value("sitemap_routes", get_sitemap_routes)
