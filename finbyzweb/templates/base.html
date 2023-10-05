@@ -107,15 +107,15 @@
       window.dev_server = {{ dev_server }};
       window.socketio_port = {{ frappe.socketio_port }};
    </script>
-   {%- if frappe.db.get_single_value('Website Settings', 'google_analytics_id') -%}
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-W37WLG9D8M"></script>
+      <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-   <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/ga-lite/latest/ga-lite.min.js" async></script>
-   <script>
-      var galite = galite || {};
-      galite.UA = 'UA-70704275-2';
-
-   </script>
-   {% endif %}
+      gtag('config', 'G-W37WLG9D8M');
+      </script>
    <script type="text/javascript" src="https://cdn.jsdelivr.net/combine/npm/jquery@3.4.1/dist/jquery.min.js"></script>
 </head>
 
