@@ -11,10 +11,12 @@
   "naming_series",
   "live_backlinks",
   "domiain_authority",
-  "submitted_url",
+  "for_page_type",
+  "for_page",
   "column_break_7rhxf",
   "date",
   "type",
+  "submitted_url",
   "remarks"
  ],
  "fields": [
@@ -78,11 +80,25 @@
   {
    "fieldname": "column_break_7rhxf",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "for_page_type",
+   "fieldtype": "Select",
+   "label": "For Page Type",
+   "options": "Web Page\nBlog Post",
+   "reqd": 1
+  },
+  {
+   "fieldname": "for_page",
+   "fieldtype": "Dynamic Link",
+   "label": "For Page",
+   "options": "for_page_type",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-06 09:47:03.024170",
+ "modified": "2023-10-06 10:15:15.415246",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Backlink Register",
