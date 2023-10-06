@@ -41,6 +41,7 @@
    "fieldname": "submitted_url",
    "fieldtype": "Data",
    "in_filter": 1,
+   "in_standard_filter": 1,
    "label": "Submitted URL"
   },
   {
@@ -81,7 +82,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-05 18:54:58.041177",
+ "modified": "2023-10-06 09:47:03.024170",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Backlink Register",
