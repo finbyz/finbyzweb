@@ -14,5 +14,15 @@ frappe.ui.form.on('Backlink Register', {
 			}
 		})
 		
+	},
+	refresh:function(frm)
+	{
+		frm.set_query("for_page_type", function() {
+			return {
+			  filters: [
+				['name','In', ["Web Page","Blog Post"]]
+			  ]
+			};
+		  });
 	}
 });
