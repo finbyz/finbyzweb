@@ -24,5 +24,33 @@ frappe.ui.form.on('Backlink Register', {
 			  ]
 			};
 		  });
+	},
+	live_backlinks:function(frm)
+	{
+		frm.call({
+			method:'finbyzweb.finbyzweb.doctype.backlink_register.backlink_register.live_backlinks_validate',
+			args:{
+				msg:frm.doc.live_backlinks
+			},
+			callback:function(r){
+				console.log(r)
+				if(r.message)
+				{
+					
+					if(r.message.domain_authority)
+					{
+						frm.set_value('domiain_authority',r.message.domain_authority);
+					}
+					if(r.message.domain_name)
+					{
+						frm.set_value('domain',r.message.domain_name);
+					}
+				}
+				else{
+					frm.set_value('domiain_authority',"");
+					frm.set_value('domain',"");
+				}
+			}
+		});
 	}
 });

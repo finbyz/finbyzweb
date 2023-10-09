@@ -13,6 +13,7 @@
   "domiain_authority",
   "for_page_type",
   "for_page",
+  "domain",
   "column_break_7rhxf",
   "date",
   "type",
@@ -95,11 +96,18 @@
    "in_standard_filter": 1,
    "label": "For Page",
    "options": "for_page_type"
+  },
+  {
+   "fieldname": "domain",
+   "fieldtype": "Link",
+   "label": "Domain",
+   "options": "Domain Authority",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-06 14:08:02.682369",
+ "modified": "2023-10-09 15:28:37.292738",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Backlink Register",
