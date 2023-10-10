@@ -8,6 +8,7 @@ from frappe import get_doc, new_doc
 class BacklinkRegister(Document):
 	def validate(self):
 		self.generating_domain()
+		self.live_backlinks_validate()
 
 	def generating_domain(self):
 			live_backlinks=self.live_backlinks.split('/')
@@ -20,6 +21,12 @@ class BacklinkRegister(Document):
 					new_entry.domain_name = live_backlinks[0]+"//"+live_backlinks[2]
 					new_entry.insert()
 					self.domain=live_backlinks[0]+"//"+live_backlinks[2]
+	def live_backlinks_validate(self):
+			live_backlinks=self.live_backlinks.split('/')
+			domain=live_backlinks[0]+"//"+live_backlinks[2]
+			if domain:
+				self.domiain_authority = frappe.db.get_value("Domain Authority",domain,'domain_authority') if frappe.db.get_value("Domain Authority",domain,'domain_authority') else None
+				self.domain = frappe.db.get_value("Domain Authority",domain,'domain_name') if frappe.db.get_value("Domain Authority",domain,'domain_name') else None
               
 @frappe.whitelist()
 def live_backlinks_validate(msg):

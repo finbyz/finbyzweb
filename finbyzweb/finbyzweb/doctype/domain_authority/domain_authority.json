@@ -23,12 +23,13 @@
   {
    "fieldname": "domain_authority",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Domain Authority"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-10 14:36:09.484520",
+ "modified": "2023-10-10 16:20:21.379624",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Domain Authority",
