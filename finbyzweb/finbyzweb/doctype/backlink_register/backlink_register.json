@@ -107,7 +107,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-09 15:28:37.292738",
+ "modified": "2023-10-10 14:25:44.487771",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Backlink Register",
@@ -139,7 +139,6 @@
    "write": 1
   }
  ],
- "quick_entry": 1,
  "search_fields": "domiain_authority",
  "sort_field": "modified",
  "sort_order": "DESC",

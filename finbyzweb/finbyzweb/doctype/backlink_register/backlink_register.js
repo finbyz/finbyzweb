@@ -33,7 +33,6 @@ frappe.ui.form.on('Backlink Register', {
 				msg:frm.doc.live_backlinks
 			},
 			callback:function(r){
-				console.log(r)
 				if(r.message)
 				{
 					
