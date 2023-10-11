@@ -180,7 +180,7 @@
                             <ul class="collapse list-unstyled ml-5" id='outsource'>
                                 {%- for d in outsource_list -%}
                                 <li>
-                                    <a href="/{{d.route}}"><img class="nav-service-icon" src="{{d.navigation_logo}}">{{d.title}}</a>
+                                    <a href="/{{d.route}}"><img class="nav-service-icon" src="{{d.navigation_logo}}" alt="{{d.title}}" title="{{d.title}}">{{d.title}}</a>
                                 </li>
                                 {% endfor %}
                                 
@@ -423,7 +423,7 @@
                                                 <img src="/files/36.svg" title="Certified Partner" alt="Certified Partner" width="40" height="40">
                                                 <div>
                                                     <h6 class="link-underline mx-2">ERPNext Certified Partner</h6><br/>
-                                                    <img src="/files/Frappe-Partner-Certificate-Logo.svg" style="float: right;" width="145" height="60">
+                                                    <img src="/files/Frappe-Partner-Certificate-Logo.svg" alt="ERPNext Certified Partner" style="float: right;" width="145" height="60">
                                                     <span class="nav-subtext  my-0 justify ">With more than 8 years of experience in ERPNext Implementation we are committed to add value.
                                                     </span>
                                                 </div>
