@@ -58,7 +58,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Type",
-   "options": "\nSocial Bookmarking\nPPT Sharing\nBlog  Submission\nImage Sharing\nQuora Comments\nClassified Ads\nProfile Creation\nLocal Listing\nBlog Bookmarking",
+   "options": "\nSocial Bookmarking\nPPT Sharing\nBlog  Submission\nImage Sharing\nQuora Comments\nClassified Ads\nMedium Comments\nProfile Creation\nLocal Listing\nBlog Bookmarking",
    "reqd": 1,
    "width": "7"
   },
@@ -107,7 +107,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-13 10:09:56.620484",
+ "modified": "2023-10-20 09:48:36.774740",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Backlink Register",
