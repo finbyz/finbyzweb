@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "FinByz Tech Pvt Ltd",
- "modified": "2023-10-23 14:53:03.709645",
+ "modified": "2023-10-26 15:04:32.455476",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Finbyz Backlinks",
@@ -25,6 +25,9 @@
   },
   {
    "role": "Website Manager"
+  },
+  {
+   "role": "WebPage Manager"
   }
  ]
 }
