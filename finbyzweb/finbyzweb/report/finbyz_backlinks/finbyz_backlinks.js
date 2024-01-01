@@ -45,7 +45,7 @@ frappe.query_reports["Finbyz Backlinks"] = {
 			"label": __("type"),
 			"fieldtype": "Select",
 			"width": "80",
-			"options": ["","Social Bookmarking","PPT Sharing","Blog Submission","Image Sharing","Comments","Classified Ads","Profile Creation","Local Listing","Blog Bookmarking"] 
+			"options": ["","Social Bookmarking","PPT Sharing","Blog  Submission","Image Sharing","Comments","Classified Ads","Profile Creation","Local Listing","Blog Bookmarking"] 
 		},
 	],
 };
