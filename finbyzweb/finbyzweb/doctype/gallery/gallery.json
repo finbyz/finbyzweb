@@ -13,6 +13,9 @@
   "seo_title",
   "small_description",
   "gallery_title",
+  "column_break_g9tml",
+  "keywords",
+  "section_break_m89qj",
   "published",
   "published_on",
   "gallery_category",
@@ -132,13 +135,26 @@
    "fieldtype": "Table",
    "label": "Gallery Sidebar",
    "options": "Gallery Sidebar"
+  },
+  {
+   "fieldname": "keywords",
+   "fieldtype": "Small Text",
+   "label": "Keywords"
+  },
+  {
+   "fieldname": "column_break_g9tml",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_m89qj",
+   "fieldtype": "Section Break"
   }
  ],
  "has_web_view": 1,
  "image_field": "svg_image",
  "is_published_field": "published",
  "links": [],
- "modified": "2023-05-15 15:34:57.970460",
+ "modified": "2024-01-08 10:54:15.489680",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Gallery",
