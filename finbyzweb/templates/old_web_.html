@@ -19,6 +19,11 @@
 				</div>
 			</div>
 		</div>
+		<div class="container-fluid d-flex justify-content-between align-items-center mt-4">
+			<div class="page-header p-lr-50">
+				{% block header %}{% endblock %}
+			</div>
+		</div>
 
 		<div class="page_content {% if route == "homepage" or route == "index" %} remove_padding_top  {% endif %}" >
 			{% include "templates/includes/finbyz-banner.html" %}

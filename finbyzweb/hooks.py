@@ -12,9 +12,9 @@ app_email = "info@finbyz.com"
 app_license = "GPL 3.0"
 
 # override bcz getting 404 error in thirt party files
-# from frappe.website import utils
-# from finbyzweb.api import add_preload_headers as my_add_preload_headers
-# utils.add_preload_headers = my_add_preload_headers
+from frappe.website import utils
+from finbyzweb.api import add_preload_headers as my_add_preload_headers
+utils.add_preload_headers = my_add_preload_headers
 
 # app_include_js = [
 # 	"assets/js/summernote.min.js",
@@ -23,27 +23,27 @@ app_license = "GPL 3.0"
 # 	"assets/js/timeline.min.js"
 # ]
 
-# app_include_css = [
-# 	"assets/css/summernote.min.css"
-# ]
+app_include_css = [
+	"assets/css/summernote.min.css"
+]
 
 # Includes in <head>
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/finbyzweb/css/finbyzweb.css"
+app_include_css = "/assets/finbyzweb/css/finbyzweb.css"
 # app_include_js = "/assets/finbyzweb/js/finbyzweb.js"
 
-#web_include_css = [
-#	"https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css",
-#	"https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"
-#]
+web_include_css = [
+	"https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css",
+	"https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"
+]
 # web_include_js = [
 	# "assets/finbyzweb/js/finbyz.js",
 # ]
 
 # include js, css files in header of web template
-# web_include_css = "/assets/finbyzweb/css/finbyzweb.css"
+web_include_css = "/assets/finbyzweb/css/finbyzweb.css"
 # web_include_js = "/assets/finbyzweb/js/finbyzweb.js"
 
 # include js in page

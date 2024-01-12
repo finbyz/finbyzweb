@@ -1,20 +1,20 @@
 var loc = window.location.pathname;
-$(".nav .nav-item a.nav-active").each(function() {
+$(".nav .nav-item a.nav-active").each(function () {
     $(this).parent('li').toggleClass('active', $(this).attr('href') == loc);
 });
 $(window).on('load', () => {
-        $('.owl-carousel').each(function() {
-            //Find each set of dots in this carousel
-            $(this).find('.owl-dot').each(function(index) {
-                //Add one to index so it starts from 1
-                $(this).attr('aria-label', index + 1);
-            });
+    $('.owl-carousel').each(function () {
+        //Find each set of dots in this carousel
+        $(this).find('.owl-dot').each(function (index) {
+            //Add one to index so it starts from 1
+            $(this).attr('aria-label', index + 1);
         });
-    })
-    // logistics-industry circle design
+    });
+})
+// logistics-industry circle design
 
 $(".tabanchor").click(
-    function() {
+    function () {
         TweenMax.from('.flex-inner', 0.4, {
             scale: 0,
             ease: Power1.easeIn
@@ -25,16 +25,16 @@ $(".tabanchor").click(
 
 // other module section
 $(".ind-module .nav-pills .nav-link").click(
-    function() {
+    function () {
         TweenMax.from('.tab-pane', 0.5, {
             opacity: 0,
             ease: Power1.easeIn
         })
     }
 )
-$(window).on('load', function() {
+$(window).on('load', function () {
 
-    setTimeout(function() {
+    setTimeout(function () {
         if ($(".web-form-actions button").hasClass('btn btn-primary btn-sm')) {
             $(".web-form-actions button").addClass('finbyz-button').removeClass('btn btn-primary btn-sm');
         }
@@ -44,9 +44,9 @@ $(window).on('load', function() {
     }, 100);
 })
 
-$(document).ready(function() {
+$(document).ready(function () {
     /* phase js */
-    $('.tabanchor').on('click', function(e) {
+    $('.tabanchor').on('click', function (e) {
         var getTab = $(this).attr('href');
         $('.circle-icon').removeClass('active');
         $(this).parent().addClass('active');
@@ -62,7 +62,7 @@ $(document).ready(function() {
 
     // gallery Filter
 
-    $(".parent-category").click(function() {
+    $(".parent-category").click(function () {
         var selectedClass = $(this).attr("data-rel");
         if (selectedClass == "all") {
             $(".gallery-sub-category-button").removeClass("d-visible");
@@ -71,16 +71,16 @@ $(document).ready(function() {
         $(".gallery-sub-category-button").removeClass("d-visible");
         $(".gallery-sub-category-button." + selectedClass).addClass("d-visible");
     });
-    $('.filter').on('click', function() {
+    $('.filter').on('click', function () {
         var cat = $(this).attr("data-rel");
         if (cat == 'all') {
             $('.gallery-filter').removeClass('d-none');
-            setTimeout(function() {
+            setTimeout(function () {
                 $('.gallery-filter').removeClass('d-none');
             }, 300);
         } else {
             $('.gallery-filter').addClass('d-none');
-            setTimeout(function() {
+            setTimeout(function () {
                 $('.gallery-filter.' + cat).removeClass('d-none');
             }, 300);
         }
@@ -99,7 +99,7 @@ $(document).ready(function() {
                 'title': document.title + '</br>' + window.location.href,
                 'email': $('#email').val()
             },
-            callback: function(r) {
+            callback: function (r) {
                 $('#lead_name').val('');
                 $('#company_name').val('');
                 $('#mobile_no').val('');
@@ -110,17 +110,17 @@ $(document).ready(function() {
     };
 
     //validation and animation	
-    $(function() {
+    $(function () {
         let show = 'show';
 
-        $('.inquiry-main .inquiry-input').on('checkval', function() {
+        $('.inquiry-main .inquiry-input').on('checkval', function () {
             let label = $(this).next('label');
             if (this.value !== '') {
                 label.addClass(show);
             } else {
                 label.removeClass(show);
             }
-        }).on('keyup', function() {
+        }).on('keyup', function () {
             $(this).trigger('checkval');
         });
 
@@ -129,7 +129,7 @@ $(document).ready(function() {
     var form = $('#inquiry'),
         submit = form.find('[name="submit"]');
 
-    form.on('submit', function(e) {
+    form.on('submit', function (e) {
         e.preventDefault();
 
         // avoid spamming buttons
@@ -137,7 +137,7 @@ $(document).ready(function() {
             return;
 
         var valid = true;
-        form.find('input').removeClass('invalid').each(function() {
+        form.find('input').removeClass('invalid').each(function () {
             if (!this.value) {
                 $(this).addClass('invalid');
                 valid = false;
@@ -157,7 +157,7 @@ $(document).ready(function() {
         } else {
             submit.attr('value', 'Sending...');
             // simulate AJAX response
-            setTimeout(function() {
+            setTimeout(function () {
                 // step 1: slide labels and inputs
                 // when AJAX responds with success
                 // no animation for AJAX failure yet
@@ -167,21 +167,21 @@ $(document).ready(function() {
                 });
                 form.find('label')
 
-                .animate({
+                    .animate({
                         left: '100%'
                     }, 500)
                     .animate({
                         opacity: '0'
                     }, 500);
             }, 1000);
-            setTimeout(function() {
+            setTimeout(function () {
                 // step 2: show thank you message after step 1
                 submit.attr('value', 'Thank you :)')
                     .css({
                         boxShadow: 'none'
                     });
             }, 1000);
-            setTimeout(function() {
+            setTimeout(function () {
                 // step 3: reset
                 $("#inquiry-form").toggle({
                     effect: "scale",
@@ -202,7 +202,7 @@ $(document).ready(function() {
                 lead_creation();
             }, 3000);
             let show = 'show';
-            $('.inquiry-main', function() {
+            $('.inquiry-main', function () {
                 let label = $('.inquiry-label');
                 label.removeClass(show);
 
@@ -230,10 +230,10 @@ $(document).ready(function() {
     });
 
     // tween for Main Slider Owl change 
-    mainOwl.on('changed.owl.carousel', function(e) {
+    mainOwl.on('changed.owl.carousel', function (e) {
         var scrollController = new ScrollMagic.Controller();
 
-        $(".owl-carousel.main-carousel #first-p").each(function() {
+        $(".owl-carousel.main-carousel #first-p").each(function () {
             var fadeUpScene = new ScrollMagic.Scene({
                     triggerElement: this,
                     triggerHook: 1
@@ -245,7 +245,7 @@ $(document).ready(function() {
                 }))
                 .addTo(scrollController)
         })
-        $(".owl-carousel.main-carousel .slide1 img").each(function() {
+        $(".owl-carousel.main-carousel .slide1 img").each(function () {
             var fadeUpScene = new ScrollMagic.Scene({
                     triggerElement: this,
                     triggerHook: 1
@@ -363,10 +363,10 @@ $(document).ready(function() {
     // Homepage Module on click one module it shows html of 
     // their modules html from modules web page
 
-    $(".module-link").on("click", function(e) {
+    $(".module-link").on("click", function (e) {
         var id = "#" + $(this).attr('id');
         e.preventDefault();
-        $.get('/modules-of-erp', null, function(text) {
+        $.get('/modules-of-erp', null, function (text) {
             html = $(text).find(id).html();
             frappe.msgprint(__(html.toString()), __("Module"));
         });
@@ -375,7 +375,7 @@ $(document).ready(function() {
     // IT consulting Module on click one module it shows html of 
     // their modules html from that same web page
 
-    $(".hover-link").on("click", function(e) {
+    $(".hover-link").on("click", function (e) {
         var id = "#" + $(this).attr('id') + "_msg";
         e.preventDefault();
         html = $(id).html();
@@ -384,7 +384,7 @@ $(document).ready(function() {
     });
 
     // Whatsapp Widget
-    var mwb_whatsapp = function() {
+    var mwb_whatsapp = function () {
         "use strict";
 
         function t() {}
@@ -524,7 +524,7 @@ $(document).ready(function() {
                 };
             let f = !1;
             var b, m, v;
-            u.ctx = s ? s(i, g, (t, e, a = e) => (u.ctx && c(u.ctx[t], u.ctx[t] = a) && (u.bound[t] && u.bound[t](a), f && B(i, t)), e)) : [], u.update(), f = !0, n(u.before_update), u.fragment = !!p && p(u.ctx), r.target && (r.hydrate ? u.fragment && u.fragment.l((v = r.target, Array.from(v.childNodes))) : u.fragment && u.fragment.c(), r.intro && ((b = i.$$.fragment) && b.i && (E.delete(b), b.i(m))), function(t, a, i) {
+            u.ctx = s ? s(i, g, (t, e, a = e) => (u.ctx && c(u.ctx[t], u.ctx[t] = a) && (u.bound[t] && u.bound[t](a), f && B(i, t)), e)) : [], u.update(), f = !0, n(u.before_update), u.fragment = !!p && p(u.ctx), r.target && (r.hydrate ? u.fragment && u.fragment.l((v = r.target, Array.from(v.childNodes))) : u.fragment && u.fragment.c(), r.intro && ((b = i.$$.fragment) && b.i && (E.delete(b), b.i(m))), function (t, a, i) {
                 const {
                     fragment: r,
                     on_mount: s,
@@ -624,12 +624,12 @@ $(document).ready(function() {
                 "name" in t && a(9, r = t.name), "number" in t && a(10, s = t.number), "avatar" in t && a(0, p = t.avatar), "description" in t && a(1, c = t.description), "welcomeMessage" in t && a(2, l = t.welcomeMessage), "pattern" in t && a(3, d = t.pattern)
             }), t.$$.update = (() => {
                 1536 & t.$$.dirty && a(6, n = r || s)
-            }), [p, c, l, d, o, i, n, function() {
+            }), [p, c, l, d, o, i, n, function () {
                 a(4, o = !o)
-            }, function() {
+            }, function () {
                 var t = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? "https://wa.me/" + String(s).replace("+", "") + "?text=" + encodeURIComponent(i) : "https://web.whatsapp.com/send?phone=" + s + "&text=" + encodeURIComponent(i);
                 window.open(t, "_blank"), a(5, i = ""), a(4, o = !1)
-            }, r, s, function() {
+            }, r, s, function () {
                 i = this.value, a(5, i)
             }]
         }
@@ -646,7 +646,7 @@ $(document).ready(function() {
                 this[t] = a
             }
             $destroy() {
-                ! function(t, e) {
+                ! function (t, e) {
                     const a = t.$$;
                     null !== a.fragment && (n(a.on_destroy), a.fragment && a.fragment.d(e), a.on_destroy = a.fragment = null, a.ctx = [])
                 }(this, 1), this.$destroy = t
@@ -734,7 +734,7 @@ $(document).ready(function() {
 
 // homepage module overlay effect on hover
 $(".modules-sub").hover(
-    function() {
+    function () {
         TweenLite.to($(this).find(".modules-div"), 1, {
             css: {
                 height: "100%",
@@ -749,7 +749,7 @@ $(".modules-sub").hover(
             ease: Sine.easeOut
         });
     },
-    function() {
+    function () {
         TweenLite.to($(this).find(".modules-div"), 1, {
             css: {
                 height: "40%",
@@ -769,7 +769,7 @@ $(".modules-sub").hover(
 // IT Consulting module overlay effect on hover
 
 $(".hover-sub").hover(
-    function() {
+    function () {
         TweenLite.to($(this).find(".hover-div"), 1, {
             css: {
                 height: "100%",
@@ -785,7 +785,7 @@ $(".hover-sub").hover(
             ease: Sine.easeOut
         });
     },
-    function() {
+    function () {
         TweenLite.to($(this).find(".hover-div"), 1, {
             css: {
                 height: "20%",
@@ -823,13 +823,13 @@ TweenLite.set([".back", ".front"], {
 var front_to_back = false;
 var back_to_front = false;
 $(".cardWrapper").hover(
-    function() {
+    function () {
         if (!front_to_back) {
             TweenLite.to($(this).find(".card"), 1.2, {
                 rotationY: 180,
                 ease: Back.easeOut,
                 onStart: makeTrueFront,
-                onUpdate: function() {
+                onUpdate: function () {
                     var progress = this.progress()
                     if (progress > 0.15) {
                         makeFalse();
@@ -839,13 +839,13 @@ $(".cardWrapper").hover(
             });
         }
     },
-    function() {
+    function () {
         if (!back_to_front) {
             TweenLite.to($(this).find(".card"), 1.2, {
                 rotationY: 0,
                 ease: Back.easeOut,
                 onStart: makeTrueBack,
-                onUpdate: function() {
+                onUpdate: function () {
                     var progress = this.progress()
                     if (progress > 0.15) {
                         makeFalse();
@@ -880,7 +880,7 @@ TweenMax.staggerTo($(".card"), 0.5, {
     yoyo: true
 }, 0.1);
 
-$(function() {
+$(function () {
     // init controller
 
     /* new ScrollMagic.Scene({triggerElement: ".timeline"})
@@ -891,7 +891,7 @@ $(function() {
     var scrollController = new ScrollMagic.Controller();
 
     // fadeinup effect
-    $(".finbyz-fadeinup").each(function() {
+    $(".finbyz-fadeinup").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
                 triggerElement: this,
                 triggerHook: 0.8
@@ -905,7 +905,7 @@ $(function() {
     })
 
     // fadeinup effect for footer
-    $(".finbyz-fadeinup-footer").each(function() {
+    $(".finbyz-fadeinup-footer").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
                 triggerElement: this,
                 triggerHook: 1
@@ -919,7 +919,7 @@ $(function() {
     })
 
     // fadeindown effect
-    $(".finbyz-fadeindown").each(function() {
+    $(".finbyz-fadeindown").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
                 triggerElement: this,
                 triggerHook: 0.8
@@ -933,7 +933,7 @@ $(function() {
     })
 
     // fadeinleft effect
-    $(".finbyz-fadeinleft").each(function() {
+    $(".finbyz-fadeinleft").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
                 triggerElement: this,
                 triggerHook: 0.8
@@ -947,7 +947,7 @@ $(function() {
     })
 
     // zoomin effect
-    $(".finbyz-zoomin").each(function() {
+    $(".finbyz-zoomin").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
                 triggerElement: this,
                 triggerHook: 0.9
@@ -959,9 +959,9 @@ $(function() {
             .addTo(scrollController)
     })
 
-    
+
     // flip box on small screen trigger at comes to view 
-    $(".card").each(function() {
+    $(".card").each(function () {
         var tl_card = new TimelineMax();
         tl_card.to(this, 1.2, {
                 rotationY: 180,
@@ -986,26 +986,26 @@ $(function() {
 
     var lastScrollTop = 0;
     // element should be replaced with the actual target element on which you have applied scroll, use window in case of no target element.
-    window.addEventListener("scroll", function() { // or window.addEventListener("scroll"....
+    window.addEventListener("scroll", function () { // or window.addEventListener("scroll"....
         var st = window.pageYOffset || document.documentElement.scrollTop;
         if (st <= 0) {
             setTimeout(() => {
                 $("header.finbyzNav").removeClass("nav-shadow");
-                if(loc == '/' || loc == '/index' || loc == '/homepage'){
+                if (loc == '/' || loc == '/index' || loc == '/homepage') {
                     $("header.finbyzNav").addClass("bg_transparent");
                 }
             }, 100)
         }
         if (st > lastScrollTop) {
             $("header.finbyzNav").addClass("nav-shadow");
-            if(loc == '/' || loc == '/index' || loc == '/homepage'){
+            if (loc == '/' || loc == '/index' || loc == '/homepage') {
                 $("header.finbyzNav").removeClass("bg_transparent");
             }
             $('.navbar-main').removeClass('animated swingInX');
             $('.navbar-main').addClass('animated swingOutX');
         } else {
             $("header.finbyzNav").addClass("nav-shadow");
-            if(loc == '/' || loc == '/index' || loc == '/homepage'){
+            if (loc == '/' || loc == '/index' || loc == '/homepage') {
                 $("header.finbyzNav").removeClass("bg_transparent");
             }
             $('.navbar-main').removeClass('animated swingOutX');
@@ -1017,7 +1017,7 @@ $(function() {
 
 
 });
-$(window).bind('scroll', function() {
+$(window).bind('scroll', function () {
     var scrollhight = $(window).height() * 0.9
     var navHeight = $(window).height() - scrollhight;
 
@@ -1027,17 +1027,17 @@ $(window).bind('scroll', function() {
     } else {
         $('.navbar.landing-navbar-main').removeClass('on');
     }
-    
+
 });
 // for image zoom on hover with fadein effect
 $(".hover-zoom").hover(
-    function() {
+    function () {
         TweenLite.to(this, 1, {
             scale: 1.05,
             ease: Power1.easeIn
         });
     },
-    function() {
+    function () {
         TweenLite.to(this, 1, {
             scale: 1,
             ease: Power1.easeIn
@@ -1063,7 +1063,7 @@ TweenLite.set(['.grid-back', '.grid-front'], {
 });
 
 // loop through each element
-$(".client-grid-wrapper").each(function(i, el) {
+$(".client-grid-wrapper").each(function (i, el) {
 
     // create a timeline for this element in paused state
     var tl = new TimelineMax({
@@ -1087,9 +1087,9 @@ $(".client-grid-wrapper").each(function(i, el) {
     el.animation = t;
 
     //create the event handler
-    $(el).on("mouseenter", function() {
+    $(el).on("mouseenter", function () {
         this.animation.play();
-    }).on("mouseleave", function() {
+    }).on("mouseleave", function () {
         this.animation.reverse();
     });
 
@@ -1102,7 +1102,7 @@ function showProjects(tab, delay) { //return false;
     //  $('.filter-item.filter-item--active').removeClass('filter-item--active');
     //   $('.filter-item-'+tab).addClass('filter-item--active');
 
-    $('.project-item').each(function() {
+    $('.project-item').each(function () {
         var $this = this;
         var tween = new TimelineLite()
             .to($(this), 0.5, {
@@ -1115,19 +1115,19 @@ function showProjects(tab, delay) { //return false;
                 opacity: 0,
                 y: '10%'
             })
-            //.from($(this).find('.icon-arrow-right'), 1, {ease: Power4.easeOut, opacity:0, x: '-20%'}, '-=0.5')
-            //.from($(this).find('.project-item__media, .project-item__branding'), 1, {ease: Power4.easeOut, opacity: 0, scale: 0.98, transformOrigin:"50% 50%"}, '-=1.5')
+        //.from($(this).find('.icon-arrow-right'), 1, {ease: Power4.easeOut, opacity:0, x: '-20%'}, '-=0.5')
+        //.from($(this).find('.project-item__media, .project-item__branding'), 1, {ease: Power4.easeOut, opacity: 0, scale: 0.98, transformOrigin:"50% 50%"}, '-=1.5')
         ;
 
         new ScrollMagic.Scene({
-            triggerHook: 1,
-            triggerElement: $this
-        })
+                triggerHook: 1,
+                triggerElement: $this
+            })
 
-        .addTo(controller)
+            .addTo(controller)
 
-        //.addIndicators()
-        .setTween(tween);
+            //.addIndicators()
+            .setTween(tween);
     });
 
 }
@@ -1149,7 +1149,7 @@ function finbyzNavDropdowns(e) {
         this.dropdownContainer = this.container.querySelector(".dropdownContainer"),
         this.dropdownArrow = this.container.querySelector(".dropdownArrow"),
         this.dropdownRoots = Strut.queryArray(".hasDropdown", this.root),
-        this.dropdownSections = Strut.queryArray(".dropdownSection", this.container).map(function(e) {
+        this.dropdownSections = Strut.queryArray(".dropdownSection", this.container).map(function (e) {
             return {
                 el: e,
                 name: e.getAttribute("data-dropdown"),
@@ -1165,25 +1165,25 @@ function finbyzNavDropdowns(e) {
         enter: "mouseenter",
         leave: "mouseleave"
     };
-    this.dropdownRoots.forEach(function(e, r) {
-        e.addEventListener(n.end, function(n) {
+    this.dropdownRoots.forEach(function (e, r) {
+        e.addEventListener(n.end, function (n) {
             n.preventDefault(), n.stopPropagation(), t.toggleDropdown(e)
-        }), e.addEventListener(n.enter, function(n) {
+        }), e.addEventListener(n.enter, function (n) {
             if (n.pointerType == "touch") return;
             t.stopCloseTimeout(), t.openDropdown(e)
-        }), e.addEventListener(n.leave, function(e) {
+        }), e.addEventListener(n.leave, function (e) {
             if (e.pointerType == "touch") return;
             t.startCloseTimeout()
         })
-    }), this.dropdownContainer.addEventListener(n.end, function(e) {
+    }), this.dropdownContainer.addEventListener(n.end, function (e) {
         e.stopPropagation()
-    }), this.dropdownContainer.addEventListener(n.enter, function(e) {
+    }), this.dropdownContainer.addEventListener(n.enter, function (e) {
         if (e.pointerType == "touch") return;
         t.stopCloseTimeout()
-    }), this.dropdownContainer.addEventListener(n.leave, function(e) {
+    }), this.dropdownContainer.addEventListener(n.leave, function (e) {
         if (e.pointerType == "touch") return;
         t.startCloseTimeout()
-    }), document.body.addEventListener(n.end, function(e) {
+    }), document.body.addEventListener(n.end, function (e) {
         t.closeDropdown()
     })
 }
@@ -1191,11 +1191,11 @@ function finbyzNavDropdowns(e) {
 
 /* Starting code */
 var Strut = {
-    queryArray: function(e, t) {
+    queryArray: function (e, t) {
         // console.log(e,t);
         return t || (t = document.body), Array.prototype.slice.call(t.querySelectorAll(e))
     },
-    ready: function(e) {
+    ready: function (e) {
         // console.log(e);
         document.addEventListener("DOMContentLoaded", e)
     }
@@ -1204,7 +1204,7 @@ var Strut = {
 
 Strut.supports = {
 
-        pointerEvents: function() {
+        pointerEvents: function () {
 
             var e = document.createElement("a").style;
             // console.log(e);
@@ -1213,7 +1213,7 @@ Strut.supports = {
         }(),
     },
 
-    finbyzNavDropdowns.prototype.checkCollision = function() {
+    finbyzNavDropdowns.prototype.checkCollision = function () {
 
         var e = this;
 
@@ -1227,28 +1227,29 @@ Strut.supports = {
 
             n.left + n.width / 2 > t / 2 && (e.container.classList.remove("test"), e.compact = !1)
 
-        } else {
+        } 
+        // else {
 
-            var r = e.primaryNavItem.getBoundingClientRect(),
+        //     var r = e.primaryNavItem.getBoundingClientRect(),
 
-                i = e.secondaryNavItem.getBoundingClientRect();
+        //         i = e.secondaryNavItem.getBoundingClientRect();
 
-            r.right > i.left && (e.container.classList.add("test"), e.compact = !0)
+        //     r.right > i.left && (e.container.classList.add("test"), e.compact = !0)
 
-        }
+        // }
     },
 
 
-    finbyzNavDropdowns.prototype.openDropdown = function(e) {
+    finbyzNavDropdowns.prototype.openDropdown = function (e) {
         var t = this;
         if (this.activeDropdown === e) return;
-        this.container.classList.add("overlayActive"), this.container.classList.add("dropdownActive"), this.activeDropdown = e, this.dropdownRoots.forEach(function(e, t) {
+        this.container.classList.add("overlayActive"), this.container.classList.add("dropdownActive"), this.activeDropdown = e, this.dropdownRoots.forEach(function (e, t) {
             e.classList.remove("active")
         }), e.classList.add("active");
         var n = e.getAttribute("data-dropdown"),
             r = "left",
             i, s, o;
-        this.dropdownSections.forEach(function(e) {
+        this.dropdownSections.forEach(function (e) {
             e.el.classList.remove("active"), e.el.classList.remove("left"), e.el.classList.remove("right"), e.name == n ? (e.el.classList.add("active"), r = "right", i = e.content.offsetWidth, s = e.content.offsetHeight, o = e.content) : e.el.classList.add(r)
         });
         var u = 520,
@@ -1258,7 +1259,7 @@ Strut.supports = {
             c = e.getBoundingClientRect(),
             h = c.left + c.width / 2 - i / 2;
 
-        h = Math.round(Math.max(h, 10)), clearTimeout(this.disableTransitionTimeout), this.enableTransitionTimeout = setTimeout(function() {
+        h = Math.round(Math.max(h, 10)), clearTimeout(this.disableTransitionTimeout), this.enableTransitionTimeout = setTimeout(function () {
             t.container.classList.remove("noDropdownTransition")
         }, 50), this.dropdownBackground.style.transform = "translateX(" + h + "px) scaleX(" + f + ") scaleY(" + l + ")", this.dropdownContainer.style.transform = "translateX(" + h + "px)", this.dropdownContainer.style.width = i + "px", this.dropdownContainer.style.height = s + "px";
         var p = Math.round(c.left + c.width / 2);
@@ -1270,13 +1271,13 @@ Strut.supports = {
         this.dropdownBackgroundAlt.style.transform = "translateY(" + d + "px)"
 
     },
-    finbyzNavDropdowns.prototype.closeDropdown = function() {
+    finbyzNavDropdowns.prototype.closeDropdown = function () {
 
         var e = this;
 
         if (!this.activeDropdown) return;
 
-        this.dropdownRoots.forEach(function(e, t) {
+        this.dropdownRoots.forEach(function (e, t) {
 
                 e.classList.remove("active")
 
@@ -1290,24 +1291,24 @@ Strut.supports = {
 
             this.activeDropdown = undefined
 
-    }, finbyzNavDropdowns.prototype.toggleDropdown = function(e) {
+    }, finbyzNavDropdowns.prototype.toggleDropdown = function (e) {
         this.activeDropdown === e ? this.closeDropdown() : this.openDropdown(e)
-    }, finbyzNavDropdowns.prototype.startCloseTimeout = function() {
+    }, finbyzNavDropdowns.prototype.startCloseTimeout = function () {
         var e = this;
-        e.closeDropdownTimeout = setTimeout(function() {
+        e.closeDropdownTimeout = setTimeout(function () {
             e.closeDropdown()
         }, 180)
-    }, finbyzNavDropdowns.prototype.stopCloseTimeout = function() {
+    }, finbyzNavDropdowns.prototype.stopCloseTimeout = function () {
         var e = this;
         clearTimeout(e.closeDropdownTimeout)
-    }, Strut.supports.pointerEvents, Strut.ready(function() {
+    }, Strut.supports.pointerEvents, Strut.ready(function () {
         new finbyzNavDropdowns(".finbyzNav")
     });
 
 
 /* Industry Nav pills */
 
-$(document).on("click", "ul.tab-nav li", function(e) {
+$(document).on("click", "ul.tab-nav li", function (e) {
     let tab_content = $(this).children("a")[0].dataset.content;
     // console.log(tab_content);
     if ($("ul.tab-nav li").hasClass("active") && $("div.tab-content-indus").hasClass("active")) {
@@ -1325,7 +1326,7 @@ $(document).on("click", "ul.tab-nav li", function(e) {
 
 /* Multilevel Sidebar - menu */
 
-$(".go-tosub-menu").on("click", function(event) {
+$(".go-tosub-menu").on("click", function (event) {
     let lsid = $(this).data("ls");
     let icon = $(this).data("icon");
     if ($(`#${lsid}`).hasClass("d-block")) {
@@ -1333,7 +1334,7 @@ $(".go-tosub-menu").on("click", function(event) {
         let $li = $("#navsidebar").children("ul").children("li");
         $(`#${lsid}`).parent("li").removeClass("show");
         setTimeout(() => {
-            $.each($li, function(ix, list) {
+            $.each($li, function (ix, list) {
                 $(this).removeClass("d-none");
             });
             $("#navsidebar").children("ul").addClass("show");
@@ -1351,14 +1352,14 @@ $(".go-tosub-menu").on("click", function(event) {
             $(`#${lsid}`).parent("li").children("img").addClass("d-none");
             $(`#${lsid}`).parent("li").find("a img:first").removeClass("d-none");
             let $li = $("#navsidebar").children("ul").children("li").not("li.show");
-            $.each($li, function(ix, list) {
+            $.each($li, function (ix, list) {
                 $(this).addClass("d-none");
             });
         }
     }
 });
 
-$('#navsidebarCollapse').on('click', function() {
+$('#navsidebarCollapse').on('click', function () {
     $('#navsidebar').toggleClass('active');
     $("header.finbyzNav div.nav-wrapper").css({
         "left": "0px",
@@ -1376,7 +1377,7 @@ $('#navsidebarCollapse').on('click', function() {
 /* Go to Top */
 
 var btn = $('a#gototop');
-$(window).scroll(function() {
+$(window).scroll(function () {
     if ($(window).scrollTop() > 300) {
         btn.addClass('show');
     } else {
@@ -1384,7 +1385,7 @@ $(window).scroll(function() {
     }
 });
 
-btn.on('click', function(e) {
+btn.on('click', function (e) {
     e.preventDefault();
     $('html, body').animate({
         scrollTop: 0
@@ -1408,7 +1409,7 @@ function notEmpty(args) {
 
 a = window.location.href.split("/")[3].split("?")[0];
 if (a == "issue-form") {
-    $("button.finbyz-button").on("click", function(e) {
+    $("button.finbyz-button").on("click", function (e) {
         form = $(this).parent("div").parent("div").parent("div").find("form");
         if (notEmpty(form)) {
             window.location.href = "/";
@@ -1424,16 +1425,24 @@ var currentScrollTop = window.pageYOffset || document.documentElement.scrollTop,
 
 function show() {
     if (!isVisible) {
-        TweenLite.to(".finbyzNav", 1, { y: "0%" }, 0);
-        TweenLite.to(".header-hide-content", 1, { y: "0%" }, 0);
+        TweenLite.to(".finbyzNav", 1, {
+            y: "0%"
+        }, 0);
+        TweenLite.to(".header-hide-content", 1, {
+            y: "0%"
+        }, 0);
         isVisible = true;
     }
 }
 
 function hide() {
     if (isVisible) {
-        TweenLite.to(".finbyzNav", 1, { y: "-30%" }, 0);
-        TweenLite.to(".header-hide-content", 1, { y: "-100%" }, 0);
+        TweenLite.to(".finbyzNav", 1, {
+            y: "-30%"
+        }, 0);
+        TweenLite.to(".header-hide-content", 1, {
+            y: "-100%"
+        }, 0);
         isVisible = false;
     }
 }
@@ -1456,15 +1465,15 @@ refresh();
 
 //  nav tabanchor
 $(".tabanchor-nav").click(
-    function() {
+    function () {
         TweenMax.from('.flex-inner-nav', 0.4, {
             scale: 0,
             ease: Power1.easeIn,
         })
     }
 )
-$(document).ready(function() {
-    $('.tabanchor-nav').on('click', function(e) {
+$(document).ready(function () {
+    $('.tabanchor-nav').on('click', function (e) {
         var getTab = $(this).attr('href');
         $('.circle-icon').removeClass('active');
         $(this).parent().addClass('active');
@@ -1484,7 +1493,7 @@ function lead_creation_campaign() {
             'title': document.title + '</br>' + window.location.href,
             'email': $('#email_campaign').val()
         },
-        callback: function(r) {
+        callback: function (r) {
             $('#lead_name_campaign').val('');
             $('#company_name_campaign').val('');
             $('#mobile_no_campaign').val('');
@@ -1497,8 +1506,8 @@ function lead_creation_campaign() {
 var form = $('#inquiry-campaign'),
     submit = form.find('[name="submit"]');
 
-form.on('submit', function(e) {
-    setTimeout(function() {
+form.on('submit', function (e) {
+    setTimeout(function () {
         lead_creation_campaign();
         let label = $('.inquiry-label');
         label.removeClass('show');
@@ -1506,23 +1515,43 @@ form.on('submit', function(e) {
     e.preventDefault();
 })
 // avatar name 
-$(document).ready(()=>{
+$(document).ready(() => {
     $(".full-name").html(frappe.get_cookie("full_name"));
     $(".block_login").attr('style', 'display: block !important');
-    if($( "section" ).hasClass( "hexa-fade-up" )){
+    if ($("section").hasClass("hexa-fade-up")) {
         var scrollController = new ScrollMagic.Controller();
         var fade_all = new TimelineMax();
-        fade_all	
-            .from(".finbyz-fadeinup1",0.5, { y: 50, opacity: 0, ease: Power1.easeIn },1)
-            .from(".finbyz-fadeinup2", 0.5 , { y: 50, opacity: 0, ease: Power1.easeIn },1.3)
-            .from(".finbyz-fadeinup3",0.5, { y: 50, opacity: 0, ease: Power1.easeIn },1.5)
-            .from(".finbyz-fadeinup4",0.5 , { y: 50, opacity: 0, ease: Power1.easeIn },1.7)
-            .from(".finbyz-fadeinup5",0.5 , { y: 50, opacity: 0, ease: Power1.easeIn },1.9)
-                
+        fade_all
+            .from(".finbyz-fadeinup1", 0.5, {
+                y: 50,
+                opacity: 0,
+                ease: Power1.easeIn
+            }, 1)
+            .from(".finbyz-fadeinup2", 0.5, {
+                y: 50,
+                opacity: 0,
+                ease: Power1.easeIn
+            }, 1.3)
+            .from(".finbyz-fadeinup3", 0.5, {
+                y: 50,
+                opacity: 0,
+                ease: Power1.easeIn
+            }, 1.5)
+            .from(".finbyz-fadeinup4", 0.5, {
+                y: 50,
+                opacity: 0,
+                ease: Power1.easeIn
+            }, 1.7)
+            .from(".finbyz-fadeinup5", 0.5, {
+                y: 50,
+                opacity: 0,
+                ease: Power1.easeIn
+            }, 1.9)
+
         new ScrollMagic.Scene({
                 triggerElement: ".hexa-fade-up",
-                triggerHook:0.8,
-                reverse:true
+                triggerHook: 0.8,
+                reverse: true
             })
             .setTween(fade_all)
             .addTo(scrollController);

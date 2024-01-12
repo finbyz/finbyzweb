@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<!-- Built on Frappe. https://frappeframework.com/ -->
+<html lang="{{boot.lang}}">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="finbyz">
+
+	<title>{% block title %}{% if seo_title %} {{ seo_title }} {% else %}Finbyz {{ title }}{% endif %}{% endblock %}</title>
+
+	{% if keywords %}
+    	<meta name="keywords" content="{{ keywords }}">
+	{% endif %}
+
+	{% if small_description or blog_intro %}
+		<meta name="description" content="{{ small_description or blog_intro }}" />
+	{% endif %}
+
+	{% block description %}{% endblock %}
+
+	<link rel="manifest" href="/assets/finbyzweb/js/manifest.json">
+
+	<!-- Chrome, Firefox OS and Opera -->
+    <meta name="theme-color" content="#286090">
+    <!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#286090">
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="#286090">
+    <!--  <meta name="theme-color" content="#A1CC3A"/> -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	{% if (doctype == "Web Page" and name == "homepage") %}
+    	<link rel="canonical" href="https://finbyz.tech/"> 
+	{% endif %}
+
+	{% if (doctype == "Web Page" and name == "homepage") or (doctype == "Web Form" and name == "contact") %}
+		<script type="application/ld+json" crossorigin="anonymous">
+			{"@context":"http://schema.org","@type":"Organization","name":"Finbyz Tech Pvt Ltd","image":"https://finbyz.tech/files/finbyz-tech.svg","@id":"https://finbyz.tech","url":" https://finbyz.tech","location":[{"@type":"LocalBusiness","parentOrganization":{"name":"Finbyz Tech Pvt Ltd"},"name":"Finbyz Tech Pvt Ltd - Ahmedabad","image":"https://finbyz.tech/files/finbyz-tech.svg","address":{"@type":"PostalAddress","addressLocality":"Ahmedabad","addressRegion":"Gujarat","postalCode":"380009","streetAddress":"FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura"},"geo":{"@type":"GeoCoordinates","latitude":23.046477,"longitude":72.558351},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"09:30","closes":"18:30"}],"telephone":"+91 07948912428","sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://plus.google.com/s/finbyz","https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz"],"priceRange":"$$"}],"description":"Looking for Software developer company in Ahmadabad? Based in Gujarat, India we are one of the best ERP software development company. We also provide services of custom software development, mobile application, website development."} 
+		</script>
+    {% elif(doctype == "Web Page") %}
+    	<script type="application/ld+json" crossorigin="anonymous">
+        	{"@context":"http://www.schema.org","@type":"ProfessionalService","name":"{{ seo_title }}","url":"https://finbyz.tech/{{ route }}","logo":"https://finbyz.tech/files/FinbyzLogo.png","image":"{% if image_seo %}{{ image_seo }}{% elif image %}{{ image }}{% else %}  /files/banner-homepage.svg {% endif %}","description":"{{ small_description | replace('\n','. ') }}","priceRange":"INR","address":{"@type":"PostalAddress","streetAddress":"FinByz Tech Pvt Ltd, 504-Addor Ambition, Nr. Navrang Circle, Navrangpura, Ahmedabad, Gujarat 380009","addressLocality":"Ahmedabad","addressRegion":"Gujarat","postalCode":"380009","addressCountry":"India"},"telephone":"+919925701446","openingHours":"Mo, Tu, We, Th, Fr, Sa 10.00:00-19:00","contactPoint":[{"@type":"ContactPoint","telephone":"+91 7948912428","contactType":"customer support","areaServed":["IN"],"availableLanguage":["Hindi","Gujarati","English"]}],"sameAs":["https://www.facebook.com/FinByz","https://twitter.com/FinByz","https://www.linkedin.com/company/finbyz","https://www.youtube.com/c/Finbyz","https://www.instagram.com/finbyz/"]}
+    	</script>
+    {% endif %}
+
+	{% if doctype == "Blog Post" and blog_intro or doctype == "Gallery" %}
+    	<script type="application/ld+json">
+      		{"@context":"http://schema.org","@type":"BlogPosting","name":"{{ title }}","headline":"{{ blog_intro or small_description | replace('\n','. ') }}","author":{"@type":"Person","name":"{{ blogger or 'Mukesh Variyani'}}"},"datePublished":"{{ published_on or creation }}","dateModified":"{{ modified }}","image":"{{ image_seo or image or animated_image or '/files/FinbyzLogo.png'}}","publisher":{"@type":"Organization","name":"FinByz Tech Pvt Ltd","sameAs":"https://finbyz.tech","email":"info@finbyz.com","logo":{"@type":"ImageObject","url":"/files/FinbyzLogo.png","height":"300px","width":"300px"}}}      
+   		</script>
+    {% endif %}
+    {% if doctype == "Blog Post" and blog_intro %}
+		<script type="application/ld+json">
+			{"@context":"https://schema.org/","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Finbyz","item":"https://finbyz.tech/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://finbyz.tech/blog"},{"@type":"ListItem","position":3,"name":"{{ blog_category }}","item":"https://finbyz.tech/blog?blog_category={{blog_category}}"}]}
+		</script>
+    {% endif %}
+
+	{% if doctype == "Job Opening" and description %}
+    	<script type="application/ld+json">
+     		{"@context":"http://schema.org","@type":"JobPosting","title":"{{ title }}","hiringOrganization":{"@type":"Organization","name":"FinByz Tech Pvt Ltd","sameAs":"https://finbyz.tech","logo":"/files/FinbyzLogo.png","email":"career@finbyz.tech"},"jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","name":"FinByz Tech Pvt Ltd","addressLocality":"Ahmedabad","addressRegion":"Gujarat","addressCountry":"India","postalCode":"380009","streetAddress":"504-Addor Ambition, Nr. Navrang Circle, Navrangpura"}},"datePosted":"{{ modified }}","baseSalary":{"@type":"MonetaryAmount","value":"{{ salary }}","currency":"INR"},"description":"<h2><strong>Job Description</strong><h2><br><p>{{ description|striptags }}</p><br><h2><strong>Key Skills</strong></h2><p>{{ skill|striptags }}</p><br><br><h2><strong>About Finbyz Tech</strong></h2><p>At Finbyz Tech, we are passionate about revolutionizing businesses through latest technology. We build scalable and innovative software solutions that streamlines your business processes efficiently. We value collaboration and strive to create a positive working environment by celebrating innovation.At FinByz, we believe the team builds company. Initiator or leader, Technical or Creative there is a space for each one. We create an environment where you can learn, grow, and thrive.</p>","employmentType":"Full-Time","validThrough":"{{ valid_till }}"}
+		</script>
+    {% endif %}
+
+	<link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/files/favicon.png">
+
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta name="name" content="{{ seo_title or title }}">
+    <meta property="og:title" content="{{ seo_title or title }}" />
+    <meta property="og:url" content="/{{ route }}" />
+    <meta property="og:site_name" content="FinByz Tech Pvt Ltd" />
+
+	{% if doctype == "Blog Post" and blog_intro %}
+	    <meta property="og:image" content="{% if image_seo %}{{ image_seo }}{% else %} /files/banner-homepage.svg {% endif %}" />
+    {% else %}
+    	<meta property="og:image" content="{% if image %}{{image}}{% else %} /files/banner-homepage.svg {% endif %}" />
+    {% endif %}
+
+	{% if small_description or blog_intro %}
+    	<meta property="og:description" content="{{ small_description or blog_intro }}" />
+    {% endif %}
+
+	<meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ seo_title or title }}">
+    <meta name="twitter:url" content="/{{ route }}">
+    <meta name="twitter:site" content="@finbyz" />
+    <meta name="twitter:creator" content="@finbyz" />
+
+	{% if doctype == "Blog Post" and blog_intro %}
+    	<meta property="twitter:image" content="{% if image_seo %}{{ image_seo }}{% else %} /files/banner-homepage.svg {% endif %}" />
+    {% else %}
+		<meta property="twitter:image" content="{% if image %}{{image}}{% else %} /files/banner-homepage.svg {% endif %}" />
+    {% endif %}
+	{% if small_description or blog_intro %}
+		<meta name="twitter:description" content="{{ small_description or blog_intro }}">
+    {% endif %}
+
+	{%- block head -%}
+		{% if meta_block is defined %}
+    		{{ meta_block }}
+    	{% endif %}
+		{% if head_html is defined %}
+			{{ head_html or "" }}
+		{% endif %}
+		<link rel="preload" href="https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css,npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    	<noscript>
+        	<link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/bootstrap-css-only@4.1.0/css/bootstrap.min.css,npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css">
+    	</noscript>
+    	
+		{% if theme.theme_url %}
+			<link type="text/css" rel="stylesheet" href="{{ theme.theme_url }}">
+    	{% endif %}
+
+    	{% block head_include %}{{ head_include or "" }}{% endblock %}
+    	{% block style %}{%- endblock -%}
+    {%- endblock -%}
+
+	<script>
+		window.frappe = {};
+		frappe.ready_events = [];
+		frappe.ready = function(fn) {
+			frappe.ready_events.push(fn);
+		}
+		window.dev_server = {{ dev_server }};
+		window.socketio_port = {{ (frappe.socketio_port or 9000) }};
+		window.show_language_picker = {{ show_language_picker or 'false' }};
+	</script>
+	
+	<!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W37WLG9D8M"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-W37WLG9D8M');
+    </script>
+	<script
+		  src="https://code.jquery.com/jquery-3.7.1.min.js"
+		  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+		  crossorigin="anonymous"></script>
+</head>
+<body data-path="{{ path }}">
+	<div class="main-section">
+		<a id="gototop">
+			<img src="/files/upwards-arrow.svg" alt="upwards-arrow" title="upwards-arrow" height="20" width="25">
+		</a>
+		<div>
+			{%- if doctype!="Ad Campaign" -%}
+				<header>
+					{%- block banner -%}
+						{% include "templates/includes/banner_extension.html" ignore missing %}
+						{% if banner_html %}
+							<div class="container-fluid">
+								<div class='banner'>
+									{{ banner_html or "" }}
+								</div>
+							</div>
+						{% endif %}
+					{%- endblock -%}
+
+					{%- block navbar -%}
+						{% include "templates/includes/navbar/Nav.html" %}
+					{%- endblock -%}
+				</header>
+			{% endif %}
+			<div class="container-fluid pl-0 pr-0">
+                <div data-html-block="hero">
+                    {%- block hero -%}{%- endblock -%}
+                </div>
+                <div class="main-content">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+
+			{%- if doctype!="Ad Campaign" -%}
+				{%- if footer is defined -%}
+					<footer class="page-footer">
+						<div class="container-fluid pl-0 pr-0">
+							{{ footer }}
+						</div>
+					</footer>
+				{%- endif -%}
+			{%- endif -%}
+		</div>
+		{%- if doctype!="Ad Campaign" -%}
+			<div>
+				{%- block footer -%}{% include "templates/includes/footer/footer.html" %}{%- endblock -%}
+			</div>
+		{%- endif -%}
+	</div>
+
+	{% block base_scripts %}
+	<!-- js should be loaded in body! -->
+	<script>
+		frappe.boot = {{ boot }}
+		// for backward compatibility of some libs
+		frappe.sys_defaults = frappe.boot.sysdefaults;
+	</script>
+	{{ include_script('frappe-web.bundle.js') }}
+	{% endblock %}
+
+	{%- if js_globals is defined -%}
+		<script>
+			{% for key, value in js_globals.iteritems() %}
+				window.{ { key } } = "{{ value[0] }}";
+			{% endfor %}
+		</script>
+	{%- endif -%}
+
+	{%- for link in web_include_js -%}
+		{%- if link not in ["website_script.js","erpnext-web.bundle.js"] -%}
+			<script type="text/javascript" src="{{ link|abs_url }}"></script>
+		{%- endif -%}
+	{%- endfor -%}
+	
+	{%- if name != "login" -%}
+		{%- if script_path -%}
+			<script type="text/javascript" src="{{ script_path }}"></script>
+		{%- endif -%}
+	{%- endif -%}
+
+	{%- block script %}
+		{% if colocated_js -%}
+			<script>{{ colocated_js }}</script>
+		{%- endif %}
+	{%- endblock %}
+
+	<script type="text/javascript" crossorigin="anonymous"
+        src="https://cdn.jsdelivr.net/combine/gh/finbyz/finbyzweb@latest/finbyzweb/public/js/combine.min.js,npm/owl.carousel@2.3.4/dist/owl.carousel.min.js">
+    </script>
+	<script type="text/javascript" src="/pwa.js"></script>
+
+	<!-- csrf_token -->
+	{%- block body_include %}{{ body_include or "" }}{% endblock -%}
+</body>
+</html>
