@@ -3,6 +3,7 @@
 <html lang="en">
 
 <head>
+
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=3.0">
    <title>{% block title %}{% if seo_title %} {{ seo_title }} {% else %}Finbyz {{ title }}{% endif %}{% endblock %}</title>
@@ -21,6 +22,7 @@
    <meta name="apple-mobile-web-app-status-bar-style" content="#286090">
    <!--  <meta name="theme-color" content="#A1CC3A"/> -->
    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
    {% if (doctype == "Web Page" and name == "homepage") %}<link rel="canonical" href="https://finbyz.tech/"> {% endif %}
    
    {% if (doctype == "Web Page" and name == "homepage") or (doctype == "Web Form" and name == "contact") %}
@@ -117,6 +119,12 @@
       gtag('config', 'G-W37WLG9D8M');
       </script>
    <script type="text/javascript" src="https://cdn.jsdelivr.net/combine/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+   <style>
+      .standard-image {
+         margin-top: 12px;
+      }
+   </style>
 </head>
 
 <body data-path="{{ path }}">
