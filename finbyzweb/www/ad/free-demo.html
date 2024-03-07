@@ -1,0 +1,154 @@
+{% extends "templates/ad_base.html" %}
+
+{% block custom_stylesheet %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+{% endblock %}
+
+{% block content %}
+<!-- <div class="container-fluid"> -->
+<div class="row">
+    <div class="navbar">
+        <div class="logo">
+            <a class="navbar-brand" href="https://finbyz.tech">
+                <img src="/files/logo.jfif" alt="Logo" width=140>
+            </a>
+        </div>
+        <div class="contact-info">
+
+            <p><i class="fa fa-envelope">&nbsp;</i>Email: <a href="#" class="link"> info@finbyz.tech</a></p>
+            <p><i class="fa fa-phone">&nbsp;</i>Phone: <a href="#" class="link">+91 9925701446</a></p>
+
+        </div>
+    </div>
+</div>
+<!-- <section id="soft-m-partner" class="soft-m-partner-section hidden-xs"> -->
+<div class="container72">
+    <div class="soft-m-section-title text-center soft-m-headline" style="padding-top: 3%;">
+        <h2>Wide array of <span class="colortext">Industries</span></h2>
+        <span>Making your business-operations more streamlined by Using Finbyz Manufacturing ERP </span>
+    </div>
+    <div class="industry_new_one industry_new_one_2" style="padding-bottom: 3%;">
+        <ul>
+            <li>
+                <img src="/files/nav-chemical8db569.svg" alt="Chemical">
+                <p>Chemical</p>
+            </li>
+            <li>
+                <img src="/files/nav-engineering534286.svg" alt="Engineering">
+                <p>Engineering</p>
+            </li>
+            <li>
+                <img src="/files/nav-logistics6f6533.svg" alt="Logistics">
+                <p>Logistics</p>
+            </li>
+            <li>
+                <img src="/files/21.svg" alt="Manufacturing">
+                <p>Paper</p>
+            </li>
+            <li>
+                <img src="/files/nav-agrof1dff8.svg" alt="Agro">
+                <p> Agro</p>
+            </li>
+            <li>
+                <img src="/files/Furniture.svg" alt="Trading">
+                <p>Furniture</p>
+            </li>
+            <li>
+                <img src="/files/Pharma.svg" alt="Trading">
+                <p>Pharma</p>
+            </li>
+            <li>
+                <img src="/files/Textile.svg" alt="Trading">
+                <p>Textile</p>
+            </li>
+            <li>
+                <img src="/files/Plastic.svg" alt="Trading">
+                <p>Plastic</p>
+            </li>
+            <li>
+                <img src="/files/FMCG.svg" alt="Trading">
+                <p>FMCG</p>
+            </li>
+        </ul>
+    </div>
+</div>
+<section id="inquiry-form-section" class="mt-100 bg-layer inquiry-form-section">
+    <div class="container-fluid">
+            <div class="row p-5" style="border-radius: 50% !important; border-color: white !important;">
+                <div class="col-md-6 bg-white br-left inquiry-form-image d-flex align-items-center justify-content-center">
+                    <div class="mt-4 mb-4">
+                        <div class="text-center">
+                            <h2 class="colortext">
+                                Request for FREE Demo
+                            </h2>
+                        </div>
+                        <img src="/files/envelope-icon.svg" alt="Request for FREE Demo" title="Request for FREE Demo"
+                            class="finbyz-zoomin pt-4">
+                    </div>
+                </div>
+                <div class="col-md-6 mtn-1 mln-2 bg-white br-right inquiry-form-fields">
+                    <div id="inquiry-form">
+                        <form id="inquiry-ad" name="contact" class="inquiry-main bg-white ml-auto m-4"
+                            accept-charset="utf-8">
+                            <h3 class="colortext d-none">
+                                Request for FREE Demo
+                            </h3>
+                            <label class="d-block">
+                                <input class="form-control inquiry-input" name="lead_name" type="text" id="lead_name"
+                                    placeholder="Name" style="background-color: #FAF8F9;">
+                                <label class="inquiry-label"><span></span>
+                                </label>
+                            </label>
+                            <label class="d-block">
+                                <input class="form-control inquiry-input" name="company_name" type="text"
+                                    id="company_name" placeholder="Organization Name"
+                                    style="background-color: #FAF8F9;">
+                                <label class="inquiry-label"><span></span>
+                                </label>
+                            </label>
+                            <label class="d-block">
+                                <input class="form-control inquiry-input" name="email" type="email" id="email"
+                                    placeholder="Email" style="background-color: #FAF8F9;">
+                                <label class="inquiry-label"><span></span>
+                                </label>
+                            </label>
+                            <label class="d-block">
+                                <input class="form-control inquiry-input" data-bind="value:mobile_no" id="mobile_no"
+                                    name="mobile_no" min="0" required="" placeholder="Mobile No" type="text"
+                                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    maxlength="15" style="background-color: #FAF8F9;">
+                                <!-- <input class="form-control inquiry-input" data-bind="value:mobile_no" id="mobile_no" name="mobile_no" min="0"
+							required="" placeholder="Mobile No" type="number"
+							oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+							maxlength="15"> -->
+                                <label class="inquiry-label"><span></span>
+                                </label>
+                            </label>
+
+                            <!-- <input name="submit" type="submit" value="Send"/> -->
+                            <div class="text-center mt-4">
+                                <button class="btn finbyz-button" name="submit" type="submit" value="Send"
+                                    style="border-color: #1aa8e2; border-width: 5px;">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</section>
+
+</section>
+<footer>
+    <div class="row footer">
+        <div class="col-sm-12">
+            <center>
+                <p>Copyright © 2024 <a href="https://finbyz.tech/" target="_blank">FinByz Tech Pvt Ltd</a> | All Rights
+                    Reserved. | <a href="https://finbyz.tech/privacy-policy" target="_blank">Privacy Policy</a></p>
+            </center>
+        </div>
+    </div>
+</footer>
+{% endblock %}

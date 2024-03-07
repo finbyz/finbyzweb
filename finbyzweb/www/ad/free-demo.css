@@ -1,0 +1,201 @@
+.navbar {
+    overflow: hidden;
+    position: fixed;
+    background-color:white;
+    color: black;
+    overflow: hidden;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+}
+.contact-info {
+    text-align: right;
+}
+
+.contact-info p {
+    margin: 0;
+    display: inline; 
+    margin-right: 20px; 
+    cursor: pointer;
+}
+.contact-info a{
+    text-decoration: none;
+    color: #000;
+}
+.container72{
+    /* margin-top: 3%; */
+    background-color:#F8F9FA;
+}
+.colortext{
+    color: #1aa8e2;
+}
+.text-center {
+    text-align: center !important;
+}
+.industry_new_one {
+    width: 100%;
+}
+.industry_new_one ul {
+    width: 100%;
+    margin: 0px;
+    padding: 20px 0 0 0;
+    text-align: center;
+}
+.industry_new_one ul li {
+    list-style: none;
+    display: inline-block;
+    margin: 5px;
+    width: 100px;
+    text-align: center;
+}
+.industry_new_one_2 li {
+    width: 125px !important;
+}
+.industry_new_one img {
+    width: 50px;
+}
+.industry_new_one p {
+    margin: 8px 0 0 0;
+    color: #000;
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 500;
+}
+.idea{
+    box-shadow: 5px 5px 5px 1px #777;
+    display: flex;
+    width: 90%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%; 
+    margin: 20px auto;
+    background: #fff;
+    padding: 15px;
+    border-radius: 0;
+    color: black;
+    z-index: 2; 
+    top: 35%;
+    
+}
+
+.demo{
+    background-color:#1aa8e2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 22px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    margin: auto;
+}
+.demo-button {
+    background-color:#1aa8e2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 22px;
+    cursor: pointer;
+}
+.inquiry-main input.inquiry-input {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+}
+.inquiry-main input.inquiry-input {
+    color: #666;
+    font-size: 1em;
+    padding: 0.75em 0.5em 0.5em;
+    padding-bottom: 0;
+    width: 100%;
+    border: 0 !important;
+    border-bottom: 1px solid #ececec !important;
+    border-radius: 0 !important;
+    background-image: linear-gradient(#9FC2FA, #9FC2FA);
+    background-size: 0 2px, auto;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    transition: all .2s ease-out !important;
+    outline: 0 !important;
+}
+.inquiry-main .inquiry-input, .inquiry-main textarea.inquiry-textarea {
+    line-height: 1.5;
+}
+.inquiry-main .inquiry-input, .inquiry-main textarea.inquiry-textarea {
+    padding: 0.5em;
+    border: none;
+    font: 300 100% / 1.2 Ubuntu, sans-serif;
+}
+#inquiry, .inquiry-main .inquiry-label, .inquiry-main .inquiry-input {
+    position: relative;
+}
+.bg-layer {
+    background-image: linear-gradient(45deg, rgba(7, 11, 56, 0.6), rgba(26, 120, 226, 0.6)), url(/files/bg-new-final.jpg);
+    background-size: cover;
+}
+.footer{
+    background-color: #1e2022;
+    color: white;
+}
+.footer a{
+    text-decoration: none;
+    color: white;
+}
+.demo-form{
+    
+    border-radius: 5%;
+    box-shadow: 5px 5px 5px 1px #777;
+    background: #fff;
+}
+.br-left{
+    border-top-left-radius: 5%;
+    border-bottom-left-radius: 5%;
+}
+.br-right{
+    border-top-right-radius: 5%;
+    border-bottom-right-radius: 5%;
+}                                                                                                                                                                                           
+.inquiry-form-border{
+    border-radius: 5%;                  
+}
+@media screen and (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+    .contact-info {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .contact-info p {
+        display: block;
+        margin: 10px 0;
+    }
+
+}
+
+.hidden {
+    display: none !important;
+}
+
+.modal-header {
+    display: none !important;
+}
