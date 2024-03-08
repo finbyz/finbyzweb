@@ -6,7 +6,7 @@ async function lead_creation() {
             'lead_name': $('#lead_name').val(),
             'company_name': $('#company_name').val(),
             'mobile_no': $('#mobile_no').val(),
-            'title': document.title + '</br>' + window.location.href,
+            'title': window.location.href,
             'email': $('#email').val()
         },
         callback: function (r) {

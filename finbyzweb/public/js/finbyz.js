@@ -96,7 +96,7 @@ $(document).ready(function () {
                 'lead_name': $('#lead_name').val(),
                 'company_name': $('#company_name').val(),
                 'mobile_no': $('#mobile_no').val(),
-                'title': document.title + '</br>' + window.location.href,
+                'title': window.location.href,
                 'email': $('#email').val()
             },
             callback: function (r) {
@@ -1490,7 +1490,7 @@ function lead_creation_campaign() {
             'lead_name': $('#lead_name_campaign').val(),
             'company_name': $('#company_name_campaign').val(),
             'mobile_no': $('#mobile_no_campaign').val(),
-            'title': document.title + '</br>' + window.location.href,
+            'title': window.location.href,
             'email': $('#email_campaign').val()
         },
         callback: function (r) {
