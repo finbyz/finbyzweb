@@ -63,7 +63,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-08 15:40:48.483727",
+ "modified": "2024-03-08 15:45:30.149478",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Employee Feedback",
@@ -94,5 +94,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }
