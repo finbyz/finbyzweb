@@ -311,6 +311,9 @@ body {
 .finbyzerplist {
     margin-left: 20%;
 }
+.set-margin{
+    margin-top: 3rem !important;
+}
 
 .manufacturerserp {
     background-color: #F8F9FA;
@@ -349,6 +352,9 @@ body {
     .navbar {
         flex-direction: column;
         align-items: center;
+    }
+    .set-margin{
+        margin-top: 12rem !important;
     }
 
     .contact-info {

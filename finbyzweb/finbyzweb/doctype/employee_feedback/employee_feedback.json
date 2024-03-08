@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "autoname": "naming_series:naming_series",
+ "creation": "2024-03-08 09:42:27.721764",
+ "default_view": "List",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "user",
+  "employee_code",
+  "employee_name",
+  "positive_feedback",
+  "negative_feedback",
+  "things_to_improve"
+ ],
+ "fields": [
+  {
+   "fieldname": "positive_feedback",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Positive Feedback",
+   "reqd": 1
+  },
+  {
+   "fieldname": "negative_feedback",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Negative Feedback",
+   "reqd": 1
+  },
+  {
+   "fieldname": "things_to_improve",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Things To Improve",
+   "reqd": 1
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Select",
+   "label": "User",
+   "options": "\nanubhav.gupta@finbyz.tech\nanuj.sanklecha@finbyz.tech\ndhruvin.bhaliya@finbyz.tech\ninfo@finbyz.com\nluxmi.sharma@finbyz.tech\nmeghwin.dave@finbyz.tech\npal.shah@finbyz.tech\nravin.ramoliya@finbyz.tech\nsmit.bhaliya@finbyz.tech"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "employee_code",
+   "fieldtype": "Data",
+   "label": "Employee Code"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "EF-"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-03-08 15:05:27.952806",
+ "modified_by": "Administrator",
+ "module": "Finbyzweb",
+ "name": "Employee Feedback",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
