@@ -2,13 +2,13 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Employee Feedback", {
-	refresh(frm) {
-        frm.set_query("user", function() {
-            return {
-                filters: {
-                    "enabled": 1
-                }
-            };
-        });
-	},
+	// refresh(frm) {
+    //     frm.set_query("user", function() {
+    //         return {
+    //             filters: {
+    //                 "enabled": 1
+    //             }
+    //         };
+    //     });
+	// },
 });
