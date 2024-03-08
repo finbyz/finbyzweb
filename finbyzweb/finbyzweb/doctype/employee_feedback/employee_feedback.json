@@ -49,8 +49,9 @@
   },
   {
    "fieldname": "employee_code",
-   "fieldtype": "Data",
-   "label": "Employee Code"
+   "fieldtype": "Link",
+   "label": "Employee Code",
+   "options": "Employee"
   },
   {
    "fieldname": "naming_series",
@@ -62,7 +63,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-08 15:37:15.207243",
+ "modified": "2024-03-08 15:40:48.483727",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Employee Feedback",
