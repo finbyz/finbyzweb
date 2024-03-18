@@ -10,7 +10,8 @@
 	{% endblock %}
 
 	<title>{% block title %}{{ title | striptags }}{% endblock %}</title>
-
+	{% block description %}
+	{% endblock %}
 	{% block favicon %}
 	<link
 		rel="shortcut icon"
