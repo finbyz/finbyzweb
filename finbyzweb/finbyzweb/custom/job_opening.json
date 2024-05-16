@@ -1,0 +1,35 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Job Opening",
+ "links": [],
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2024-05-16 11:09:06.253357",
+   "default_value": "Month",
+   "doc_type": "Job Opening",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "salary_per",
+   "idx": 0,
+   "is_system_generated": 0,
+   "modified": "2024-05-16 11:09:13.207758",
+   "modified_by": "Administrator",
+   "module": "Finbyzweb",
+   "name": "Job Opening-salary_per-options",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "options",
+   "property_type": "Text",
+   "row_name": null,
+   "value": "Hour\nDay\nWeek\nMonth\nYear"
+  }
+ ],
+ "sync_on_migrate": 1
+}
