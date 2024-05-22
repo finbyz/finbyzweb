@@ -20,11 +20,14 @@
             <a class="rootLink item-developers hasDropdown colorize" data-dropdown="outsource" href="#">
                 Outsourcing
             </a>
+            <a class="rootLink item-support hasDropdown colorize"data-dropdown="career" href="#">
+                Career
+            </a>
             <a class="rootLink item-support" href="/blog">
                     Blog
                 </a>
           
-            <a class="rootLink hasDropdown item-support" data-dropdown="contact" href="#">
+            <a class="rootLink  item-support" href="/contact">
                     Contact Us
                 </a>
         </li>
@@ -72,9 +75,9 @@
                                 <li>
                                     <a href="/steer-your-vision"><img class="nav-service-icon" src="/files/au-steer-your-vision.svg" alt="Steer Your Vision" title="Steer Your Vision">Steer Your Vision</a>
                                 </li>
-                                <li>
+                                <!-- <li>
                                     <a href="/career"><img class="nav-service-icon" src="/files/nav-career.svg" alt="Jobs" title="Jobs">Career</a>
-                                </li>
+                                </li> -->
                             </ul>
                         </li>
                         <li>
@@ -94,11 +97,11 @@
                                     <a class="btn-next d-flex justify-content-end align-items-center ind-link" href="/erp-for-industry" target="_blank">
                                         <span class="pr-3 t-blue opac-1">View
                                                 More</span>
-                                        <svg class="finbyz-icon finbyz-icon-arrow-right1">
-                                                <use href="#finbyz-icon-arrow-right1"></use>
+                                        <svg class="finbyz-icon finbyz-icon-arrow-right1" >
+                                                <use href="#finbyz-icon-arrow-right1" loading="lazy"></use>
                                             </svg>
                                         <svg class="finbyz-icon icon-hover finbyz-icon-arrow-right-1">
-                                                <use href="#finbyz-icon-arrow-right-1"></use>
+                                                <use href="#finbyz-icon-arrow-right-1" loading="lazy"></use>
                                             </svg>
                                     </a>
                                 </li>
@@ -539,12 +542,12 @@
                                 <h6 class="link-underline mt-1">Steer Your Vision</h6>
                             </a>
                         </li>
-                        <li>
+                        <!-- <li>
                             <a class="linkContainer item-jobs" href="/career">
                                 <img class="nav-service-icon" src="/files/nav-career.svg" alt="Jobs" title="Jobs">
                                 <h6 class="link-underline mt-1">Career</h6>
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
                     <div class="linkGroup blogGroup">
                         <a class="linkContainer" href="/blog">
@@ -588,13 +591,14 @@
                     </ul>
                     </div>
                 </div>
-            </div>            <div class="dropdownSection right" data-dropdown="contact">
+            </div>            
+            <div class="dropdownSection right" data-dropdown="career">
                 <div class="dropdownContent">
                     <ul class="linkGroup linkList contactGroup pb-0">
                         <li>
-                            <a class="linkContainer item-about" href="/contact">
-                                <img class="nav-service-icon" src="/files/nav-call.svg" alt="Contact" title="Conatct">
-                                <h6 class="link-underline mt-1">Inquiry
+                              <a href="/career"><img class="nav-service-icon" src="/files/nav-career.svg" alt="Jobs" title="Jobs">
+                                <!-- <img class="nav-service-icon" src="/files/nav-call.svg" alt="Contact" title="Conatct"> -->
+                                <h6 class="link-underline mt-1">Career at Finbyz
                                 </h6>
                             </a>
                         </li>
@@ -608,7 +612,7 @@
                     <div class="linkGroup blogGroup">
                         <a class="linkContainer" href="/jobs">
                             <img class="nav-service-icon" src="/files/job-opening.svg" alt="Job Opening" title="Job Opening">
-                            <h5 class="link-underline mt-1">Job Opening</h5>
+                            <h5 class="link-underline mt-1">Job Openings</h5>
                         </a>
 
                         {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='modified desc',limit=3) -%}
