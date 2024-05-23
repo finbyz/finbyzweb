@@ -20,7 +20,7 @@
             <a class="rootLink item-developers hasDropdown colorize" data-dropdown="outsource" href="#">
                 Outsourcing
             </a>
-            <a class="rootLink item-support hasDropdown colorize"data-dropdown="career" href="#">
+            <a class="rootLink item-support hasDropdown colorize" data-dropdown="career" href="#">
                 Career
             </a>
             <a class="rootLink item-support" href="/blog">
@@ -188,6 +188,45 @@
                                 {% endfor %}
                                 
                             </ul>
+                            <!-- <ul class="collapse list-unstyled ml-5" id='career'>
+                               
+                                <li>
+                                    <a href="/career"><img class="nav-service-icon" src="/files/nav-career.svg" alt="career" title="career">Career</a>
+                                </li>
+                               
+                                
+                            </ul> -->
+                            <li>
+                                <a href="" data-ls="Careersubmenu" data-toggle="collapse" aria-expanded="false" class="go-tosub-menu">
+                                    <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="Web App Development">
+                                    <img class="nav-service-icon" src="/files/nav-career.svg" alt="ERPNext" title="ERPNext">Career</a>
+                                <img data-ls="Careersubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
+                                <ul class="collapse list-unstyled ml-5" id='Careersubmenu' >
+                                    <li>
+                                        <img class="nav-service-icon" src="/files/nav-career.svg" alt="Jobs" title="Jobs"> 
+                                        <a href="/career" class="link-underline p-1">Career at Finbyz</a>
+                                    </li>
+                                    <li>
+                                        <img class="nav-service-icon" src="/files/nav-jobs.svg" alt="Jobs" title="Jobs"> 
+                                        <a href="/job-application-form?new=1" class="link-underline p-1">Job Application</a>
+                                    </li>
+                                    <li>
+                                        <img class="nav-service-icon" src="/files/job-opening.svg" alt="Jobs" title="Jobs"> 
+                                        <a href="/jobs" class="link-underline p-1">Job Opening</a>
+                                        {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='modified desc',limit=3) -%}
+                                        <ul class="blogPosts">
+                                            {%- for d in jobopen -%}
+                                            <li>
+                                                <a href="/{{ d.route }}">
+                                                    <span>{{ d.job_title }}</span>
+                                                </a>
+                                            </li>
+                                            {%- endfor -%}
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                            </li>
                         </li>
                         <li>
                             <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Blog" title="Blog"><a href="/blog">Blog</a>
@@ -596,7 +635,8 @@
                 <div class="dropdownContent">
                     <ul class="linkGroup linkList contactGroup pb-0">
                         <li>
-                              <a href="/career"><img class="nav-service-icon" src="/files/nav-career.svg" alt="Jobs" title="Jobs">
+                              <a class="linkContainer item-customers" href="/career">
+                                <img class="nav-service-icon" src="/files/nav-career.svg" alt="Jobs" title="Jobs">
                                 <!-- <img class="nav-service-icon" src="/files/nav-call.svg" alt="Contact" title="Conatct"> -->
                                 <h6 class="link-underline mt-1">Career at Finbyz
                                 </h6>
