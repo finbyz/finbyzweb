@@ -58,11 +58,14 @@
 			{% if gallery_links %}
 				{% include "templates/includes/gallery_links.html" %}
 			{% endif %}
-			
-			{% if doctype == "Web Page" and (name != "career" and name!="contact") and doctype!="Ad Campaign" %}
-			{% include "templates/includes/form/inquiry_form.html" %}
-			
+
+			{% if not (
+				(doctype == "Web Page" and name == "career" or name == "contact") or 
+				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening")
+			) %}
+				{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
+		
 			
 			{% if doctype == "Web Page" and name == "homepage" %}
 			<div class="customer">
@@ -70,7 +73,7 @@
 			</div>
 			{% endif %}
 
-			{% if doctype == "Web Page" or  doctype != "Web Page"%}
+			{% if (doctype == "Ad Campaign") %}
 				{% include 'templates/includes/form/campaign_inquiry_form.html' %}
 			{% endif %}
 		</div>
