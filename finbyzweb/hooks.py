@@ -164,3 +164,7 @@ doc_events = {
 override_doctype_dashboards = {
 	"Issue":"finbyzweb.finbyzweb.dashboard.issue.get_data",
 }
+
+from erpnext.support.doctype.issue import issue
+from finbyzweb.finbyzweb.monkey_patch.issue import get_issue_list
+issue.get_issue_list = get_issue_list
