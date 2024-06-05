@@ -1,25 +1,25 @@
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="text-center">
-				<h3 class="pt-3">
-					Some of The Loyal Clients of FinByz
-				</h3>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<div class="finbyz-customer">
-				<div class="owl-carousel py-3">
-					{% set customer_doc = frappe.get_doc("Customer Details", "Customer Details") %}
-					{% for i in customer_doc.get({"doctype":"Customer Details List"}) %}
-					<div class="item pl-20 pr-20">
-						<img src="{{ i.image }}" alt="{{ i.customer }}" title='{{ i.customer }}' class="customer-logo-img" style="height: auto !important; max-width: 150px!important;" >
-					</div>
-					{% endfor %}
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="container-fluid d-none d-sm-block">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h3 class="pt-3">
+                    Some of The Loyal Clients of FinByz
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="finbyz-customer">
+                <div class="owl-carousel py-3">
+                    {% set customer_doc = frappe.get_doc("Customer Details", "Customer Details") %}
+                    {% for i in customer_doc.get({"doctype":"Customer Details List"}) %}
+                    <div class="item pl-20 pr-20">
+                        <img src="{{ i.image }}" alt="{{ i.customer }}" title='{{ i.customer }}' class="customer-logo-img" style="height: auto !important; max-width: 150px!important;">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -41,11 +41,19 @@
 
 	{% if result_heading_template %}{% include result_heading_template %}{% endif %}
 
-	<div class="row result test" {% if doctype == "Gallery"%}id="show"{% endif %}>
+	{% if not (route == "invoices") %}
+	<div class="margin-setup" {% if (doctype == "Gallery") %}id="show"{% endif %}>
 		{% for row in result %}
 		{{row}}
 		{% endfor %}
 	</div>
+	{% else %}
+	<div class="row result test" {% if (doctype == "Gallery") %}id="show"{% endif %}>
+		{% for row in result %}
+		{{row}}
+		{% endfor %}
+	</div>
+	{% endif %}
 	<div class="more-block {% if not show_more -%} hide {%- endif %}">
 		<button class="btn btn-default btn-more btn-sm">{{ _("More") }}</button>
 	</div>

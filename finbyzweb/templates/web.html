@@ -61,14 +61,14 @@
 
 			{% if not (
 				(doctype == "Web Page" and name == "career" or name == "contact") or 
-				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening")
+				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening") or (route == "login" or route == "me" or route == "app")
 			) %}
 				{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
 		
 			
 			{% if doctype == "Web Page" and name == "homepage" %}
-			<div class="customer">
+			<div class="customer d-none d-md-block">
 				{% include 'www/customer.html' %}
 			</div>
 			{% endif %}
