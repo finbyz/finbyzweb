@@ -25,7 +25,7 @@ class BacklinkRegister(Document):
 			live_backlinks=self.live_backlinks.split('/')
 			domain=live_backlinks[0]+"//"+live_backlinks[2]
 			if domain:
-				self.domiain_authority = frappe.db.get_value("Domain Authority",domain,'domain_authority') if frappe.db.get_value("Domain Authority",domain,'domain_authority') else None
+				self.domiain_authority = frappe.db.get_value("Domain Authority",domain,'domain_authority') if frappe.db.get_value("Domain Authority",domain,'domain_authority') else self.domiain_authority
 				self.domain = frappe.db.get_value("Domain Authority",domain,'domain_name') if frappe.db.get_value("Domain Authority",domain,'domain_name') else None
               
 @frappe.whitelist()
