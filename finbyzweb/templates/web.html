@@ -60,7 +60,7 @@
 			{% endif %}
 
 			{% if not (
-				(doctype == "Web Page" and name == "career" or name == "contact") or 
+				(doctype == "Web Page" and (name == "career" or name == "contact")) or 
 				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening") or (route == "login" or route == "me" or route == "app")
 			) %}
 				{% include "templates/includes/form/inquiry_form.html" %}
@@ -73,7 +73,10 @@
 			</div>
 			{% endif %}
 
-			{% if (doctype == "Ad Campaign") %}
+			{% if not (
+				(doctype == "Web Page" and (name == "career" or name == "contact")) or 
+				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening") or (route == "login" or route == "me" or route == "app")
+			) %}
 				{% include 'templates/includes/form/campaign_inquiry_form.html' %}
 			{% endif %}
 		</div>
