@@ -18,10 +18,36 @@
  "introduction_text": "",
  "is_multi_step_form": 0,
  "is_standard": 1,
- "list_columns": [],
+ "list_columns": [
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Subject"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer"
+  },
+  {
+   "fieldname": "raised_by",
+   "fieldtype": "Data",
+   "label": "Raised By (Email)"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status"
+  },
+  {
+   "fieldname": "total_involvement_time",
+   "fieldtype": "Float",
+   "label": "Total Involvement Time"
+  }
+ ],
  "login_required": 1,
  "max_attachment_size": 0,
- "modified": "2024-06-15 09:26:17.220447",
+ "modified": "2024-06-15 11:06:43.279212",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "ticket",
