@@ -17,6 +17,7 @@
   "column_break_7rhxf",
   "date",
   "type",
+  "project",
   "submitted_url",
   "remarks"
  ],
@@ -43,8 +44,7 @@
    "allow_in_quick_entry": 1,
    "fieldname": "submitted_url",
    "fieldtype": "Data",
-   "label": "Submitted URL",
-   "read_only": 1
+   "label": "Submitted URL"
   },
   {
    "fieldname": "remarks",
@@ -103,11 +103,20 @@
    "label": "Domain",
    "options": "Domain Authority",
    "read_only": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Project",
+   "options": "Project",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-12 10:45:38.161209",
+ "modified": "2024-07-30 09:57:17.035560",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Backlink Register",
