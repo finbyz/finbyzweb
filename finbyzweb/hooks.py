@@ -38,9 +38,10 @@ web_include_css = [
 	"https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css",
 	"https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css",
 ]
-# web_include_js = [
-	# "assets/finbyzweb/js/finbyz.js",
-# ]
+web_include_js = [
+ 	# "assets/finbyzweb/js/finbyz.js",
+    "public/js/web_form.js",
+]
 
 # include js, css files in header of web template
 web_include_css = "/assets/finbyzweb/css/finbyzweb.css"
@@ -56,7 +57,8 @@ web_include_css = "/assets/finbyzweb/css/finbyzweb.css"
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
 override_doctype_class = {
-	"Website Theme": "finbyzweb.website_theme_override.CustomWebsiteTheme"
+	"Website Theme": "finbyzweb.website_theme_override.CustomWebsiteTheme",
+    "Web Form": "finbyzweb.finbyzweb.override.web_form.WebForm"
 }
 
 

@@ -172,6 +172,7 @@
                                 <li>
                                     <img class="nav-service-icon" src="/files/FD-Management-Logo.svg" alt="FD" title="FD"><a class="link-underline p-1" href="/fd-management-erpnext">FD Management</a>
                                 </li>
+                                
                             </ul>
                         </li>
                         <li>
@@ -686,6 +687,8 @@
                                 </h6>
                             </a>
                         </li>
+                        
+                        {% if frappe.db.get_value("User", frappe.session.user, "user_type") != "Website User" %}
                         <li>
                             <a class="linkContainer item-about" href="/desk" rel="nofollow">
                                 <img class="nav-service-icon" src="/files/nav-switch-to-desk.svg" alt="Desk" title="Desk">
@@ -693,6 +696,7 @@
                                 </h6>
                             </a>
                         </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
