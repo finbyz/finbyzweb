@@ -22,6 +22,7 @@ export default class FinByzWebFormList extends WebFormList {
 		this.columns.forEach((col) => {
 			let $tr = $thead.find("tr");
 			let $th = $(`<th>${__(col.label)}</th>`);
+			
 			$th.appendTo($tr);
 		});
 

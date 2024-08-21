@@ -166,7 +166,7 @@
 					<th>
 						<input type="checkbox" class="select-all">
 					</th>
-					<th>${__("Name")}.</th>
+					<th>${__("Name")}</th>
 				</tr>
 			</thead>
 		`);
@@ -845,4 +845,4 @@
     }
   });
 })();
-//# sourceMappingURL=custom_web_form.bundle.SFEIFMLY.js.map
+//# sourceMappingURL=custom_web_form.bundle.6Z7QJPKC.js.map

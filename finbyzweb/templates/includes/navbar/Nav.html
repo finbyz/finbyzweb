@@ -673,6 +673,7 @@
             <div class="dropdownSection left logged-in" data-dropdown="finbyz-login">
                 <div class="dropdownContent">
                     <ul class="linkGroup linkList loginGroup">
+                        {% if frappe.db.get_value("User", frappe.session.user, "user_type") != "Website User" %}
                         <li>
                             <a class="linkContainer item-about" href="/me" rel="nofollow">
                                 <img class="nav-service-icon" src="/files/nav-my-account.svg" alt="My account" title="My account">
@@ -680,6 +681,15 @@
                                 </h6>
                             </a>
                         </li>
+                        {% else %}
+                        <li>
+                            <a class="linkContainer item-about" href="/ticket/list" rel="nofollow">
+                                <img class="nav-service-icon" src="/files/nav-my-account.svg" alt="My account" title="My account">
+                                <h6 class="link-underline mt-1">{{ _('My Ticket') }}
+                                </h6>
+                            </a>
+                        </li>
+                        {% endif %}
                         <li>
                             <a class="linkContainer item-about" href="/?cmd=web_logout" rel="nofollow">
                                 <img class="nav-service-icon" src="/files/nav-logout.svg" alt="Logout" title="Logout">

@@ -178,7 +178,7 @@ export default class WebFormList {
 					<th>
 						<input type="checkbox" class="select-all">
 					</th>
-					<th>${__("Name")}.</th>
+					<th>${__("Name")}</th>
 				</tr>
 			</thead>
 		`);

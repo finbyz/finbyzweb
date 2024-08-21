@@ -9,7 +9,7 @@
  "apply_document_permissions": 0,
  "breadcrumbs": "[{\"label\":_(\"Issues\"), \"route\":\"ticket\"}]",
  "button_label": "Save",
- "client_script": "$(document).ready(function() {\r\n    // For the header (th)\r\n    $(\"th\").each(function() {\r\n        if ($(this).html().includes(\"Sr.\")) {\r\n            $(this).css('display', 'none'); // Hide the th element containing 'Sr.'\r\n        }\r\n    });\r\n\r\n    // For the table cells (td)\r\n    $(\"td\").each(function() {\r\n        if ($(this).html().includes(\"Sr.\")) {\r\n            $(this).css('display', 'none'); // Hide the td element containing 'Sr.'\r\n        }\r\n    });\r\n});\r\n",
+ "client_script": "",
  "condition_json": "[]",
  "creation": "2024-06-15 09:26:17.220447",
  "doc_type": "Issue",
@@ -26,9 +26,9 @@
    "label": "Subject"
   },
   {
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "label": "Customer"
+   "fieldname": "opening_date",
+   "fieldtype": "Date",
+   "label": "Opening Date"
   },
   {
    "fieldname": "raised_by",
@@ -48,7 +48,7 @@
  ],
  "login_required": 1,
  "max_attachment_size": 0,
- "modified": "2024-08-14 11:52:40.071137",
+ "modified": "2024-08-20 18:17:47.824938",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "ticket",
@@ -252,7 +252,7 @@
    "max_value": 0,
    "options": "Time Involvement",
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
