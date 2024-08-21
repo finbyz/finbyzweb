@@ -6,3 +6,4 @@
 *.swp
 tags
 finbyzweb/docs/current
+finbyzweb/public/dist/*
