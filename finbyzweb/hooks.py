@@ -43,6 +43,13 @@ web_include_js = [
     "public/js/web_form.js",
 ]
 
+fixtures = [
+       {
+        
+         "dt": "Custom Field", 
+         "filters":[["module", "=", 'Finbyzweb']]
+	   }
+]
 # include js, css files in header of web template
 web_include_css = "/assets/finbyzweb/css/finbyzweb.css"
 # web_include_js = "/assets/finbyzweb/js/finbyzweb.js"

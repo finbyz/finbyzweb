@@ -295,7 +295,7 @@
                             {%- set industry = frappe.db.get_all('Web Page',filters={'page_type': "Industry",'hide_from_the_navigation':0},fields=["title","navigation_description","navigation_logo","route"]) -%}
                             {%- for d in industry -%}
                             <li>
-                                <a class="linkContainer" href="{{d.route}}">
+                                <a class="linkContainer" href="/{{d.route}}">
                                     <img src="{{d.navigation_logo}}" title="{{d.navigation_logo}}" alt="{{d.navigation_logo}}" class="nav-icon">
                                     <div>
                                         <h6 class="link-underline m-0 p-0">{{d.title}}</h6>
@@ -599,7 +599,7 @@
                         <ul class="blogPosts">
                             {%- for d in blog -%}
                             <li>
-                                <a href="{{ d.route }}">
+                                <a href="/{{ d.route }}">
                                     <span>{{ d.title }}</span>
                                 </a>
                             </li>

@@ -344,6 +344,19 @@
           formatter(this.doc[field.fieldname], field, { only_value: 1 }, this.doc)
         ) || "";
         let cell = $(`<td><p class="ellipsis">${value}</p></td>`);
+        if (field.fieldname === "status") {
+          let pTag = cell.find("p");
+          if (value.toLowerCase() === "open" && this.doc["priority"].toLowerCase() === "high") {
+            pTag.addClass("badge badge-danger");
+          } else if (value.toLowerCase() === "closed") {
+            pTag.addClass("badge badge-success");
+          } else if (value.toLowerCase() === "on hold") {
+            pTag.addClass("badge badge-secondary");
+          } else if (value.toLowerCase() === "open") {
+            pTag.addClass("badge badge-warning");
+          }
+        }
+        cell.appendTo(this.row);
         if (field.fieldtype === "Text Editor") {
           value = $(value).addClass("ellipsis");
           cell = $("<td></td>").append(value);
@@ -845,4 +858,4 @@
     }
   });
 })();
-//# sourceMappingURL=custom_web_form.bundle.6Z7QJPKC.js.map
+//# sourceMappingURL=custom_web_form.bundle.5R552RGW.js.map
