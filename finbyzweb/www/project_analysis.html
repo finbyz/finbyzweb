@@ -328,40 +328,69 @@ path[paint-order="stroke"] {
     opacity: 0.5;
 }
         </style>
-    </head>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script></head>
     <body>
+        <!-- Add these buttons where you want them in your HTML -->
+        <div class="d-flex justify-content-end">
+            <button id="select-project-btn" class="btn btn-primary me-2 mr-2" data-bs-toggle="modal" data-bs-target="#projectModal">Select Project</button>
+            <button id="select-timespan-btn" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#timespanModal">Select Timespan</button>
+        </div>
+        
+
+        <!-- Project Selection Modal -->
+        <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="projectModalLabel">Select Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <select id="projectSelect" class="form-select">
+                <option selected>Choose a project...</option>
+                <!-- Add project options dynamically using JavaScript -->
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveProjectBtn">Save changes</button>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Timespan Selection Modal -->
+        <div class="modal fade" id="timespanModal" tabindex="-1" aria-labelledby="timespanModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="timespanModalLabel">Select Timespan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                <label for="fromDate" class="form-label">From Date</label>
+                <input type="date" class="form-control" id="fromDate">
+                </div>
+                <div class="mb-3">
+                <label for="toDate" class="form-label">To Date</label>
+                <input type="date" class="form-control" id="toDate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveTimespanBtn">Save changes</button>
+            </div>
+            </div>
+        </div>
+        </div>
         <div class="ml-2">
             <!-- Activity Summary -->
             <div class="row mt-4">
                 <div class="chart-column-container" id="url-data">
                     <div class="chart-column-container chart-wrapper">
                         <!-- URL DATA HERE -->
-                    </div>
-                </div>
-            </div>`
-            <div class="row mt-4">
-                <div class="frappe-card chart-column-container col-md-12">
-                    <div class="title-area">
-                        <h5 class="mt-2 ml-2">Activity Summary</h5>
-                    </div>
-                    <div style="display: flex; justify-content: center;">
-                        <ul class="row list-unstyled" style="display: flex; padding: 0; list-style: none;" id="overallChartLegends">
-                            <li data-value="Inactive" class="row align-center" style="margin-right: 20px;">
-                                <span style="background-color: #E9EAEC; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>Inactive
-                            </li>
-                            <li data-value="Application" class="row align-center" style="margin-right: 20px;">
-                                <span style="background-color: #4BC0C0; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>Application
-                            </li>
-                            <li data-value="Internal Meeting" class="row align-center" style="margin-right: 20px;">
-                                <span style="background-color: #9966FF; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>Internal Meeting
-                            </li>
-                            <li data-value="External Meeting" class="row align-center" style="margin-right: 20px;">
-                                <span style="background-color: #6699FF; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>External Meeting
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="overall-performance" style="width: 100%; min-height: 450px; max-height: 650px;">
-                        <!-- Overall Performance Chart Container -->
                     </div>
                 </div>
             </div>

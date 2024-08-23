@@ -19,13 +19,13 @@ def get_context(context):
 
 # Overall Performance Code Starts
 @frappe.whitelist()
-def overall_performance(user=None, start_date=None, end_date=None):
+def overall_performance(user=None, start_date=None, end_date=None, project=None):
+    condition = ""
+    meeting_condition = ""
     if user:
-        condition = "and dwsp.employee = '{0}' ".format(user)
-        meeting_condition = "and mcr.employee = '{0}' ".format(user)
-    else:
-        condition = ""
-        meeting_condition = ""
+        condition += "and dwsp.employee = '{0}' ".format(user)
+        meeting_condition += "and mcr.employee = '{0}' ".format(user)
+    
     # frappe.throw(str(condition))
     meetings = frappe.db.sql(f"""
          SELECT m.name AS parent, 
@@ -91,11 +91,12 @@ def overall_performance(user=None, start_date=None, end_date=None):
 
 # Work Intensity Code Starts
 @frappe.whitelist()
-def work_intensity(user = None, start_date=None, end_date=None):
+def work_intensity(user = None, start_date=None, end_date=None, project=None):
+    condition = ""
     if user:
-        condition = "and employee = '{0}' ".format(user)
-    else:
-        condition = ""
+        condition += "and employee = '{0}' ".format(user)
+    if project:
+        condition += "and project = '{0}' ".format(project)
 
     intensity_data = frappe.db.sql(f"""
         SELECT 
@@ -143,11 +144,12 @@ def work_intensity(user = None, start_date=None, end_date=None):
 
 # Applications Used Code Starts
 @frappe.whitelist()
-def application_usage_time(user=None,start_date=None, end_date=None):
+def application_usage_time(user=None,start_date=None, end_date=None,project=None):
+    condition = ""
     if user:
-        condition = "and employee = '{0}' ".format(user)
-    else:
-        condition = ""
+        condition += "and employee = '{0}' ".format(user)
+    if project:
+        condition += "and project = '{0}' ".format(project)
     application_name = frappe.db.sql(f"""
         SELECT 
             LEFT(application_name, 25) AS application_name, 
@@ -180,11 +182,12 @@ def application_usage_time(user=None,start_date=None, end_date=None):
 
 # Web Browsing Time code starts
 @frappe.whitelist()
-def web_browsing_time(user=None,start_date=None,end_date=None):
+def web_browsing_time(user=None,start_date=None,end_date=None, project=None):
+    condition = ""
     if user:
-        condition = "and employee = '{0}' ".format(user)
-    else:
-        condition = ""
+        condition += "and employee = '{0}' ".format(user)
+    if project:
+        condition += "and project = '{0}' ".format(project)
     domain_data = frappe.db.sql(f"""
         SELECT domain, round(SUM(duration)/3600,2) as total_duration
         FROM `tabApplication Usage log`
@@ -207,19 +210,23 @@ def web_browsing_time(user=None,start_date=None,end_date=None):
 # Web Browsing Time code ends
 
 # User Activity Images Code Starts
+import frappe
+from frappe.utils import getdate
+
+# User Activity Images Code Starts
 @frappe.whitelist()
 def user_activity_images(user=None,start_date=None, end_date=None, offset=0):
     if user:
         condition = "and employee = '{0}' ".format(user)
     else:
         condition = ""
-    # frappe.throw(str(start_date) + " " + str(end_date))
-    data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]], "employee": condition}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
+    # frappe.throw(str(parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)))
+    data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
+    # frappe.throw(str(data))
     for i in data:
         i["time_"] = frappe.format(i["time"], "Datetime")
     return data
 # User Activity Images Code Ends
-
 # Conditions to be applied to get data from versions table code starts 
 @frappe.whitelist() 
 def version_conditions(user,start_date=None, end_date=None):
@@ -234,13 +241,14 @@ def version_conditions(user,start_date=None, end_date=None):
 
 
 @frappe.whitelist()
-def fetch_url_data(user=None, start_date=None, end_date=None):
+def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
+    condition = ""
+    app_condition = ""
     if user:
-        condition = "AND mcr.employee = '{0}'".format(user)
-        app_condition = "AND employee = '{0}'".format(user)
-    else:
-        condition = ""
-        app_condition = ""
+        condition += "AND mcr.employee = '{0}'".format(user)
+        app_condition += "AND employee = '{0}'".format(user)
+    if project:
+        app_condition += "AND project = '{0}'".format(project)
 
     # Fetch application usage data
     application_time = frappe.db.sql(f"""
@@ -303,3 +311,9 @@ def fetch_url_data(user=None, start_date=None, end_date=None):
             for emp_id, emp_data in combined_duration.items() if emp_data['employee'] is not None]
     # frappe.throw(str(data))
     return {"data": data}
+
+
+@frappe.whitelist()
+def get_projects():
+    projects = frappe.get_list("Project", fields=["name", "project_name"])
+    return projects
