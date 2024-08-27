@@ -17,81 +17,11 @@ def get_context(context):
 	context.show_sidebar = True
 	
 
-# Overall Performance Code Starts
-@frappe.whitelist()
-def overall_performance(user=None, start_date=None, end_date=None, project=None):
-    condition = ""
-    meeting_condition = ""
-    if user:
-        condition += "and dwsp.employee = '{0}' ".format(user)
-        meeting_condition += "and mcr.employee = '{0}' ".format(user)
-    
-    # frappe.throw(str(condition))
-    meetings = frappe.db.sql(f"""
-         SELECT m.name AS parent, 
-            m.meeting_from AS meeting_start, m.meeting_to AS meeting_end, m.party as client, m.internal_meeting AS internal,DATE(m.meeting_from) as date,
-            mcr.employee, mcr.employee_name, m.organization as organization, m.party_type as party_type, m.meeting_arranged_by as meeting_arranged_by
-        FROM `tabMeeting` AS m
-        JOIN `tabMeeting Company Representative` AS mcr ON mcr.parent = m.name
-        WHERE m.meeting_from >= '{start_date} 00:00:00' and m.meeting_to <= '{end_date} 23:59:59' and m.docstatus = 1 {meeting_condition}
-        ORDER BY date(m.meeting_from)
-    """, as_dict=True)
-
-    applications = frappe.db.sql(f"""
-        SELECT dwsp.name AS parent, 
-            a.from_time AS application_start, a.to_time AS application_end,
-            dwsp.employee, dwsp.date
-        FROM `tabProductify Work Summary` AS dwsp
-        JOIN `tabProductify Work Summary Application` AS a ON a.parent = dwsp.name
-        WHERE dwsp.date between '{start_date}' and '{end_date}' {condition}
-        ORDER BY dwsp.date
-    """, as_dict=True)
-    base_data = []
-    for app in applications:
-        base_data.append([
-            "Application",
-            app['date'],
-            app['application_start'],
-            app['application_end'],
-        ])
-
-    for meeting in meetings:
-        if meeting['internal']:
-            base_data.append([
-                "Internal Meeting",
-                meeting['date'],
-                meeting['meeting_start'],
-                meeting['meeting_end'],
-                meeting['internal'],
-                meeting['client']
-            ])
-        else:
-            base_data.append([
-                "External Meeting",
-                meeting['date'],
-                meeting['meeting_start'],
-                meeting['meeting_end'],
-                meeting['internal'],
-                meeting['organization'],
-                meeting['party_type'],
-                meeting['meeting_arranged_by']
-            ])  
-
-    base_data = sorted(base_data, key=lambda x: x[2])
-    data = list(set([item[1] for item in base_data]))
-
-    return{
-        "base_dimensions":['Activity', 'Employee', 'Start Time', 'End Time'],
-        "dimensions":['Employee', 'Employee Name'],
-        "base_data":base_data,
-        "data":data
-    }
-# Overall Performance Code Ends
-
-
 # Work Intensity Code Starts
 @frappe.whitelist()
 def work_intensity(user = None, start_date=None, end_date=None, project=None):
+    # if not project:
+    #     return []
     condition = ""
     if user:
         condition += "and employee = '{0}' ".format(user)
@@ -145,6 +75,8 @@ def work_intensity(user = None, start_date=None, end_date=None, project=None):
 # Applications Used Code Starts
 @frappe.whitelist()
 def application_usage_time(user=None,start_date=None, end_date=None,project=None):
+    # if not project:
+    #     return []
     condition = ""
     if user:
         condition += "and employee = '{0}' ".format(user)
@@ -183,6 +115,8 @@ def application_usage_time(user=None,start_date=None, end_date=None,project=None
 # Web Browsing Time code starts
 @frappe.whitelist()
 def web_browsing_time(user=None,start_date=None,end_date=None, project=None):
+    # if not project:
+    #     return []
     condition = ""
     if user:
         condition += "and employee = '{0}' ".format(user)
@@ -215,14 +149,10 @@ from frappe.utils import getdate
 
 # User Activity Images Code Starts
 @frappe.whitelist()
-def user_activity_images(user=None,start_date=None, end_date=None, offset=0):
-    if user:
-        condition = "and employee = '{0}' ".format(user)
-    else:
-        condition = ""
-    # frappe.throw(str(parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)))
-    data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
-    # frappe.throw(str(data))
+def user_activity_images(user=None,start_date=None, end_date=None, project = None, offset=0):
+    # if not project:
+    #     return []
+    data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
     for i in data:
         i["time_"] = frappe.format(i["time"], "Datetime")
     return data
@@ -242,6 +172,9 @@ def version_conditions(user,start_date=None, end_date=None):
 
 @frappe.whitelist()
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
+    # frappe.throw(str(start_date) + " " + str(end_date))
+    # if not project:
+    #     frappe.throw("Please select a project")
     condition = ""
     app_condition = ""
     if user:
@@ -257,7 +190,13 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
         WHERE date >= '{start_date}' AND date <= '{end_date}' {app_condition}
         GROUP BY employee_name, employee
     """, as_dict=True)
-    
+    # frappe.throw(f"""
+    #     SELECT employee_name AS employee, employee AS employee_id, SUM(duration) AS total_duration
+    #     FROM `tabApplication Usage log`
+    #     WHERE date >= '{start_date}' AND date <= '{end_date}' {app_condition}
+    #     GROUP BY employee_name, employee
+    # """)
+    # frappe.throw(str(application_time))
     # Fetch meeting time data
     meeting_time = frappe.db.sql(f"""
         SELECT mcr.employee AS employee_id, SUM(TIME_TO_SEC(TIMEDIFF(m.meeting_to, m.meeting_from))) AS total_duration
@@ -317,3 +256,78 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
 def get_projects():
     projects = frappe.get_list("Project", fields=["name", "project_name"])
     return projects
+
+
+# Overall Performance timely Code Starts
+@frappe.whitelist()
+def overall_performance_timely(employee=None, date=None, hour=None, project=None):
+    # if not project:
+    #     return {
+    #         "labels": [],
+    #         "values": []
+    #     }
+    if not employee:
+        return {
+            "labels": [],
+            "values": []
+        }
+    applications = frappe.db.sql(f"""
+    SELECT 
+        application_name AS name, 
+        from_time AS application_start, 
+        to_time AS application_end, 
+        date, 
+        LEFT(application_title, 80) AS application_title, 
+        LEFT(url, 80) AS url, 
+        project, 
+        issue, 
+        task,
+        process_name
+    FROM `tabApplication Usage log`
+    WHERE date = '{date}' 
+      AND employee = '{employee}' 
+      AND application_name != '' 
+      AND application_name IS NOT NULL 
+      AND HOUR(from_time) = {hour}
+      AND project = '{project}'
+    """, as_dict=True)
+
+    base_data = []
+    for app in applications:
+        if app.process_name in ["chrome.exe","firefox.exe","msedge.exe","opera.exe","iexplore.exe","brave.exe","safari.exe","vivaldi.exe","chromium.exe","microsoftedge.exe"]:
+            base_data.append([
+                "Browser",
+                app['date'],
+                app['application_start'],
+                app['application_end'],
+                app['application_title'].split(" - ")[0] if app['application_title'] else None,
+                app['url'] if app['url'] else None,
+                app['project'] if app['project'] else None,
+                app['issue'] if app['issue'] else None,
+                app['task'] if app['task'] else None,
+                app['name']
+            ])
+        else:
+            base_data.append([
+                "Application",
+                app['date'],
+                app['application_start'],
+                app['application_end'],
+                app['application_title'].split(" - ")[0] if app['application_title'] else None,
+                app['url'] if app['url'] else None,
+                app['project'] if app['project'] else None,
+                app['issue'] if app['issue'] else None,
+                app['task'] if app['task'] else None,
+                app['name']         
+            ])
+
+    base_data = sorted(base_data, key=lambda x: x[2])
+    data = list(set([item[1] for item in base_data]))
+    # frappe.throw(str(data))
+    return{
+        "base_dimensions":['Activity', 'Employee', 'Start Time', 'End Time'],
+        "dimensions":['Employee', 'Employee Name'],
+        "base_data":base_data,
+        "data":data
+    }
+# Overall Performance Timely Code Ends

@@ -1,5 +1,17 @@
+let selectedProject = null;
 
-initial_requirements();
+function updateUrlParams(from_date, to_date, project) {
+    const url = new URL(window.location);
+    const params = new URLSearchParams(url.search);
+
+    if (from_date) params.set('from_date', from_date);
+    if (to_date) params.set('to_date', to_date);
+    if (project) params.set('project', project);
+
+    url.search = params.toString();
+    window.history.replaceState({}, '', url);
+}
+
 function initial_requirements() {
     // Function to get URL parameters
     function getUrlParams() {
@@ -11,184 +23,127 @@ function initial_requirements() {
         };
     }
 
-    // Function to update URL with new parameters
-    function updateUrlParams(from_date, to_date) {
-        const url = new URL(window.location);
-        const params = new URLSearchParams(url.search);
-
-        params.set('from_date', from_date);
-        params.set('to_date', to_date);
-
-        url.search = params.toString();
-        window.history.replaceState({}, '', url);
-    }
-
     // Retrieve URL parameters
     const { from_date, to_date, project } = getUrlParams();
     if (from_date && to_date) {
-        // Use the provided dates from URL
         this.selected_start_date = from_date;
         this.selected_end_date = to_date;
-    }
-    if (project) {
-        this.selected_project = project;
     } else {
-        // Use the default dates (last 30 days)
         const endDate = new Date();
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - 30);
         
-        // Format end date (YYYY-MM-DD)
-        const endDay = endDate.getDate().toString().padStart(2, '0');
-        const endMonth = (endDate.getMonth() + 1).toString().padStart(2, '0');
-        const endYear = endDate.getFullYear();
-        this.selected_end_date = `${endYear}-${endMonth}-${endDay}`;
-        
-        // Format start date (YYYY-MM-DD)
-        const startDay = startDate.getDate().toString().padStart(2, '0');
-        const startMonth = (startDate.getMonth() + 1).toString().padStart(2, '0');
-        const startYear = startDate.getFullYear();
-        this.selected_start_date = `${startYear}-${startMonth}-${startDay}`;
+        this.selected_end_date = formatDateToYYYYMMDD(endDate);
+        this.selected_start_date = formatDateToYYYYMMDD(startDate);
 
-        // Update URL with the default dates
-        updateUrlParams(this.selected_start_date, this.selected_end_date);
+        updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
     }
+
+    if (project && !this.selected_project) {
+        this.selected_project = project;
+    }
+
+    populateProjectOptions();
+    updateDataBasedOnSelection(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
 }
 
-let selectedFromDate = null;
-let selectedToDate = null;
-this.selected_project = null; // Initialize this.selected_project
+function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
+	console.log("hii")
+    work_intensity(selected_start_date, selected_end_date, selected_project, selected_employee);
+    application_usage_time(selected_start_date, selected_end_date, selected_project, selected_employee);
+    web_browsing_time(selected_start_date, selected_end_date, selected_project, selected_employee);
+    fetch_url_data(selected_start_date, selected_end_date, selected_project, selected_employee);
+}
 
-// Function to populate project options and handle URL parameter
+function formatDateToYYYYMMDD(date) {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 function populateProjectOptions() {
-    frappe
-        .xcall("finbyzweb.www.project_analysis.get_projects")
+    const projectSelect = document.getElementById('projectSelect');
+    projectSelect.innerHTML = '';
+    
+    frappe.xcall("finbyzweb.www.project_analysis.get_projects")
         .then(projects => {
-            const projectSelect = document.getElementById('projectSelect');
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Select a project';
+            projectSelect.appendChild(defaultOption);
+
             projects.forEach(project => {
                 const option = document.createElement('option');
-                option.value = project.name; // Use `project.name` for URL
-                option.textContent = project.project_name; // Display `project.project_name` in dropdown
+                option.value = project.name;
+                option.textContent = project.project_name;
                 projectSelect.appendChild(option);
             });
 
-            // Check URL for the selected project and set it
+            // Check URL for project
             const urlParams = new URLSearchParams(window.location.search);
             const projectFromUrl = urlParams.get('project');
+
             if (projectFromUrl) {
-                projectSelect.value = projectFromUrl;
-                this.selected_project = projectFromUrl; // Set `this.selected_project`
+                this.selected_project = projectFromUrl;
+            } else if (!this.selected_project && projects.length > 0) {
+                this.selected_project = projects[0].name;
             }
+
+            // Set the selected project in the dropdown
+            if (this.selected_project) {
+                projectSelect.value = this.selected_project;
+                updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
+            }
+            
+            // console.log("selected_project", this.selected_project);
         })
         .catch(error => {
             console.error("Error fetching projects:", error);
         });
 }
 
-// Add event listener for project selection
-document.getElementById('projectSelect').addEventListener('change', function () {
-    const selectedProjectName = this.value;
-    this.selected_project = selectedProjectName; // Update `this.selected_project`
-
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('project', selectedProjectName); // Set `project.name` in URL
-    window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
-});
-
-// Function to update URL with selected dates
-function updateURLWithDates(fromDate, toDate) {
-    const url = new URL(window.location);
-    url.searchParams.set('from_date', fromDate);
-    url.searchParams.set('to_date', toDate);
-    window.history.pushState({}, '', url);
+function updateDates(fromDate, toDate) {
+    this.selected_start_date = formatDateToYYYYMMDD(fromDate);
+    this.selected_end_date = formatDateToYYYYMMDD(toDate);
+    updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
 }
 
-// Function to get dates from URL
-function getDatesFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const fromDate = urlParams.get('from_date');
-    const toDate = urlParams.get('to_date');
-    return { fromDate, toDate };
-}
-
-// Function to format date to "YYYY-MM-DD"
-function formatDateToYYYYMMDD(date) {
-    // Ensure `date` is a Date object. If not, create a new Date object.
-    if (!(date instanceof Date)) {
-        date = new Date(date);
-    }
-
-    // Extract year, month, and day
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, '0');
-
-    // Format as "YYYY-MM-DD"
-    return `${year}-${month}-${day}`;
-}
-
-// Event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    populateProjectOptions();
+    initial_requirements.call(this);
 
-    // Get dates from URL and set them in the inputs
-    const { fromDate, toDate } = getDatesFromURL();
-    if (fromDate) {
-        document.getElementById('fromDate').value = fromDate;
-        selectedFromDate = fromDate;
-        this.selected_start_date = formatDateToYYYYMMDD(fromDate);
-    }
-    if (toDate) {
-        document.getElementById('toDate').value = toDate;
-        selectedToDate = toDate;
-        this.selected_end_date = formatDateToYYYYMMDD(toDate);
-    }
+    document.getElementById('projectSelect').addEventListener('change', function () {
+        this.selected_project = this.value;
+        // console.log("Selected project:", this.selected_project);
+        updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
+        // updateDataBasedOnSelection.call(this);
+    }.bind(this));
 
-    // Event listener for saving the selected project
     document.getElementById('saveProjectBtn').addEventListener('click', function() {
-        selectedProject = document.getElementById('projectSelect').value;
-        this.selected_project = selectedProject; // Update `this.selected_project`
-        initial_requirements.call(this);
-        work_intensity.call(this);
-        application_usage_time.call(this);
-        web_browsing_time.call(this);
-        fetch_url_data.call(this);
-        // Uncomment and define the render_images function if needed
-        // render_images.call(this);
+        // console.log("Saving project:", document.getElementById('projectSelect').value);
+        this.selected_project = document.getElementById('projectSelect').value;
+        updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
+        updateDataBasedOnSelection(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
         bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
-        // Uncomment and define the render_images function if needed
-        // render_images();
-    });
+    }.bind(this));
 
-    // Event listener for saving the selected time span
     document.getElementById('saveTimespanBtn').addEventListener('click', function() {
-        selectedFromDate = document.getElementById('fromDate').value;
-        selectedToDate = document.getElementById('toDate').value;
-
-        // Update URL and set selected dates
-        updateURLWithDates(selectedFromDate, selectedToDate);
-        this.selected_start_date = formatDateToYYYYMMDD(selectedFromDate);
-        this.selected_end_date = formatDateToYYYYMMDD(selectedToDate);
-
-        // Call functions to update data based on the new dates
-        initial_requirements.call(this);
-        work_intensity.call(this);
-        application_usage_time.call(this);
-        web_browsing_time.call(this);
-        fetch_url_data.call(this);
-        // Uncomment and define the render_images function if needed
-        // render_images.call(this);
-
+        const fromDate = document.getElementById('fromDate').value;
+        const toDate = document.getElementById('toDate').value;
+        updateDates.call(this, fromDate, toDate);
+        updateDataBasedOnSelection(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
         bootstrap.Modal.getInstance(document.getElementById('timespanModal')).hide();
-    });
+    }.bind(this));
 });
-
-function work_intensity() {
+function work_intensity(selected_start_date, selected_end_date, selected_project, selected_employee) {
 	frappe.xcall("finbyzweb.www.project_analysis.work_intensity", {
-        user: this.selected_employee,
-		start_date: this.selected_start_date,
-		end_date: this.selected_end_date,
-        project: this.selected_project
+        user: selected_employee,
+		start_date: selected_start_date,
+		end_date: selected_end_date,
+        project: selected_project
 	}).then((response) => {
 		if (response.length === 0) {
 			return;
@@ -288,14 +243,13 @@ function work_intensity() {
 	});
 }
 
-function application_usage_time() {
-	let data = this.selected_employee;
+function application_usage_time(selected_start_date, selected_end_date, selected_project, selected_employee) {
 	frappe
 		.xcall("finbyzweb.www.project_analysis.application_usage_time", {
-            user: this.selected_employee,
-			start_date: this.selected_start_date,
-			end_date: this.selected_end_date,
-            project: this.selected_project
+            user: selected_employee,
+			start_date: selected_start_date,
+			end_date: selected_end_date,
+            project: selected_project
 		})
 		.then((r) => {
 			if (r.length === 0) {
@@ -395,14 +349,13 @@ function application_usage_time() {
 // Application Used Chart Code Ends
 
 // Web Browsing Time Chart Code Starts
-function web_browsing_time() {
-    let data = this.selected_employee || this.user_id;
+function web_browsing_time(selected_start_date, selected_end_date, selected_project, selected_employee) {
     frappe
         .xcall("finbyzweb.www.project_analysis.web_browsing_time", {
-            user: this.selected_employee,
-            start_date: this.selected_start_date,
-            end_date: this.selected_end_date,
-            project: this.selected_project
+            user: selected_employee,
+            start_date: selected_start_date,
+            end_date: selected_end_date,
+            project: selected_project
         })
         .then(r => {
             if (r.length === 0) return;
@@ -474,16 +427,20 @@ function web_browsing_time() {
             console.error("Error fetching chart data:", error);
         });
 }
-
-function render_images() {
-    let startDatetime = new Date(this.selected_start_date + "T00:00:00");
-    let endDatetime = new Date(this.selected_end_date + "T23:59:59");
-    let data = this.selected_employee ? this.selected_employee : this.user_id;
+function render_images(selected_start_date, selected_end_date, selected_project, selected_employee) {
+    let startDatetime = new Date(selected_start_date + "T00:00:00");
+    let endDatetime = new Date(selected_end_date + "T23:59:59");
+    let data = selected_employee ? selected_employee : user_id;
 
     let lastPrintedDate = null;
     let lastPrintedHour = null;
+    let renderedTimeSlots = new Set();
 
     const imageContainer = $(".recent-activity-list");
+    imageContainer.empty();
+
+    // Remove any existing scroll event listeners
+    $(window).off('scroll');
 
     const debounce = (func, delay) => {
         let debounceTimer;
@@ -506,15 +463,17 @@ function render_images() {
             String(date.getSeconds()).padStart(2, '0');
     }
 
-    function loadImages(user = null, start_time, end_time) {
+    function loadImages(user = null, start_time, end_time, selected_project) {
         const self = this;
         return frappe.xcall("finbyzweb.www.project_analysis.user_activity_images", {
             user: user,
             start_date: start_time,
             end_date: end_time,
+            project: selected_project
         }).then((imagedata) => {
+            console.log("imagedata", imagedata);
             let flag = imagedata.length > 0 ? 1 : 0;
-            imagedata.reverse();
+            
             let slotImages = {};
             imagedata.forEach((image) => {
                 const imageDateTime = new Date(image.time);
@@ -533,44 +492,48 @@ function render_images() {
 
             Object.keys(slotImages).reverse().forEach(date => {
                 Object.keys(slotImages[date]).reverse().forEach(hour => {
-                    if (lastPrintedDate !== date || lastPrintedHour !== hour) {
-                        const hourHeader = `<div class="col-md-1"><h5><b>${date} ${hour}:00</b></h5></div><br><div class="col-md-11">
-							<div class="overall-performance-timely" id="performance-chart-${this.formattedDate_}-${hour}" style="min-height: 50px; max-height: 50px;">
-								<!-- Overall Performance Chart Container -->
-							</div>
-							</div>`;
-                        imageContainer.append(hourHeader);
-                        lastPrintedDate = date;
-                        lastPrintedHour = hour;
-						// Call the function to display chart for this hour
-						this.overall_performance_timely(user,this.formattedDate_,hour);
-                    }
-
-                    for (let slot = 11; slot >= 0; slot--) {
-                        const image = slotImages[date][hour][slot];
-                        const slotTime = new Date(date);
-                        slotTime.setHours(hour);
-                        slotTime.setMinutes(slot * 5);
-                        const slotTimeString = slotTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-
-                        if (image) {
-                            const imgElement = `
-                                <div class="col-md-3">
-                                    <div style="display: flex; justify-content: center; align-items: center; height: 160px;">
-                                        <img src="${image.screenshot}" title="${image.time_}" data-active-app="${image.active_app}" alt="User Activity Image" style="max-width: 100%; max-height: 100%; object-fit: contain;" class="clickable-image">
-                                    </div>
-                                    <p style="text-align: center;"><b>${slotTimeString}</b></p>
+                    const timeSlotKey = `${date}-${hour}`;
+                    if (!renderedTimeSlots.has(timeSlotKey)) {
+                        renderedTimeSlots.add(timeSlotKey);
+                        
+                        if (lastPrintedDate !== date || lastPrintedHour !== hour) {
+                            const hourHeader = `<div class="col-md-1"><h5><b>${date} ${hour}:00</b></h5></div><br><div class="col-md-11">
+                                <div class="overall-performance-timely" id="performance-chart-${self.formattedDate_}-${hour}" style="min-height: 50px; max-height: 50px;">
+                                    <!-- Overall Performance Chart Container -->
+                                </div>
                                 </div>`;
-                            imageContainer.append(imgElement);
-                        } else {
-                            const gapMessage = `
-                                <div class="col-md-3">
-                                    <div style="width: 100%; height: 160px; background-color: #dddddd; display: flex; justify-content: center; align-items: center;">
-                                        <span style="font-weight: bold;">Not Active</span>
-                                    </div>
-                                    <p style="text-align: center;"><b>${slotTimeString}</b></p>
-                                </div>`;
-                            imageContainer.append(gapMessage);
+                            imageContainer.append(hourHeader);
+                            lastPrintedDate = date;
+                            lastPrintedHour = hour;
+                            self.overall_performance_timely(user, self.formattedDate_, hour, selected_project);
+                        }
+
+                        for (let slot = 11; slot >= 0; slot--) {
+                            const image = slotImages[date][hour][slot];
+                            const slotTime = new Date(date);
+                            slotTime.setHours(hour);
+                            slotTime.setMinutes(slot * 5);
+                            const slotTimeString = slotTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+                            if (image) {
+                                const imgElement = `
+                                    <div class="col-md-3">
+                                        <div style="display: flex; justify-content: center; align-items: center; height: 160px;">
+                                            <img src="${image.screenshot}" title="${image.time_}" data-active-app="${image.active_app}" alt="User Activity Image" style="max-width: 100%; max-height: 100%; object-fit: contain;" class="clickable-image">
+                                        </div>
+                                        <p style="text-align: center;"><b>${slotTimeString}</b></p>
+                                    </div>`;
+                                imageContainer.append(imgElement);
+                            } else {
+                                const gapMessage = `
+                                    <div class="col-md-3">
+                                        <div style="width: 100%; height: 160px; background-color: #dddddd; display: flex; justify-content: center; align-items: center;">
+                                            <span style="font-weight: bold;">Not Active</span>
+                                        </div>
+                                        <p style="text-align: center;"><b>${slotTimeString}</b></p>
+                                    </div>`;
+                                imageContainer.append(gapMessage);
+                            }
                         }
                     }
                 });
@@ -629,18 +592,14 @@ function render_images() {
     let start_time = new Date(end_time);
     start_time.setHours(start_time.getHours() - 1);
 
-    imageContainer.empty();
-
     let formattedStartTime = formatDatetime(start_time);
     let formattedEndTime = formatDatetime(end_time);
-
-
 
     function fetchImages() {
         if (start_time < startDatetime) {
             return;
         }
-        loadImages(data, formattedStartTime, formattedEndTime).then(function (flag) {
+        loadImages(data, formattedStartTime, formattedEndTime, selected_project).then(function (flag) {
             if (flag === 0 && start_time > startDatetime) {
                 end_time = new Date(start_time);
                 start_time = new Date(end_time);
@@ -656,11 +615,12 @@ function render_images() {
 
     if (currentDatetime > startDatetime) {
         const handleScroll = debounce(function () {
-            const scrollHeight = $(document).height();
-            const scrollPosition = $(window).height() + $(window).scrollTop();
-            const scrollThreshold = 400;
+            const windowHeight = $(window).height();
+            const documentHeight = $(document).height();
+            const scrollTop = $(window).scrollTop();
+            const scrollPercentage = (scrollTop / (documentHeight - windowHeight)) * 100;
 
-            if (scrollPosition >= scrollHeight - scrollThreshold) {
+            if (scrollPercentage >= 50) {
                 end_time = new Date(start_time);
                 start_time = new Date(end_time);
                 start_time.setHours(start_time.getHours() - 1);
@@ -672,18 +632,20 @@ function render_images() {
 
         $(window).on('scroll', handleScroll);
     }
-
-    // this.overall_performance_timely(); // Uncomment if needed and ensure it's properly implemented
 }
 // URL DATA Code Starts
-function fetch_url_data() {
+function fetch_url_data(start_date, end_date, project, employee) {
+	// console.log("start_date", this.selected_start_date);
+	// console.log("end_date", this.selected_end_date);
+	// console.log("employee", this.selected_employee);
+	// console.log("project mmm", this.selected_project);
     frappe.call({
         method: "finbyzweb.www.project_analysis.fetch_url_data",
         args: {
-            user: this.selected_employee,
-            start_date: this.selected_start_date,
-            end_date: this.selected_end_date,
-            project: this.selected_project
+            start_date: start_date,
+            end_date: end_date,
+            project: project,
+            employee: employee
         },
         callback: (r) => {
             if (r.message) {
@@ -776,10 +738,10 @@ function url_data(data) {
 
             // Call functions to refresh data
             initial_requirements.call(this);
-            work_intensity.call(this);
-            application_usage_time.call(this);
-            web_browsing_time.call(this);
-            render_images.call(this);
+            work_intensity(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
+            application_usage_time(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
+            web_browsing_time(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
+            render_images(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
         }.bind(this));
     });
 }
@@ -792,8 +754,7 @@ function convertSecondsToTime_(seconds) {
     return `${hours}:${formattedMinutes}`;
 }
 // Overall Performance Timely Chart Code Starts
-function overall_performance_timely(user,date, hour) {
-	console.log("project mmm", selected_project);
+function overall_performance_timely(user,date, hour, selected_project) {
 	let overallPerformanceDom = document.querySelector(`#performance-chart-${date}-${hour}`);
 	if (!overallPerformanceDom) {
 		console.error('Chart container not found:', `#performance-chart-${date}-${hour}`);
@@ -804,7 +765,8 @@ function overall_performance_timely(user,date, hour) {
 	frappe.xcall("finbyzweb.www.project_analysis.overall_performance_timely", {
 		employee: user,
 		date: date,
-		hour: hour
+		hour: hour,
+		project: selected_project
 	}).then((r) => {
 		if (r.base_data.length === 0) {
 			// Handle no data scenario if needed
@@ -1304,8 +1266,5 @@ function overall_performance_timely(user,date, hour) {
 	});
 }
 // Overall Performance Timely Chart Code Ends
-work_intensity();
-application_usage_time();
-web_browsing_time();
-fetch_url_data();
+
 // render_images();
