@@ -20,8 +20,8 @@ def get_context(context):
 # Work Intensity Code Starts
 @frappe.whitelist()
 def work_intensity(user = None, start_date=None, end_date=None, project=None):
-    # if not project:
-    #     return []
+    if not project:
+        return []
     condition = ""
     if user:
         condition += "and employee = '{0}' ".format(user)
@@ -75,8 +75,8 @@ def work_intensity(user = None, start_date=None, end_date=None, project=None):
 # Applications Used Code Starts
 @frappe.whitelist()
 def application_usage_time(user=None,start_date=None, end_date=None,project=None):
-    # if not project:
-    #     return []
+    if not project:
+        return []
     condition = ""
     if user:
         condition += "and employee = '{0}' ".format(user)
@@ -115,8 +115,8 @@ def application_usage_time(user=None,start_date=None, end_date=None,project=None
 # Web Browsing Time code starts
 @frappe.whitelist()
 def web_browsing_time(user=None,start_date=None,end_date=None, project=None):
-    # if not project:
-    #     return []
+    if not project:
+        return []
     condition = ""
     if user:
         condition += "and employee = '{0}' ".format(user)
@@ -150,8 +150,8 @@ from frappe.utils import getdate
 # User Activity Images Code Starts
 @frappe.whitelist()
 def user_activity_images(user=None,start_date=None, end_date=None, project = None, offset=0):
-    # if not project:
-    #     return []
+    if not project:
+        return []
     data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
     for i in data:
         i["time_"] = frappe.format(i["time"], "Datetime")
@@ -172,9 +172,8 @@ def version_conditions(user,start_date=None, end_date=None):
 
 @frappe.whitelist()
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
-    # frappe.throw(str(start_date) + " " + str(end_date))
-    # if not project:
-    #     frappe.throw("Please select a project")
+    if not project:
+        return []
     condition = ""
     app_condition = ""
     if user:
@@ -266,11 +265,11 @@ def get_projects():
 # Overall Performance timely Code Starts
 @frappe.whitelist()
 def overall_performance_timely(employee=None, date=None, hour=None, project=None):
-    # if not project:
-    #     return {
-    #         "labels": [],
-    #         "values": []
-    #     }
+    if not project:
+        return {
+            "labels": [],
+            "values": []
+        }
     if not employee:
         return {
             "labels": [],
