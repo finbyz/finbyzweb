@@ -254,7 +254,12 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
 
 @frappe.whitelist()
 def get_projects():
-    projects = frappe.get_list("Project", fields=["name", "project_name"])
+    current_user = frappe.session.user
+    projects = frappe.db.sql(f"""
+        SELECT DISTINCT p.name as name, p.project_name 
+        FROM `tabProject` as p
+        JOIN `tabProject User` as pu ON pu.parent = p.name
+        WHERE pu.user = '{current_user}' and status = 'Open'""",as_dict=1) 
     return projects
 
 

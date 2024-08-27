@@ -65,10 +65,9 @@ function formatDateToYYYYMMDD(date) {
     return `${year}-${month}-${day}`;
 }
 
-function populateProjectOptions() {
+function populateProjectOptions(employee) {
     const projectSelect = document.getElementById('projectSelect');
     projectSelect.innerHTML = '';
-    
     frappe.xcall("finbyzweb.www.project_analysis.get_projects")
         .then(projects => {
             const defaultOption = document.createElement('option');
