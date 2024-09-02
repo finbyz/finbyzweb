@@ -43,6 +43,7 @@
    "columns": 2,
    "fieldname": "height",
    "fieldtype": "Float",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Height"
   }
@@ -50,7 +51,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-02 14:30:23.506864",
+ "modified": "2024-09-02 18:03:43.677816",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Detail Web Stories",

@@ -86,7 +86,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "show_on_website",
  "links": [],
- "modified": "2024-08-29 11:24:29.274168",
+ "modified": "2024-09-02 18:00:25.009795",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Web Stories",
@@ -102,6 +102,33 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Website Manager",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "WebPage Manager",
+   "select": 1,
    "share": 1,
    "write": 1
   }
