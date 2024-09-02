@@ -32,6 +32,9 @@
 			{% if page_type == "Industry" %}
 			{% include "templates/includes/other_erp_module.html" %}
 			{% endif %}
+			{% if enable_web_stories %}
+			{% include "templates/includes/web_story.html" %}
+			{% endif %}
 			{% if related_links %}
 			{% include "templates/includes/related_links.html" %}
 			<div class="svg-container">
@@ -61,7 +64,7 @@
 
 			{% if not (
 				(doctype == "Web Page" and (name == "career" or name == "contact")) or 
-				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening") or (route == "login" or route == "me" or route == "app")
+				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening" or doctype == "Web Stories") or (route == "login" or route == "me" or route == "app")
 			) %}
 				{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
@@ -75,7 +78,7 @@
 
 			{% if not (
 				(doctype == "Web Page" and (name == "career" or name == "contact")) or 
-				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening") or (route == "login" or route == "me" or route == "app")
+				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening" or doctype == "Web Stories") or (route == "login" or route == "me" or route == "app")
 			) %}
 				{% include 'templates/includes/form/campaign_inquiry_form.html' %}
 			{% endif %}

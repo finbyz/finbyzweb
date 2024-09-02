@@ -1,0 +1,123 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<style>
+	.page_content {
+		min-height: 100vh
+	}
+
+	.bottom-left-h1 {
+		margin-bottom: 4px;
+		left: 16px;
+		z-index: 2;
+		color: #ffff;
+		margin: 4px;
+		position: relative;
+		margin-bottom : 10px;
+	}
+
+	.bottom-left-q {
+		margin-bottom: 8px;
+		left: 16px;
+		z-index: 2;
+		color: #ffff;
+		position: relative;
+		padding: 2px;
+		margin-bottom : 5px;
+	}
+
+	.bottom-right {
+		position: absolute;
+		top: -30px;
+		left: 12px;
+		z-index: 2;
+		color: white;
+	}
+
+	amp-story-grid-layer {
+		padding: 0px;
+	}
+
+
+	amp-story-grid-layer.bottom {
+		align-content: end;
+	}
+
+	amp-story-grid-layer.noedge {
+		padding: 0px;
+	}
+
+	amp-story-grid-layer.center-text {
+		align-content: center;
+	}
+	.wrapper {
+		display: grid;
+		grid-template-columns: 50% 50%;
+		grid-template-rows: 50% 50%;
+	}
+	.position_set{
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 10px;
+	}
+
+	.banner-text {
+		text-align: center;
+		background-color: #000;
+		line-height: 2em;
+	}
+	amp-story-page{
+		background-color: transparent;
+		border: 3px solid #ffffff;
+	}
+@media(max-width:750px){
+	amp-story-page{
+		background-color: grey;
+		border: 3px solid #ffffff;
+	}
+}
+
+@media (min-width: 1440px) {
+	.container {
+		padding-left: 0;
+		padding-right: 0;
+		position: relative;
+		text-align: center;
+		color: white;
+	}
+}
+@media (min-width: 576px) {
+	.container_view {
+		max-width: 900px;
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
+</style>
+<amp-story standalone title="{{doc.title}}" publisher="Finbyz"
+	publisher-logo-src="https://finbyz.tech/files/finbyz-tech.svg"
+	poster-portrait-src="https://finbyz.tech/files/finbyz-tech.svg">
+	{% for row in doc.detail_web_stories %}
+	<amp-story-page id="page{{row.idx}}">
+		<amp-story-grid-layer template="vertical" >
+			<div class="container_view grid">
+				<amp-img src="{{row.image}}" width="720" height="{{row.height}}" layout="responsive">
+				</amp-img>
+				<img src="https://finbyz.tech/files/finbyz-tech.svg" class="bottom-right" height="20%" width="20%" />
+			</div>
+			<div class="position_set">
+				<h1 class="bottom-left-h1">{{row.title}}</h1>
+				<q class="bottom-left-q">{{row.description}}</q>
+			</div>
+		</amp-story-grid-layer>
+	</amp-story-page>
+	{% endfor %}
+</amp-story>
+
+{% endblock %}
+
+
+
+

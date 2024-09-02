@@ -1,0 +1,133 @@
+<style>
+    .stories-grid {
+    display: flex;
+    gap: 15px;
+    overflow-x: hidden; /* Hide the scrollbar */
+    padding-bottom: 10px;
+}
+
+.stories-grid::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Webkit browsers (Chrome, Safari) */
+}
+
+.stories-grid {
+    -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+    .container-fluid {
+        border-radius: 10px;
+        padding: 30px;
+        color: #fff;
+    }
+
+    h2 {
+        font-family: 'Arial', sans-serif;
+        color: black;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .stories-grid {
+        display: flex;
+        gap: 15px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .story {
+        position: relative;
+        width: 200px;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease-in-out;
+        background-color: #1c1c1e;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .story img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .story:hover {
+        transform: scale(1.05);
+    }
+
+    .caption {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        font-size: 0.9rem;
+        text-align: left;
+    }
+
+    .play-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .play-icon img {
+        width: 15px;
+        height: 15px;
+    }
+</style>
+{% set web = frappe.db.get_all("Web Stories", filters={'show_on_website': 1}, fields=['*']) %}
+{% if web %}
+<div class="row p-lr-50">
+    <div class="col-md-12">
+        <h2 align="center" class="title-underline">Web Stories</h2>
+    </div>
+</div>
+<div class="container-fluid mt-50 mb-100">
+    {% set web_stories = frappe.db.get_all("Web Stories", filters={'show_on_website': 1}, fields=['*']) %}
+    <div class="stories-grid">
+        {% for story in web_stories %}
+            {% set story_images = frappe.db.get_all("Detail Web Stories", filters={'parent': story.name}, fields=['image'], order_by="idx", limit=1) %}
+            {% if story_images %}
+                <div class="story">
+                    <a href="{{ story.route }}">
+                        <img src="{{ story_images[0].image }}" alt="{{ story.title }}">
+                        <div class="caption">{{ story.title }}</div>
+                    </a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const container = document.querySelector('.stories-grid');
+    let scrollAmount = 0;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+
+    function autoScroll() {
+        if (scrollAmount < maxScroll) {
+            scrollAmount += 2; // Scroll speed
+            container.scrollLeft = scrollAmount;
+        } else {
+            scrollAmount = 0; // Reset scroll
+            container.scrollLeft = scrollAmount;
+        }
+    }
+
+    // Adjust the interval for the speed of the slideshow
+    setInterval(autoScroll, 30); // 30ms for smooth transition
+});
+
+</script>
