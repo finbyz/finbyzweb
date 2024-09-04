@@ -31,7 +31,7 @@ function initial_requirements() {
     } else {
         const endDate = new Date();
         const startDate = new Date();
-        startDate.setDate(endDate.getDate() - 30);
+        startDate.setDate(endDate.getDate() - 1);
         
         this.selected_end_date = formatDateToYYYYMMDD(endDate);
         this.selected_start_date = formatDateToYYYYMMDD(startDate);
@@ -48,11 +48,17 @@ function initial_requirements() {
 }
 
 function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
-	console.log("hii")
-    work_intensity(selected_start_date, selected_end_date, selected_project, selected_employee);
-    application_usage_time(selected_start_date, selected_end_date, selected_project, selected_employee);
-    web_browsing_time(selected_start_date, selected_end_date, selected_project, selected_employee);
-    fetch_url_data(selected_start_date, selected_end_date, selected_project, selected_employee);
+	frappe.xcall("finbyzweb.www.project_analysis.get_data", {
+        user: selected_employee,
+		start_date: selected_start_date,
+		end_date: selected_end_date,
+        project: selected_project
+	}).then((response) => {
+		work_intensity(response.work_intensity)
+		application_usage_time(response.application_usage)
+		web_browsing_time(response.web_browsing)
+		fetch_url_data(response.url_data)
+	})
 }
 
 function formatDateToYYYYMMDD(date) {
@@ -137,13 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         bootstrap.Modal.getInstance(document.getElementById('timespanModal')).hide();
     }.bind(this));
 });
-function work_intensity(selected_start_date, selected_end_date, selected_project, selected_employee) {
-	frappe.xcall("finbyzweb.www.project_analysis.work_intensity", {
-        user: selected_employee,
-		start_date: selected_start_date,
-		end_date: selected_end_date,
-        project: selected_project
-	}).then((response) => {
+function work_intensity(response) {
 		if (response.length === 0) {
 			return;
 		}
@@ -237,20 +237,9 @@ function work_intensity(selected_start_date, selected_end_date, selected_project
 				window.myChart.resize();
 			}
 		});
-	}).catch((error) => {
-		console.error("Error fetching data:", error);
-	});
 }
 
-function application_usage_time(selected_start_date, selected_end_date, selected_project, selected_employee) {
-	frappe
-		.xcall("finbyzweb.www.project_analysis.application_usage_time", {
-            user: selected_employee,
-			start_date: selected_start_date,
-			end_date: selected_end_date,
-            project: selected_project
-		})
-		.then((r) => {
+function application_usage_time(r) {
 			if (r.length === 0) {
 				return;
 			}
@@ -340,23 +329,11 @@ function application_usage_time(selected_start_date, selected_end_date, selected
 			window.addEventListener('resize', function () {
 				myChart.resize();
 			});
-		})
-		.catch(error => {
-			console.error("Error fetching chart data:", error);
-		});
 }
 // Application Used Chart Code Ends
 
 // Web Browsing Time Chart Code Starts
-function web_browsing_time(selected_start_date, selected_end_date, selected_project, selected_employee) {
-    frappe
-        .xcall("finbyzweb.www.project_analysis.web_browsing_time", {
-            user: selected_employee,
-            start_date: selected_start_date,
-            end_date: selected_end_date,
-            project: selected_project
-        })
-        .then(r => {
+function web_browsing_time(r) {
             if (r.length === 0) return;
 
             const chartDom = document.getElementById('web-browsing-time');
@@ -414,22 +391,15 @@ function web_browsing_time(selected_start_date, selected_end_date, selected_proj
             };
 
             myChart.setOption(option);
-            myChart.resize(); // Ensure it fits the container initially
-
-            // Ensure `selected_start_date` and `selected_end_date` are accessible or passed as arguments
-            // Re-add resize listener to ensure chart resizes with window
+            myChart.resize(); 
             window.addEventListener('resize', function () {
                 myChart.resize();
             });
-        })
-        .catch(error => {
-            console.error("Error fetching chart data:", error);
-        });
 }
 function render_images(selected_start_date, selected_end_date, selected_project, selected_employee) {
     let startDatetime = new Date(selected_start_date + "T00:00:00");
     let endDatetime = new Date(selected_end_date + "T23:59:59");
-    let data = selected_employee ? selected_employee : user_id;
+    let data = selected_employee
 
     let lastPrintedDate = null;
     let lastPrintedHour = null;
@@ -515,10 +485,11 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                             const slotTimeString = slotTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
                             if (image) {
+								console.log("image", image.blurred_screenshot);
                                 const imgElement = `
                                     <div class="col-md-3">
                                         <div style="display: flex; justify-content: center; align-items: center; height: 160px;">
-                                            <img src="${image.screenshot}" title="${image.time_}" data-active-app="${image.active_app}" alt="User Activity Image" style="max-width: 100%; max-height: 100%; object-fit: contain;" class="clickable-image">
+                                            <img src="${image.blurred_screenshot}" title="${image.time_}" data-active-app="${image.active_app}" alt="User Activity Image" style="max-width: 100%; max-height: 100%; object-fit: contain;" class="clickable-image">
                                         </div>
                                         <p style="text-align: center;"><b>${slotTimeString}</b></p>
                                     </div>`;
@@ -550,6 +521,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
             window.addEventListener('resize', setImageHeight);
 
             $('.clickable-image').off('click').on('click', function () {
+				console.log("clickable-image");
                 const imgSrc = $(this).attr('src');
                 const activeApp = $(this).data('active-app');
                 showImageDialog(imgSrc, activeApp);
@@ -559,31 +531,49 @@ function render_images(selected_start_date, selected_end_date, selected_project,
         });
     }
 
-    function showImageDialog(imgSrc, activeApp) {
-        let dialog = new frappe.ui.Dialog({
-            title: activeApp || 'Unknown App',
-            fields: [
-                {
-                    fieldtype: 'HTML',
-                    label: '',
-                    fieldname: 'image_content',
-                    options: `
-                        <div class="frappe-card custom-card">
-                            <div class="modal-body">
-                                <img id="zoomedImg" src="${imgSrc}" class="img-fluid" style="width: 100%; height: auto; object-fit: contain;">
-                            </div>
-                        </div>`
-                }
-            ],
-            size: 'extra-large',
-            primary_action_label: 'Close',
-            primary_action: function () {
-                dialog.hide();
-            }
-        });
-
-        dialog.show();
-    }
+	function showImageDialog(imgSrc, activeApp) {
+		console.log("imgSrc", imgSrc);
+		console.log("activeApp", activeApp);
+	
+		// Create modal HTML
+		const modalHTML = `
+			<div id="imageModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9);">
+				<div class="modal-content" style="margin: 2% auto; padding: 20px; width: 90%; max-width: 1200px; height: 90%; background-color: #fff; position: relative; display: flex; flex-direction: column;">
+					<span class="close" style="color: #aaa; position: absolute; top: 10px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer;">&times;</span>
+					<h5 style="margin-top: 0; margin-bottom: 5px;">${activeApp || 'Unknown App'}</h5>
+					<div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+						<img id="zoomedImg" src="${imgSrc}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+					</div>
+				</div>
+			</div>
+		`;
+	
+		// Append modal to body
+		$('body').append(modalHTML);
+	
+		// Get modal element
+		const modal = document.getElementById('imageModal');
+	
+		// Get the <span> element that closes the modal
+		const span = modal.querySelector('.close');
+	
+		// Show the modal
+		modal.style.display = "block";
+	
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function() {
+			modal.style.display = "none";
+			modal.remove(); // Remove the modal from DOM after closing
+		}
+	
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function(event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+				modal.remove(); // Remove the modal from DOM after closing
+			}
+		}
+	}
 
     let currentDatetime = new Date(endDatetime);
     let end_time = new Date(currentDatetime);
@@ -633,22 +623,10 @@ function render_images(selected_start_date, selected_end_date, selected_project,
     }
 }
 // URL DATA Code Starts
-function fetch_url_data(start_date, end_date, project, employee) {
-	// console.log("start_date", this.selected_start_date);
-	// console.log("end_date", this.selected_end_date);
-	// console.log("employee", this.selected_employee);
-	// console.log("project mmm", this.selected_project);
-    frappe.call({
-        method: "finbyzweb.www.project_analysis.fetch_url_data",
-        args: {
-            start_date: start_date,
-            end_date: end_date,
-            project: project,
-            employee: employee
-        },
-        callback: (r) => {
-            if (r.message) {
-                url_data(r.message);
+function fetch_url_data(r) {
+			console.log("r", r.data);
+            if (r.data) {
+                url_data(r.data);
                 $(document).ready(function () {
                     $('#logCountModalTrigger').click(function () {
                         $('#logCountModal').modal('show');
@@ -656,9 +634,8 @@ function fetch_url_data(start_date, end_date, project, employee) {
                 });
             }
         }
-    });
-}
 function url_data(data) {
+	console.log("data", data);
     function getBaseURL() {
         return window.location.origin + '/app/';
     }
@@ -668,8 +645,6 @@ function url_data(data) {
     let end_date_ = this.selected_end_date;
     if (this.selected_employee != null) {
         employee_data = this.selected_employee;
-    } else {
-        employee_data = this.user_id;
     }
     var total_duration = 0;
     const baseUrl = getBaseURL();
@@ -690,7 +665,7 @@ function url_data(data) {
                         </thead>
                         <tbody>`;
 
-    data.data.forEach(app => {
+    data.forEach(app => {
         wholedata += `
             <tr align="center">
                 <td style="color:#00A6E0 !important;"><b><a href="#" style="text-decoration:none !important;color:#00A6E0 !important;" class="url-link" data-url="${app.employee_id}" data-employee="${app.employee_id}">${app.employee}</a></b></td>
@@ -737,10 +712,17 @@ function url_data(data) {
 
             // Call functions to refresh data
             initial_requirements.call(this);
-            work_intensity(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
-            application_usage_time(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
-            web_browsing_time(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
-            render_images(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
+            frappe.xcall("finbyzweb.www.project_analysis.get_data", {
+				user: this.selected_employee,
+				start_date: this.selected_start_date,
+				end_date: this.selected_end_date,
+				project: this.selected_project
+			}).then((response) => {
+				work_intensity(response.work_intensity)
+				application_usage_time(response.application_usage)
+				web_browsing_time(response.web_browsing)
+			})
+			render_images(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
         }.bind(this));
     });
 }

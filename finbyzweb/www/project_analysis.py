@@ -5,21 +5,41 @@ import frappe
 import frappe.www.list
 from frappe import _
 from dateutil.parser import parse
+from dateutil.parser import parse
+from frappe.utils import format_datetime
 
 no_cache = 1
 
 
 def get_context(context):
-	if frappe.session.user == "Guest":
-		frappe.throw(_("You need to be logged in to access this page"), frappe.PermissionError)
+    if frappe.session.user == "Guest":
+        frappe.throw(_("You need to be logged in to access this page"), frappe.PermissionError)
 
-	context.current_user = frappe.get_doc("User", frappe.session.user)
-	context.show_sidebar = True
-	
+    context.current_user = frappe.get_doc("User", frappe.session.user)
+    context.show_sidebar = True
 
-# Work Intensity Code Starts
 @frappe.whitelist()
-def work_intensity(user = None, start_date=None, end_date=None, project=None):
+def get_data(user=None, start_date=None, end_date=None, project=None):
+    if not project:
+        frappe.throw(_("Please select a project"))
+
+    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.status = 'Open' and p.name = '{project}'""", as_dict=1)
+    if frappe.session.user not in [user['user'] for user in portal_users]:
+        raise frappe.PermissionError
+    else:
+        work_intensity_data = work_intensity(user, start_date, end_date, project)
+        application_usage_data = application_usage_time(user, start_date, end_date, project)
+        web_browsing_data = web_browsing_time(user, start_date, end_date, project)
+        url_data = fetch_url_data(user, start_date, end_date, project)
+        return {
+            "work_intensity": work_intensity_data,
+            "application_usage": application_usage_data,
+            "web_browsing": web_browsing_data,
+            "url_data": url_data
+        }
+    
+
+def work_intensity(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
     condition = ""
@@ -70,11 +90,10 @@ def work_intensity(user = None, start_date=None, end_date=None, project=None):
 
     return data
 # Work Intensity Code Ends
-	
 
-# Applications Used Code Starts
-@frappe.whitelist()
-def application_usage_time(user=None,start_date=None, end_date=None,project=None):
+
+# Application Usage Time Code Starts
+def application_usage_time(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
     condition = ""
@@ -110,11 +129,10 @@ def application_usage_time(user=None,start_date=None, end_date=None,project=None
         })
 
     return data
-# Applications Used Code Ends
+# Application Usage Time Code Ends
 
-# Web Browsing Time code starts
-@frappe.whitelist()
-def web_browsing_time(user=None,start_date=None,end_date=None, project=None):
+# Web Browsing Time Code Starts
+def web_browsing_time(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
     condition = ""
@@ -141,36 +159,23 @@ def web_browsing_time(user=None,start_date=None,end_date=None, project=None):
 
     
     return data
-# Web Browsing Time code ends
-
-# User Activity Images Code Starts
-import frappe
-from frappe.utils import getdate
+# Web Browsing Time Code Ends
 
 # User Activity Images Code Starts
 @frappe.whitelist()
-def user_activity_images(user=None,start_date=None, end_date=None, project = None, offset=0):
+def user_activity_images(user=None, start_date=None, end_date=None, project=None, offset=0):
     if not project:
         return []
-    data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
-    for i in data:
-        i["time_"] = frappe.format(i["time"], "Datetime")
-    return data
-# User Activity Images Code Ends
-# Conditions to be applied to get data from versions table code starts 
-@frappe.whitelist() 
-def version_conditions(user,start_date=None, end_date=None):
-    if user != "Administrator":
-        email = frappe.db.get_value("Employee", user, "company_email")
-        condition = f"WHERE modified_by = '{email}' and creation >= '{start_date} 00:00:00' AND creation <= '{end_date} 23:59:59'"
+    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.status = 'Open' and p.name = '{project}'""", as_dict=1)
+    if frappe.session.user not in [user['user'] for user in portal_users]:
+        raise frappe.PermissionError
     else:
-        condition = f"WHERE creation >= '{start_date} 00:00:00' AND creation <= '{end_date} 23:59:59'"
+        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["blurred_screenshot", "time","active_app"])
+        for i in data:
+            i["time_"] = frappe.format(i["time"], "Datetime")
+        return data
+# User Activity Images Code Ends
 
-    return condition
-# Conditions to be applied to get data from versions table code ends
-
-
-@frappe.whitelist()
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
@@ -261,8 +266,6 @@ def get_projects():
         WHERE pu.user = '{current_user}' and status = 'Open'""",as_dict=1) 
     return projects
 
-
-# Overall Performance timely Code Starts
 @frappe.whitelist()
 def overall_performance_timely(employee=None, date=None, hour=None, project=None):
     if not project:
@@ -270,68 +273,72 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
             "labels": [],
             "values": []
         }
-    if not employee:
-        return {
-            "labels": [],
-            "values": []
+    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.status = 'Open' and p.name = '{project}'""", as_dict=1)
+    if frappe.session.user not in [user['user'] for user in portal_users]:
+        raise frappe.PermissionError
+    else:
+        if not employee:
+            return {
+                "labels": [],
+                "values": []
+            }
+        applications = frappe.db.sql(f"""
+        SELECT 
+            application_name AS name, 
+            from_time AS application_start, 
+            to_time AS application_end, 
+            date, 
+            LEFT(application_title, 80) AS application_title, 
+            LEFT(url, 80) AS url, 
+            project, 
+            issue, 
+            task,
+            process_name
+        FROM `tabApplication Usage log`
+        WHERE date = '{date}' 
+        AND employee = '{employee}' 
+        AND application_name != '' 
+        AND application_name IS NOT NULL 
+        AND HOUR(from_time) = {hour}
+        AND project = '{project}'
+        """, as_dict=True)
+
+        base_data = []
+        for app in applications:
+            if app.process_name in ["chrome.exe","firefox.exe","msedge.exe","opera.exe","iexplore.exe","brave.exe","safari.exe","vivaldi.exe","chromium.exe","microsoftedge.exe"]:
+                base_data.append([
+                    "Browser",
+                    app['date'],
+                    app['application_start'],
+                    app['application_end'],
+                    app['application_title'].split(" - ")[0] if app['application_title'] else None,
+                    app['url'] if app['url'] else None,
+                    app['project'] if app['project'] else None,
+                    app['issue'] if app['issue'] else None,
+                    app['task'] if app['task'] else None,
+                    app['name']
+                ])
+            else:
+                base_data.append([
+                    "Application",
+                    app['date'],
+                    app['application_start'],
+                    app['application_end'],
+                    app['application_title'].split(" - ")[0] if app['application_title'] else None,
+                    app['url'] if app['url'] else None,
+                    app['project'] if app['project'] else None,
+                    app['issue'] if app['issue'] else None,
+                    app['task'] if app['task'] else None,
+                    app['name']         
+                ])
+
+        base_data = sorted(base_data, key=lambda x: x[2])
+        data = list(set([item[1] for item in base_data]))
+        # frappe.throw(str(data))
+        return{
+            "base_dimensions":['Activity', 'Employee', 'Start Time', 'End Time'],
+            "dimensions":['Employee', 'Employee Name'],
+            "base_data":base_data,
+            "data":data
         }
-    applications = frappe.db.sql(f"""
-    SELECT 
-        application_name AS name, 
-        from_time AS application_start, 
-        to_time AS application_end, 
-        date, 
-        LEFT(application_title, 80) AS application_title, 
-        LEFT(url, 80) AS url, 
-        project, 
-        issue, 
-        task,
-        process_name
-    FROM `tabApplication Usage log`
-    WHERE date = '{date}' 
-      AND employee = '{employee}' 
-      AND application_name != '' 
-      AND application_name IS NOT NULL 
-      AND HOUR(from_time) = {hour}
-      AND project = '{project}'
-    """, as_dict=True)
-
-    base_data = []
-    for app in applications:
-        if app.process_name in ["chrome.exe","firefox.exe","msedge.exe","opera.exe","iexplore.exe","brave.exe","safari.exe","vivaldi.exe","chromium.exe","microsoftedge.exe"]:
-            base_data.append([
-                "Browser",
-                app['date'],
-                app['application_start'],
-                app['application_end'],
-                app['application_title'].split(" - ")[0] if app['application_title'] else None,
-                app['url'] if app['url'] else None,
-                app['project'] if app['project'] else None,
-                app['issue'] if app['issue'] else None,
-                app['task'] if app['task'] else None,
-                app['name']
-            ])
-        else:
-            base_data.append([
-                "Application",
-                app['date'],
-                app['application_start'],
-                app['application_end'],
-                app['application_title'].split(" - ")[0] if app['application_title'] else None,
-                app['url'] if app['url'] else None,
-                app['project'] if app['project'] else None,
-                app['issue'] if app['issue'] else None,
-                app['task'] if app['task'] else None,
-                app['name']         
-            ])
-
-    base_data = sorted(base_data, key=lambda x: x[2])
-    data = list(set([item[1] for item in base_data]))
-    # frappe.throw(str(data))
-    return{
-        "base_dimensions":['Activity', 'Employee', 'Start Time', 'End Time'],
-        "dimensions":['Employee', 'Employee Name'],
-        "base_data":base_data,
-        "data":data
-    }
 # Overall Performance Timely Code Ends
