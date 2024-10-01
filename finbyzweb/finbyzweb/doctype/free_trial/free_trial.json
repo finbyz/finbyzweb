@@ -39,7 +39,8 @@
   {
    "fieldname": "whatsapp_number",
    "fieldtype": "Data",
-   "label": "Whatsapp Number"
+   "label": "Whatsapp Number",
+   "options": "Phone"
   },
   {
    "fieldname": "account_manager",
@@ -56,7 +57,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-01 18:56:41.706525",
+ "modified": "2024-10-01 19:00:49.864346",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Free Trial",
