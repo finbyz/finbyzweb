@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "FT.-.YYYY.-.####",
+ "creation": "2024-10-01 18:39:26.188741",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company_name",
+  "erp_url",
+  "key_person",
+  "email_id",
+  "whatsapp_number",
+  "account_manager",
+  "promo_code"
+ ],
+ "fields": [
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "fieldname": "erp_url",
+   "fieldtype": "Data",
+   "label": "ERP URL"
+  },
+  {
+   "fieldname": "key_person",
+   "fieldtype": "Data",
+   "label": "Key Person"
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "options": "Email"
+  },
+  {
+   "fieldname": "whatsapp_number",
+   "fieldtype": "Data",
+   "label": "Whatsapp Number"
+  },
+  {
+   "fieldname": "account_manager",
+   "fieldtype": "Link",
+   "label": "Account Manager",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "promo_code",
+   "fieldtype": "Data",
+   "label": "Promo Code"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-01 18:47:01.183786",
+ "modified_by": "Administrator",
+ "module": "Finbyzweb",
+ "name": "Free Trial",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
