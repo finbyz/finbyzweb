@@ -12,52 +12,72 @@
   "email_id",
   "whatsapp_number",
   "account_manager",
+  "employee_name",
+  "employee_number",
   "promo_code"
  ],
  "fields": [
   {
+   "fetch_from": "account_manager.custom_company_mobile",
    "fieldname": "company_name",
    "fieldtype": "Data",
-   "label": "Company Name"
+   "in_list_view": 1,
+   "label": "Company Name",
+   "reqd": 1
   },
   {
    "fieldname": "erp_url",
    "fieldtype": "Data",
-   "label": "ERP URL"
+   "label": "ERP URL",
+   "reqd": 1
   },
   {
    "fieldname": "key_person",
    "fieldtype": "Data",
-   "label": "Key Person"
+   "label": "Key Person",
+   "reqd": 1
   },
   {
    "fieldname": "email_id",
    "fieldtype": "Data",
    "label": "Email ID",
-   "options": "Email"
+   "options": "Email",
+   "reqd": 1
   },
   {
    "fieldname": "whatsapp_number",
    "fieldtype": "Data",
    "label": "Whatsapp Number",
-   "options": "Phone"
+   "options": "Phone",
+   "reqd": 1
   },
   {
    "fieldname": "account_manager",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
-   "label": "Account Manager",
+   "label": "Employee",
    "options": "Employee"
   },
   {
    "fieldname": "promo_code",
    "fieldtype": "Data",
    "label": "Promo Code"
+  },
+  {
+   "fieldname": "employee_number",
+   "fieldtype": "Data",
+   "label": "Employee Number"
+  },
+  {
+   "fetch_from": "account_manager.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-01 19:00:49.864346",
+ "modified": "2024-10-01 19:08:01.668875",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Free Trial",
