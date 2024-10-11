@@ -17,7 +17,6 @@
  "doctype": "Web Form",
  "idx": 0,
  "introduction_text": "",
- "is_multi_step_form": 0,
  "is_standard": 1,
  "list_columns": [
   {
@@ -48,8 +47,8 @@
  ],
  "login_required": 1,
  "max_attachment_size": 0,
- "modified": "2024-08-21 15:37:56.041277",
- "modified_by": "Administrator",
+ "modified": "2024-09-26 15:17:38.688337",
+ "modified_by": "pal.shah@finbyz.tech",
  "module": "Finbyzweb",
  "name": "ticket",
  "owner": "Administrator",

@@ -14,11 +14,11 @@
   "account_manager",
   "employee_name",
   "employee_number",
-  "promo_code"
+  "promo_code",
+  "amended_from"
  ],
  "fields": [
   {
-   "fetch_from": "account_manager.custom_company_mobile",
    "fieldname": "company_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -28,8 +28,7 @@
   {
    "fieldname": "erp_url",
    "fieldtype": "Data",
-   "label": "ERP URL",
-   "reqd": 1
+   "label": "ERP URL"
   },
   {
    "fieldname": "key_person",
@@ -64,6 +63,7 @@
    "label": "Promo Code"
   },
   {
+   "fetch_from": "account_manager.custom_company_mobile",
    "fieldname": "employee_number",
    "fieldtype": "Data",
    "label": "Employee Number"
@@ -73,11 +73,22 @@
    "fieldname": "employee_name",
    "fieldtype": "Data",
    "label": "Employee Name"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Free Trial",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2024-10-01 19:08:01.668875",
+ "modified": "2024-10-04 12:31:44.549750",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Free Trial",
@@ -85,6 +96,8 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -93,10 +106,14 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "select": 1,
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -105,7 +122,9 @@
    "read": 1,
    "report": 1,
    "role": "Employee",
+   "select": 1,
    "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],

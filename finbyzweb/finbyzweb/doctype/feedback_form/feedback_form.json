@@ -16,13 +16,15 @@
  "fields": [
   {
    "fieldname": "document",
-   "fieldtype": "Data",
-   "label": "Document"
+   "fieldtype": "Link",
+   "label": "Document",
+   "options": "DocType"
   },
   {
    "fieldname": "document_name",
-   "fieldtype": "Data",
-   "label": "Document Name"
+   "fieldtype": "Dynamic Link",
+   "label": "Document Name",
+   "options": "document"
   },
   {
    "fieldname": "column_break_3",
@@ -49,7 +51,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-08 09:41:16.330105",
+ "modified": "2024-10-11 15:14:04.151252",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Feedback Form",
