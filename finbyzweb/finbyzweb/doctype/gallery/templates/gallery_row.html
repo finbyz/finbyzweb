@@ -3,7 +3,9 @@
 	<div class="container-fluid">
 		<div class="row mt-100 p-lr-50">
 			<div class="col-md-12 text-center">
-				<h2>{{ doc.gallery_title }}</h2>
+				<h2 class="gallery-list-main">
+					<a class='normal' href="{{ doc.route }}">
+					   <div class="text-center bold display-flex link-underline mb-0 mt-30">{{ doc.gallery_title }}</h2>
 				{% if doc.quote %}<div class="inline-block"><p class="sub-text back-quote pl-45">{{ doc.quote }}</p></div>{% endif %}
 				{% if doc.animated_image%}
 				<image src={{ doc.animated_image }} title="{{ doc.title }}" alt="{{ doc.title}}" width="70%" height="50%">
