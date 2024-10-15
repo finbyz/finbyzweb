@@ -23,9 +23,9 @@
             <a class="rootLink item-support hasDropdown colorize" data-dropdown="career" href="#">
                 Career
             </a>
-            <a class="rootLink item-support" href="/blog">
-                    Blog
-                </a>
+            <a class="rootLink item-support hasDropdown colorize" data-dropdown="techupdate" href="#">
+                Updates
+            </a>
           
             <a class="rootLink  item-support" href="/contact">
                     Contact Us
@@ -230,8 +230,27 @@
                             </li>
                         </li>
                         <li>
-                            <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Blog" title="Blog"><a href="/blog">Blog</a>
+                            <a href="" data-ls="techupdatesubmenu" data-toggle="collapse" aria-expanded="false" class="go-tosub-menu">
+                                <img class="left-arrow nav-service-icon d-none" src="/files/left-arrow.svg" alt="Left Arrow" title="Web App Development">
+                                <img class="nav-service-icon" src="/files/nav-career.svg" alt="ERPNext" title="ERPNext">Career</a>
+                            <img data-ls="techupdatesubmenu" src="/files/right-arrow.svg" class="go-tosub-menu ml-5 float-right mt-2" alt="right-arrow" height="15" width="15">
+                            <ul class="collapse list-unstyled ml-5" id='techupdatesubmenu' >
+                                <li>
+                                    <img class="nav-service-icon" src="/files/nav-Gallery.svg" alt="Jobs" title="Jobs"> 
+                                    <a href="/gallery" class="link-underline p-1">Gallery</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Jobs" title="Jobs"> 
+                                    <a href="/blog" class="link-underline p-1">Tech Update</a>
+                                </li>
+                                <li>
+                                    <img class="nav-service-icon" src="/files/nav-jobs.svg" alt="Jobs" title="Jobs"> 
+                                    <a href="/blog" class="link-underline p-1">Blog</a>
+                                </li>
+                                
+                            </ul>
                         </li>
+                    </li>
                         <li>
                             <img class="nav-service-icon" src="/files/nav-Gallery.svg" alt="Gallery" title="Gallery"><a href="/gallery">Gallery</a>
                         </li>
@@ -416,21 +435,7 @@
                         </div>
                     </div>
                     <ul class="linkGroup linkList developersGroup float-left">
-                        <li>
-                            <h4>FinByz Updates</h4>
-                        </li>
-                        <li>
-                            <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Tech Update" title="Tech Update">
-                            <a class="link-underline" href="/blog">
-                                <h6 class="mt-1">Tech Update</h6>
-                            </a>
-                        </li>
-                        <li>
-                            <img class="nav-service-icon" src="/files/nav-Gallery.svg" alt="Gallery" title="Gallery">
-                            <a class="link-underline" href="/gallery">
-                                <h6 class="mt-1">Gallery</h6>
-                            </a>
-                        </li>
+                        
                     </ul>
                     <ul class="linkGroup linkList developersGroup float-right">
                         <li>
@@ -538,6 +543,28 @@
                                                     <img class="nav-service-icon" src="/files/FD-Management-Logo.svg" alt="FD" title="FD">
                                                     <a class="link-underline p-1" href="/fd-management-erpnext">
                                                         <h6 class="mt-1">FD Management</h6>
+                                                    </a>
+                                                </li>
+                                                
+                                            </ul>
+                                        </div>
+                                        <div class="col-12 col-sm-8 col-md-6 col-lg-6">
+                                            <ul style="width:max-content">
+                                                <li class="my-2">
+                                                    <img class="nav-service-icon" src="/files/Portfolio_Icon40c95a.png" alt="IP" title="IP">
+                                                    <a class="link-underline p-1" href="/investment-portfolio-erpnext">
+                                                        <h6 class="mt-1">Investment Portfolio</h6>
+                                                    </a>
+                                                </li>
+                                                
+                                            </ul>
+                                        </div>
+                                        <div class="col-12 col-sm-8 col-md-6 col-lg-6">
+                                            <ul style="width:max-content">
+                                                <li class="my-2">
+                                                    <img class="nav-service-icon" src="/files/Logo Only.png" alt="P" title="P">
+                                                    <a class="link-underline p-1" href="/productify">
+                                                        <h6 class="mt-1">Productify</h6>
                                                     </a>
                                                 </li>
                                                 
@@ -666,6 +693,32 @@
                             </li>
                             {%- endfor -%}
                         </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="dropdownSection right" data-dropdown="techupdate">
+                <div class="dropdownContent">
+                    <ul class="linkGroup linkList contactGroup pb-0">
+                        <li>
+                              <a class="linkContainer item-customers" href="/gallery">
+                                <img class="nav-service-icon" src="/files/nav-Gallery.svg" alt="Jobs" title="Jobs">
+                                <!-- <img class="nav-service-icon" src="/files/nav-call.svg" alt="Contact" title="Conatct"> -->
+                                <h6 class="link-underline mt-1">Gallery
+                                </h6>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="linkContainer item-customers" href="/blog">
+                                <img class="nav-service-icon" src="/files/nav-tech-update.svg" alt="Job" title="Job">
+                                <h6 class="link-underline mt-1">Blog</h6>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="linkGroup blogGroup">
+                        <a class="linkContainer" href="/blog">
+                            <img class="nav-service-icon" src="/files/job-opening.svg" alt="Job Opening" title="Job Opening">
+                            <h5 class="link-underline mt-1">Tech Update</h5>
+                        </a>
                     </div>
                 </div>
             </div>

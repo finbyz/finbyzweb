@@ -1,19 +1,21 @@
 <!-- this is a sample default list template -->
-{%- if doc.svg_image -%}
-<div class=" col-lg-3 col-md-6 col-sm-6 col-xs-12 image-row gallery-filter all {{doc.gallery_category}} {{doc.sub_category_name or ''}}">
-	<div class="gallery-list-main">
-	     	<a class='normal' href="{{ doc.route }}">
-				<div class="text-center bold"><p class=" display-flex link-underline mb-0 mt-30">{{ doc.gallery_title }}</p></div>
-	       		<img class="img-fluid center" src="{{ doc.svg_image or doc.animated_image }}"  height="200" width="350" alt="{{ doc.gallery_title }}" title="{{ gallery_title }}">
-	      	</a> 
-	</div>
-</div>
-
-{%- endif -%} 
-<style>
-.image-row {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: center;
-    }
-</style>
+ <div>
+	<div class="container-fluid">
+		<div class="row mt-100 p-lr-50">
+			<div class="col-md-12 text-center">
+				<h2>{{ doc.gallery_title }}</h2>
+				{% if doc.quote %}<div class="inline-block"><p class="sub-text back-quote pl-45">{{ doc.quote }}</p></div>{% endif %}
+				{% if doc.animated_image%}
+				<image src={{ doc.animated_image }} title="{{ doc.title }}" alt="{{ doc.title}}" width="70%" height="50%">
+				{% endif %}
+				{%if doc.youtube_link %}
+				{% set list1 = doc.youtube_link.split('/') %}
+				{% set src = "https://www.youtube.com/embed/" + list1[-1] + "?rel=0&amp;autoplay=1&mute=0" %}
+				<iframe src="{{src}}" title="YouTube video player" frameborder="0" id="movie_player" allowfullscreen></iframe>
+				{% endif %}
+				
+				
+				{% if doc.description %}<p class="pl-45">{{ doc.description }}</p>{% endif %}
+			</div>
+		</div>
+ </div>
