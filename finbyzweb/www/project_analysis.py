@@ -20,6 +20,7 @@ def get_context(context):
 
 @frappe.whitelist()
 def get_data(user=None, start_date=None, end_date=None, project=None):
+    # frappe.throw(str(user) + " " + str(start_date) + " " + str(end_date) + " " + str(project))
     if not project:
         frappe.throw(_("Please select a project"))
 
@@ -164,13 +165,14 @@ def web_browsing_time(user=None, start_date=None, end_date=None, project=None):
 # User Activity Images Code Starts
 @frappe.whitelist()
 def user_activity_images(user=None, start_date=None, end_date=None, project=None, offset=0):
+    # frappe.throw(str(user) + " " + str(start_date) + " " + str(end_date) + " " + str(project))
     if not project:
         return []
     portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.status = 'Open' and p.name = '{project}'""", as_dict=1)
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
     else:
-        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["blurred_screenshot", "time","active_app"])
+        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
         for i in data:
             i["time_"] = frappe.format(i["time"], "Datetime")
         return data
@@ -261,9 +263,9 @@ def get_projects():
     current_user = frappe.session.user
     projects = frappe.db.sql(f"""
         SELECT DISTINCT p.name as name, p.project_name 
-        FROM `tabProject` as p
-        JOIN `tabProject User` as pu ON pu.parent = p.name
-        WHERE pu.user = '{current_user}' and status = 'Open'""",as_dict=1) 
+        from `tabProject` as p 
+        join `tabPortal User` as pu on p.customer = pu.parent 
+        where p.status = 'Open' and pu.user = '{current_user}'""",as_dict=1)
     return projects
 
 @frappe.whitelist()
@@ -341,4 +343,4 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
             "base_data":base_data,
             "data":data
         }
-# Overall Performance Timely Code Ends
+# Overall Performance Timely Code Ends  

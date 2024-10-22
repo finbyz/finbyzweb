@@ -1,64 +1,31 @@
-let selectedProject = null;
+// Global state object to manage selections
+const state = {
+    selected_project: null,
+    selected_start_date: null,
+    selected_end_date: null,
+    selected_employee: null
+};
 
-function updateUrlParams(from_date, to_date, project) {
+function updateUrlParams(from_date, to_date, project, employee) {
     const url = new URL(window.location);
     const params = new URLSearchParams(url.search);
-
     if (from_date) params.set('from_date', from_date);
     if (to_date) params.set('to_date', to_date);
     if (project) params.set('project', project);
+    if (employee) params.set('employee', employee);
 
     url.search = params.toString();
     window.history.replaceState({}, '', url);
 }
 
-function initial_requirements() {
-    // Function to get URL parameters
-    function getUrlParams() {
-        const params = new URLSearchParams(window.location.search);
-        return {
-            from_date: params.get('from_date'),
-            to_date: params.get('to_date'),
-            project: params.get('project')
-        };
-    }
-
-    // Retrieve URL parameters
-    const { from_date, to_date, project } = getUrlParams();
-    if (from_date && to_date) {
-        this.selected_start_date = from_date;
-        this.selected_end_date = to_date;
-    } else {
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(endDate.getDate() - 1);
-        
-        this.selected_end_date = formatDateToYYYYMMDD(endDate);
-        this.selected_start_date = formatDateToYYYYMMDD(startDate);
-
-        updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
-    }
-
-    if (project && !this.selected_project) {
-        this.selected_project = project;
-    }
-
-    populateProjectOptions();
-    updateDataBasedOnSelection(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
-}
-
-function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
-	frappe.xcall("finbyzweb.www.project_analysis.get_data", {
-        user: selected_employee,
-		start_date: selected_start_date,
-		end_date: selected_end_date,
-        project: selected_project
-	}).then((response) => {
-		work_intensity(response.work_intensity)
-		application_usage_time(response.application_usage)
-		web_browsing_time(response.web_browsing)
-		fetch_url_data(response.url_data)
-	})
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        from_date: params.get('from_date'),
+        to_date: params.get('to_date'),
+        project: params.get('project'),
+        employee: params.get('employee')
+    };
 }
 
 function formatDateToYYYYMMDD(date) {
@@ -71,78 +38,297 @@ function formatDateToYYYYMMDD(date) {
     return `${year}-${month}-${day}`;
 }
 
-function populateProjectOptions(employee) {
+async function populateProjectOptions() {
     const projectSelect = document.getElementById('projectSelect');
     projectSelect.innerHTML = '';
-    frappe.xcall("finbyzweb.www.project_analysis.get_projects")
-        .then(projects => {
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Select a project';
-            projectSelect.appendChild(defaultOption);
+    
+    try {
+        const projects = await frappe.xcall("finbyzweb.www.project_analysis.get_projects");
+        
+        // Add default option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select a project';
+        projectSelect.appendChild(defaultOption);
 
-            projects.forEach(project => {
-                const option = document.createElement('option');
-                option.value = project.name;
-                option.textContent = project.project_name;
-                projectSelect.appendChild(option);
-            });
-
-            // Check URL for project
-            const urlParams = new URLSearchParams(window.location.search);
-            const projectFromUrl = urlParams.get('project');
-
-            if (projectFromUrl) {
-                this.selected_project = projectFromUrl;
-            } else if (!this.selected_project && projects.length > 0) {
-                this.selected_project = projects[0].name;
-            }
-
-            // Set the selected project in the dropdown
-            if (this.selected_project) {
-                projectSelect.value = this.selected_project;
-                updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
-            }
-            
-            // console.log("selected_project", this.selected_project);
-        })
-        .catch(error => {
-            console.error("Error fetching projects:", error);
+        // Add project options
+        projects.forEach(project => {
+            const option = document.createElement('option');
+            option.value = project.name;
+            option.textContent = project.project_name;
+            projectSelect.appendChild(option);
         });
+
+        // Get project from URL params
+        const { project: projectFromUrl } = getUrlParams();
+
+        if (projectFromUrl) {
+            state.selected_project = projectFromUrl;
+        } else if (!state.selected_project && projects.length > 0) {
+            state.selected_project = projects[0].name;
+        }
+
+        // Set the selected project in the dropdown
+        if (state.selected_project) {
+            projectSelect.value = state.selected_project;
+        }
+
+        return state.selected_project;
+    } catch (error) {
+        console.error("Error fetching projects:", error);
+        return null;
+    }
 }
 
 function updateDates(fromDate, toDate) {
-    this.selected_start_date = formatDateToYYYYMMDD(fromDate);
-    this.selected_end_date = formatDateToYYYYMMDD(toDate);
-    updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
+    state.selected_start_date = formatDateToYYYYMMDD(fromDate);
+    state.selected_end_date = formatDateToYYYYMMDD(toDate);
+    updateUrlParams(
+        state.selected_start_date, 
+        state.selected_end_date, 
+        state.selected_project,
+        state.selected_employee
+    );
+}
+
+async function initial_requirements() {
+    // Get URL parameters
+    const { from_date, to_date, project, employee } = getUrlParams();
+
+    // Set dates
+    if (from_date && to_date) {
+        state.selected_start_date = from_date;
+        state.selected_end_date = to_date;
+    } else {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 1);
+        
+        state.selected_end_date = formatDateToYYYYMMDD(endDate);
+        state.selected_start_date = formatDateToYYYYMMDD(startDate);
+    }
+
+    // Set project and employee from URL if available
+    if (project) {
+        state.selected_project = project;
+    }
+    if (employee) {
+        state.selected_employee = employee;
+    }
+
+    // Wait for project options to be populated
+    await populateProjectOptions();
+
+    // Initialize date inputs with current state values
+    const fromDateInput = document.getElementById('fromDate');
+    const toDateInput = document.getElementById('toDate');
+    if (fromDateInput) fromDateInput.value = state.selected_start_date;
+    if (toDateInput) toDateInput.value = state.selected_end_date;
+
+    // Update URL and fetch data
+    updateUrlParams(
+        state.selected_start_date, 
+        state.selected_end_date, 
+        state.selected_project,
+        state.selected_employee
+    );
+    
+    await updateDataBasedOnSelection(
+        state.selected_start_date, 
+        state.selected_end_date, 
+        state.selected_project, 
+        state.selected_employee
+    );
+}
+
+function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
+    // Ensure we have valid dates before making the call
+    if (!selected_start_date || !selected_end_date) {
+        console.error('Invalid dates:', { selected_start_date, selected_end_date });
+        return Promise.reject(new Error('Invalid dates'));
+    }
+
+    return frappe.xcall("finbyzweb.www.project_analysis.get_data", {
+        user: selected_employee,
+        start_date: selected_start_date,
+        end_date: selected_end_date,
+        project: selected_project
+    }).then((response) => {
+        work_intensity(response.work_intensity);
+        application_usage_time(response.application_usage);
+        web_browsing_time(response.web_browsing);
+        fetch_url_data(response.url_data, selected_start_date, selected_end_date, selected_project, selected_employee);
+    }).catch(error => {
+        console.error('Error updating data:', error);
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    initial_requirements.call(this);
+    // Initialize the application
+    initial_requirements().catch(console.error);
 
-    document.getElementById('projectSelect').addEventListener('change', function () {
-        this.selected_project = this.value;
-        // console.log("Selected project:", this.selected_project);
-        updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
-        // updateDataBasedOnSelection.call(this);
-    }.bind(this));
+    // Employee select change handler
+    document.getElementById('employeeSelect')?.addEventListener('change', function(event) {
+        state.selected_employee = event.target.value;
+        updateUrlParams(
+            state.selected_start_date,
+            state.selected_end_date,
+            state.selected_project,
+            state.selected_employee
+        );
+        updateDataBasedOnSelection(
+            state.selected_start_date,
+            state.selected_end_date,
+            state.selected_project,
+            state.selected_employee
+        );
+    });
 
+    // Project select change handler
+    document.getElementById('projectSelect').addEventListener('change', function(event) {
+        state.selected_project = event.target.value;
+        updateUrlParams(
+            state.selected_start_date,
+            state.selected_end_date,
+            state.selected_project,
+            state.selected_employee
+        );
+    });
+
+    // Save project button handler
     document.getElementById('saveProjectBtn').addEventListener('click', function() {
-        // console.log("Saving project:", document.getElementById('projectSelect').value);
-        this.selected_project = document.getElementById('projectSelect').value;
-        updateUrlParams(this.selected_start_date, this.selected_end_date, this.selected_project);
-        updateDataBasedOnSelection(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
+        state.selected_project = document.getElementById('projectSelect').value;
+        updateUrlParams(
+            state.selected_start_date,
+            state.selected_end_date,
+            state.selected_project,
+            state.selected_employee
+        );
+        updateDataBasedOnSelection(
+            state.selected_start_date,
+            state.selected_end_date,
+            state.selected_project,
+            state.selected_employee
+        );
         bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
-    }.bind(this));
+    });
 
+    // Save timespan button handler
     document.getElementById('saveTimespanBtn').addEventListener('click', function() {
         const fromDate = document.getElementById('fromDate').value;
         const toDate = document.getElementById('toDate').value;
-        updateDates.call(this, fromDate, toDate);
-        updateDataBasedOnSelection(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
+        updateDates(fromDate, toDate);
+        updateDataBasedOnSelection(
+            state.selected_start_date,
+            state.selected_end_date,
+            state.selected_project,
+            state.selected_employee
+        );
         bootstrap.Modal.getInstance(document.getElementById('timespanModal')).hide();
-    }.bind(this));
+    });
 });
+// URL DATA Code Starts
+function fetch_url_data(r, selected_start_date, selected_end_date, selected_project, selected_employee) {
+	// console.log("r", r.data);
+	if (r.data) {
+		url_data(r.data, selected_start_date, selected_end_date, selected_project, selected_employee);
+		$(document).ready(function () {
+			$('#logCountModalTrigger').click(function () {
+				$('#logCountModal').modal('show');
+			});
+		});
+	}
+}
+function url_data(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
+// console.log("data", data);
+function getBaseURL() {
+return window.location.origin + '/app/';
+}
+
+let employee_data;
+let start_date_ = this.selected_start_date;
+let end_date_ = this.selected_end_date;
+if (this.selected_employee != null) {
+employee_data = this.selected_employee;
+}
+var total_duration = 0;
+const baseUrl = getBaseURL();
+const container = $("#url-data");
+container.empty();
+let wholedata = `
+<div class="row mt-3">
+	<div class="col-md-12">
+		<div class="custom-card">
+			<h4 class="custom-title p-3" style="font-size: 14px !important;" align="center">All Resources</h4>
+			<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr align="center">
+						<th>Resources</th>
+						<th>Total Time</th>
+					</tr>
+				</thead>
+				<tbody>`;
+
+data.forEach(app => {
+wholedata += `
+	<tr align="center">
+		<td style="color:#00A6E0 !important;"><b><a href="#" style="text-decoration:none !important;color:#00A6E0 !important;" class="url-link" data-url="${app.employee_id}" data-employee="${app.employee_id}">${app.employee}</a></b></td>
+		<td style="color:#FF4001;">${this.convertSecondsToTime_(app.total_duration)} H</td>
+	</tr>`;
+total_duration += app.total_duration;
+});
+
+wholedata += `
+	<tr align="center">
+		<td><b><a href="#" style="text-decoration:none !important;" class="url-link" data-url="null" data-employee="null">Total</a></b></td>
+		<td><b>${this.convertSecondsToTime_(total_duration)} H</b></td>
+	</tr>`;
+
+wholedata += `
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>`;
+container.append(wholedata);
+
+$(document).ready(function () {
+$(document).on('click', '.url-link', function (e) {
+	e.preventDefault();
+	let clickedLink = $(this);
+	let selectedEmployee = e.target.getAttribute('data-employee');
+
+	if (selectedEmployee === "null") {
+		selectedEmployee = employee_data;
+	}
+
+	// Update selected employee and call required functions
+	this.selected_employee = selectedEmployee;
+
+	// Update URL with selected employee, start date, and end date
+	const newUrl = new URL(window.location);
+	const params = new URLSearchParams(newUrl.search);
+	params.set('employee', selectedEmployee);
+	newUrl.search = params.toString();
+	window.history.replaceState({}, '', newUrl);
+
+	// Call functions to refresh data
+	initial_requirements.call(this);
+	frappe.xcall("finbyzweb.www.project_analysis.get_data", {
+		user: selected_employee,
+		start_date: selected_start_date,
+		end_date: selected_end_date,
+		project: selected_project
+	}).then((response) => {
+		work_intensity(response.work_intensity)
+		application_usage_time(response.application_usage)
+		web_browsing_time(response.web_browsing)
+	})
+	render_images(selected_start_date, selected_end_date, selected_project, selected_employee);
+}.bind(this));
+});
+}
 function work_intensity(response) {
 		if (response.length === 0) {
 			return;
@@ -397,6 +583,7 @@ function web_browsing_time(r) {
             });
 }
 function render_images(selected_start_date, selected_end_date, selected_project, selected_employee) {
+
     let startDatetime = new Date(selected_start_date + "T00:00:00");
     let endDatetime = new Date(selected_end_date + "T23:59:59");
     let data = selected_employee
@@ -440,7 +627,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
             end_date: end_time,
             project: selected_project
         }).then((imagedata) => {
-            console.log("imagedata", imagedata);
+            // console.log("imagedata", imagedata);
             let flag = imagedata.length > 0 ? 1 : 0;
             
             let slotImages = {};
@@ -485,11 +672,11 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                             const slotTimeString = slotTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
                             if (image) {
-								console.log("image", image.blurred_screenshot);
+								// console.log("image", image);
                                 const imgElement = `
                                     <div class="col-md-3">
                                         <div style="display: flex; justify-content: center; align-items: center; height: 160px;">
-                                            <img src="${image.blurred_screenshot}" title="${image.time_}" data-active-app="${image.active_app}" alt="User Activity Image" style="max-width: 100%; max-height: 100%; object-fit: contain;" class="clickable-image">
+                                            <img src="${image.screenshot}" title="${image.time_}" data-active-app="${image.active_app}" alt="User Activity Image" style="max-width: 100%; max-height: 100%; object-fit: contain;" class="clickable-image">
                                         </div>
                                         <p style="text-align: center;"><b>${slotTimeString}</b></p>
                                     </div>`;
@@ -521,7 +708,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
             window.addEventListener('resize', setImageHeight);
 
             $('.clickable-image').off('click').on('click', function () {
-				console.log("clickable-image");
+				// console.log("clickable-image");
                 const imgSrc = $(this).attr('src');
                 const activeApp = $(this).data('active-app');
                 showImageDialog(imgSrc, activeApp);
@@ -532,8 +719,8 @@ function render_images(selected_start_date, selected_end_date, selected_project,
     }
 
 	function showImageDialog(imgSrc, activeApp) {
-		console.log("imgSrc", imgSrc);
-		console.log("activeApp", activeApp);
+		// console.log("imgSrc", imgSrc);
+		// console.log("activeApp", activeApp);
 	
 		// Create modal HTML
 		const modalHTML = `
@@ -622,110 +809,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
         $(window).on('scroll', handleScroll);
     }
 }
-// URL DATA Code Starts
-function fetch_url_data(r) {
-			console.log("r", r.data);
-            if (r.data) {
-                url_data(r.data);
-                $(document).ready(function () {
-                    $('#logCountModalTrigger').click(function () {
-                        $('#logCountModal').modal('show');
-                    });
-                });
-            }
-        }
-function url_data(data) {
-	console.log("data", data);
-    function getBaseURL() {
-        return window.location.origin + '/app/';
-    }
 
-    let employee_data;
-    let start_date_ = this.selected_start_date;
-    let end_date_ = this.selected_end_date;
-    if (this.selected_employee != null) {
-        employee_data = this.selected_employee;
-    }
-    var total_duration = 0;
-    const baseUrl = getBaseURL();
-    const container = $("#url-data");
-    container.empty();
-    let wholedata = `
-        <div class="row mt-3">
-            <div class="col-md-12">
-                <div class="custom-card">
-                    <h4 class="custom-title p-3" style="font-size: 14px !important;" align="center">All Resources</h4>
-                    <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr align="center">
-                                <th>Resources</th>
-                                <th>Total Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-
-    data.forEach(app => {
-        wholedata += `
-            <tr align="center">
-                <td style="color:#00A6E0 !important;"><b><a href="#" style="text-decoration:none !important;color:#00A6E0 !important;" class="url-link" data-url="${app.employee_id}" data-employee="${app.employee_id}">${app.employee}</a></b></td>
-                <td style="color:#FF4001;">${this.convertSecondsToTime_(app.total_duration)} H</td>
-            </tr>`;
-        total_duration += app.total_duration;
-    });
-
-    wholedata += `
-            <tr align="center">
-                <td><b><a href="#" style="text-decoration:none !important;" class="url-link" data-url="null" data-employee="null">Total</a></b></td>
-                <td><b>${this.convertSecondsToTime_(total_duration)} H</b></td>
-            </tr>`;
-
-    wholedata += `
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>`;
-    container.append(wholedata);
-
-    $(document).ready(function () {
-        $(document).on('click', '.url-link', function (e) {
-            e.preventDefault();
-            let clickedLink = $(this);
-            let selectedEmployee = e.target.getAttribute('data-employee');
-
-            if (selectedEmployee === "null") {
-                selectedEmployee = employee_data;
-            }
-
-            // Update selected employee and call required functions
-            this.selected_employee = selectedEmployee;
-
-            // Update URL with selected employee, start date, and end date
-            const newUrl = new URL(window.location);
-            const params = new URLSearchParams(newUrl.search);
-            params.set('employee', this.selected_employee);
-            params.set('from_date', this.selected_start_date);
-            params.set('to_date', this.selected_end_date);
-            newUrl.search = params.toString();
-            window.history.replaceState({}, '', newUrl);
-
-            // Call functions to refresh data
-            initial_requirements.call(this);
-            frappe.xcall("finbyzweb.www.project_analysis.get_data", {
-				user: this.selected_employee,
-				start_date: this.selected_start_date,
-				end_date: this.selected_end_date,
-				project: this.selected_project
-			}).then((response) => {
-				work_intensity(response.work_intensity)
-				application_usage_time(response.application_usage)
-				web_browsing_time(response.web_browsing)
-			})
-			render_images(this.selected_start_date, this.selected_end_date, this.selected_project, this.selected_employee);
-        }.bind(this));
-    });
-}
 
 
 function convertSecondsToTime_(seconds) {
@@ -766,6 +850,11 @@ function overall_performance_timely(user,date, hour, selected_project) {
 			var priorityOrder = {
 				'Inactive': 0,
 				'Application': 1,
+					'Browser': 2,
+					'Idle': 3,
+					'Internal Meeting': 4,
+					'External Meeting': 5,
+					'	Call': 6
 			};
 
 			function makeOption() {
@@ -777,45 +866,6 @@ function overall_performance_timely(user,date, hour, selected_project) {
 				function padZero(num) {
 					return num < 10 ? `0${num}` : num;
 				}
-
-				// Define the inactive periods array
-				var inactivePeriods = [];
-				// Define a map to track the end time of the last activity for each employee
-				var employeeLastEndTime = {};
-				// Sort the flight data by date and then by priority
-				_rawData.flight.data.sort((a, b) => new Date(a[2]).getTime() - new Date(b[2]).getTime());
-				_rawData.flight.data.sort((a, b) => priorityOrder[a[0]] - priorityOrder[b[0]]);
-				// Iterate over each activity in the flight data
-				for (var i = 0; i < _rawData.flight.data.length; i++) {
-				var activity = _rawData.flight.data[i];
-				var employeeName = activity[1];
-				var startTime = new Date(activity[2]).getTime();
-				var endTime = new Date(activity[3]).getTime(); // Assuming end time is at index 3
-				// Initialize employee's last end time if not already set
-				if (!employeeLastEndTime[employeeName]) {
-					employeeLastEndTime[employeeName] = startTime; // Set to the start time of the first activity
-				}
-				// Calculate inactive period if there is a gap between the last activity and the current start time
-				if (startTime > employeeLastEndTime[employeeName]) {
-					var lastEndTime = employeeLastEndTime[employeeName];
-					var startTimeString = convertDateTime(new Date(lastEndTime).toISOString());
-					var endTimeString = convertDateTime(new Date(startTime).toISOString());       
-					inactivePeriods.push(['Inactive', employeeName, startTimeString, endTimeString]);
-				}
-				// Update the last end time to the end time of the current activity
-				employeeLastEndTime[employeeName] = endTime;
-				}
-				// Combine flight data with inactive periods
-				_rawData.flight.data = _rawData.flight.data.concat(inactivePeriods);
-				// Sort combined data by date and priority
-				_rawData.flight.data.sort((a, b) => new Date(a[2]).getTime() - new Date(b[2]).getTime());
-				_rawData.flight.data.sort((a, b) => priorityOrder[a[0]] - priorityOrder[b[0]]);
-				// Format the date for each entry
-				_rawData.flight.data = _rawData.flight.data.map(item => {
-				let date = new Date(item[2]);
-				let formattedDate = `${padZero(date.getDate())}-${padZero(date.getMonth() + 1)}-${date.getFullYear()}`;
-				return [item[0], formattedDate, ...item.slice(2)];
-				});
 				// Function to get the start of the hour for a given date
 				function getStartOfHour(date) {
 				return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), 0, 0, 0);
@@ -843,125 +893,62 @@ function overall_performance_timely(user,date, hour, selected_project) {
 				var startTime = new Date(activity[2]);
 				var endTime = new Date(activity[3]); // Assuming end time is at index 3
 
-				var hourStart = getStartOfHour(startTime);
-				var hourEnd = getEndOfHour(startTime);
-
 				// Initialize employee's last end time if not already set
 				if (!employeeLastEndTime[employeeName]) {
-					employeeLastEndTime[employeeName] = hourStart;
+        employeeLastEndTime[employeeName] = getStartOfHour(startTime);
 				}
 
-				// Calculate inactive periods for the previous hour if there's a gap
-				if (employeeLastEndTime[employeeName] < hourStart) {
-					if (employeeLastEndTime[employeeName] < hourEnd) {
+    // Calculate inactive period if there is a gap between the last activity and the current start time
+    if (startTime > employeeLastEndTime[employeeName]) {
 						var inactiveStart = employeeLastEndTime[employeeName];
-						var inactiveEnd = Math.min(hourEnd, startTime);
-						if (inactiveStart < inactiveEnd) {
-							var startTimeString = convertDateTime(new Date(inactiveStart).toISOString());
-							var endTimeString = convertDateTime(new Date(inactiveEnd).toISOString());
-							inactivePeriods.push(['Inactive', employeeName, startTimeString, endTimeString]);
-						}
-					}
-					// Update last end time to the end of the current activity
-					employeeLastEndTime[employeeName] = Math.max(employeeLastEndTime[employeeName], endTime);
-				} else {
-					// Update last end time to the end of the current activity
-					employeeLastEndTime[employeeName] = Math.max(employeeLastEndTime[employeeName], endTime);
-				}
-				}
-
-				// Handle inactive periods after the last activity of each employee for the day
-				for (const employee in employeeLastEndTime) {
-				var lastEnd = employeeLastEndTime[employee];
-				var nextHourStart = getStartOfHour(new Date(lastEnd)).getTime() + 3600000; // Start of next hour
-				var endOfDay = new Date(lastEnd).setHours(23, 59, 59, 999);
-
-				if (nextHourStart < endOfDay) {
-					var startTimeString = convertDateTime(new Date(lastEnd).toISOString());
-					var endTimeString = convertDateTime(new Date(nextHourStart).toISOString());
-					inactivePeriods.push(['Inactive', employee, startTimeString, endTimeString]);
-				}
+        var inactiveEnd = startTime;
+        
+        // If the inactive period crosses an hour boundary, split it
+        while (getEndOfHour(inactiveStart) < inactiveEnd && getEndOfHour(inactiveStart) < startTime) {
+            var hourEnd = getEndOfHour(inactiveStart);
+            inactivePeriods.push([
+                'Inactive',
+                employeeName,
+                convertDateTime(inactiveStart.toISOString()),
+                convertDateTime(hourEnd.toISOString())
+            ]);
+            inactiveStart = new Date(hourEnd.getTime() + 1); // Start of next hour
 				}
 
-				// Combine flight data with inactive periods
-				_rawData.flight.data = _rawData.flight.data.concat(inactivePeriods);
-
-				// Sort combined data by date and priority
-				_rawData.flight.data.sort((a, b) => new Date(a[2]).getTime() - new Date(b[2]).getTime());
-				_rawData.flight.data.sort((a, b) => priorityOrder[a[0]] - priorityOrder[b[0]]);
-
-				// Format the date for each entry
-				_rawData.flight.data = _rawData.flight.data.map(item => {
-				let date = new Date(item[2]);
-				let formattedDate = `${padZero(date.getDate())}-${padZero(date.getMonth() + 1)}-${date.getFullYear()}`;
-				return [item[0], formattedDate, ...item.slice(2)];
-				});
-				// Function to get the start of the hour for a given date
-				function getStartOfHour(date) {
-				return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), 0, 0, 0);
-				}
-
-				// Function to get the end of the hour for a given date
-				function getEndOfHour(date) {
-				return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), 59, 59, 999);
-				}
-
-				// Define the inactive periods array
-				var inactivePeriods = [];
-
-				// Define a map to track the last end time of each employee
-				var employeeLastEndTime = {};
-
-				// Sort the flight data by date and then by priority
-				_rawData.flight.data.sort((a, b) => new Date(a[2]).getTime() - new Date(b[2]).getTime());
-				_rawData.flight.data.sort((a, b) => priorityOrder[a[0]] - priorityOrder[b[0]]);
-
-				// Iterate over each activity in the flight data
-				for (var i = 0; i < _rawData.flight.data.length; i++) {
-				var activity = _rawData.flight.data[i];
-				var employeeName = activity[1];
-				var startTime = new Date(activity[2]);
-				var endTime = new Date(activity[3]); // Assuming end time is at index 3
-
-				var hourStart = getStartOfHour(startTime);
-				var hourEnd = getEndOfHour(startTime);
-
-				// Initialize employee's last end time if not already set
-				if (!employeeLastEndTime[employeeName]) {
-					// Initialize to the start of the day or the first hour boundary
-					employeeLastEndTime[employeeName] = hourStart;
-				}
-
-				// Handle inactive period from the end of the last activity to the start of the current activity
-				if (employeeLastEndTime[employeeName] < startTime) {
-					var inactiveStart = employeeLastEndTime[employeeName];
-					var inactiveEnd = startTime;
-					if (inactiveStart < inactiveEnd) {
-						var startTimeString = convertDateTime(new Date(inactiveStart).toISOString());
-						var endTimeString = convertDateTime(new Date(inactiveEnd).toISOString());
-						inactivePeriods.push(['Inactive', employeeName, startTimeString, endTimeString]);
+        // Add the remaining inactive period if it exists and is within the same hour
+        if (inactiveStart < inactiveEnd && inactiveStart.getHours() === inactiveEnd.getHours()) {
+            inactivePeriods.push([
+                'Inactive',
+                employeeName,
+                convertDateTime(inactiveStart.toISOString()),
+                convertDateTime(inactiveEnd.toISOString())
+            ]);
 					}
 				}
 
-				// Update last end time to the end of the current activity
-				employeeLastEndTime[employeeName] = Math.max(employeeLastEndTime[employeeName], endTime);
-
-				// Move the last end time to the end of the hour if needed
-				if (endTime > hourEnd) {
-					employeeLastEndTime[employeeName] = hourEnd;
-				}
+    // Update the last end time to the end of the current activity
+    employeeLastEndTime[employeeName] = endTime;
 				}
 
 				// Handle inactive periods at the end of the day for each employee
 				for (const employee in employeeLastEndTime) {
 				var lastEnd = employeeLastEndTime[employee];
-				var endOfDay = new Date(lastEnd).setHours(23, 59, 59, 999);
+    var endOfHour = getEndOfHour(lastEnd);
 
-				// Add inactive periods from the end of the last recorded activity until the end of the day
-				if (lastEnd < endOfDay) {
-					var startTimeString = convertDateTime(new Date(lastEnd).toISOString());
-					var endTimeString = convertDateTime(new Date(endOfDay).toISOString());
-					inactivePeriods.push(['Inactive', employee, startTimeString, endTimeString]);
+    // Only add an inactive period if it's within the same hour and there's actually a gap
+    if (lastEnd < endOfHour && 
+        lastEnd.getHours() === endOfHour.getHours() && 
+        lastEnd.getTime() !== endOfHour.getTime()) {
+        
+        // Ensure we're not creating a full 59-minute inactive period
+        if (endOfHour.getTime() - lastEnd.getTime() < 3540000) { // 59 minutes in milliseconds
+            inactivePeriods.push([
+                'Inactive',
+                employee,
+                convertDateTime(lastEnd.toISOString()),
+                convertDateTime(endOfHour.toISOString())
+            ]);
+        }
 				}
 				}
 
@@ -978,8 +965,6 @@ function overall_performance_timely(user,date, hour, selected_project) {
 				let formattedDate = `${padZero(date.getDate())}-${padZero(date.getMonth() + 1)}-${date.getFullYear()}`;
 				return [item[0], formattedDate, ...item.slice(2)];
 				});
-
-
 				var uniqueDates = [...new Set(_rawData.flight.data.map(item => item[1]))];
 
 				function setFixedDate(timestamp) {
@@ -1015,6 +1000,7 @@ function overall_performance_timely(user,date, hour, selected_project) {
 							var date = params.data[1];
 							var startTime_ = new Date(params.data[2]);
 							var endTime_ = new Date(params.data[3]);
+								// console.log(startTime_, endTime_);
 							var startTimeString = formatTimeToHHMM(startTime_);
 							var endTimeString = formatTimeToHHMM(endTime_);
 
@@ -1029,52 +1015,128 @@ function overall_performance_timely(user,date, hour, selected_project) {
 							if (minutes > 0) durationString += minutes + "m ";
 							if (seconds > 0 || durationString === "") durationString += seconds + "s";
 
-							var tooltipContent = `
+								var tooltipContent = ``;
+
+								if (activityType === "Application" || activityType === "Browser") {
+									tooltipContent += `
 								<div class="custom-tooltip">
 									<table style="border-collapse: collapse; width: 100%; font-size: 14px;">
 										<tr>
 											<td style="padding: 0px 10px; text-align: left; font-weight: bold;">${startTimeString}</td>
+													<td style="padding: 0px 10px; font-weight: bold;">${params.data[9]}</td>
 											<td style="padding: 0px 10px; text-align: right; font-weight: bold;">${durationString}</td>
 										</tr>
 							`;
-
-							if (activityType === "Application" || activityType === "Browser") {
-								if (params.data[4]) {
-									tooltipContent += `
-										<tr>
-											<td colspan="2" style="padding: 0px 10px; text-align: left;">${params.data[4]}</td>
-										</tr>`;
 								}
-								if (activityType) {
+								if (activityType === "Call") {
 									tooltipContent += `
-										<tr>
-											<td colspan="2" style="padding: 0px 10px; text-align: left;">${params.data[9]}</td>
-										</tr>`;
+										<div class="custom-tooltip">
+											<table style="border-collapse: collapse; width: 100%; font-size: 14px;">
+												<tr>
+													<td style="padding: 0px 10px; text-align: left; font-weight: bold;">${startTimeString}</td>
+													<td style="padding: 0px 10px; font-weight: bold;">Call</td>
+													<td style="padding: 0px 10px; text-align: right; font-weight: bold;">${durationString}</td>
+												</tr>
+									`;
 								}
-								if (params.data[5]) {
+								if (activityType === "Idle"){
 									tooltipContent += `
-										<tr>
-											<td colspan="2" style="padding: 0px 10px; text-align: left;">${params.data[5]}</td>
-										</tr>`;
+										<div class="custom-tooltip">
+											<table style="border-collapse: collapse; width: 100%; font-size: 14px;">
+												<tr>
+													<td style="padding: 0px 10px; text-align: left; font-weight: bold;">${startTimeString}</td>
+													<td style="padding: 0px 10px; font-weight: bold;">Idle</td>
+													<td style="padding: 0px 10px; text-align: right; font-weight: bold;">${durationString}</td>
+												</tr>
+									`;
 								}
-								if (params.data[6]) {
+								if (activityType === "Inactive"){
 									tooltipContent += `
-										<tr>
-											<td colspan="2" style="padding: 0px 10px; text-align: left;">${params.data[6]}</td>
+										<div class="custom-tooltip">
+											<table style="border-collapse: collapse; width: 100%; font-size: 14px;">
+												<tr>
+													<td style="padding: 0px 10px; text-align: left; font-weight: bold;">${startTimeString}</td>
+													<td style="padding: 0px 10px; font-weight: bold;">Inactive</td>
+													<td style="padding: 0px 10px; text-align: right; font-weight: bold;">${durationString}</td>
+												</tr>
+									`;
+								}
+								if (activityType === "Internal Meeting" || activityType === "External Meeting") {
+									tooltipContent += `
+										<div class="custom-tooltip">
+											<table style="border-collapse: collapse; width: 100%; font-size: 14px;">
+												<tr>
+													<td style="padding: 0px 10px; text-align: left; font-weight: bold;">${startTimeString}</td>
+													<td style="padding: 0px 10px; font-weight: bold;">Meeting</td>
+													<td style="padding: 0px 10px; text-align: right; font-weight: bold;">${durationString}</td>
+												</tr>
+									`;
+								}
+								if (activityType === "Application" || activityType === "Browser") {
+									if (params.data[4]) {
+										tooltipContent += `
+											<tr>
+												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[4]}</td>
+											</tr>`;
+									}
+									if (params.data[5]) {
+										tooltipContent += `
+											<tr>
+												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[5]}</td>
+											</tr>`;
+									}
+									if (params.data[6]) {
+										tooltipContent += `
+											<tr>
+												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[6]}</td>
 										</tr>`;
 								}
 								if (params.data[7] && params.data[8]) {
 									tooltipContent += `
 										<tr>
 											<td style="padding: 0px 10px; text-align: left;">${params.data[7]}</td>
+												<td></td>
 											<td style="padding: 0px 10px; text-align: left;">${params.data[8]}</td>
 										</tr>`;
 								}
-							} else {
+								}
+								if (activityType === "Call") {
+									// console.log("params",params);
+									if (params.data[4]) {
 								tooltipContent += `
 									<tr>
-										<td colspan="2" style="padding: 0px 10px; text-align: left;">${activityType}</td>
+												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[4]}</td>
+											</tr>`;
+									}
+									if (params.data[6] && params.data[7]) {
+										tooltipContent += `
+											<tr>
+												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[6]} - ${params.data[7]}</td>
+											</tr>`;
+									}
+								} 
+								if (activityType === "Internal Meeting" || activityType === "External Meeting") {
+									if (params.data[7] && params.data[8]) {
+										tooltipContent += `
+											<tr>
+												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[8]} - ${params.data[7]}</td>
+											</tr>`;
+									}
+									if (params.data[4]) {
+										tooltipContent += `
+											<tr>
+												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[4]}</td>
+											</tr>`;
+									}
+									if (params.data[5]) {
+										tooltipContent += `
+											<tr>
+												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[5]}</td>
 									</tr>`;
+									}
+								}
+								else {
+									
 							}
 
 							tooltipContent += `
@@ -1159,6 +1221,12 @@ function overall_performance_timely(user,date, hour, selected_project) {
 									color = '#E9EAEC';
 								} else if (activityType === 'Browser') {
 									color = '#2c5278';
+									} else if (activityType === 'Call') {
+										color = '#FFCC66';
+									} else if (activityType === 'Internal Meeting') {
+										color = '#9966FF';
+									} else if (activityType == 'External Meeting') {
+										color = '#6699FF';
 								} else {
 									color = '#4BC0C0';
 								}
