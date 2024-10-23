@@ -139,6 +139,16 @@ async function initial_requirements() {
         state.selected_project, 
         state.selected_employee
     );
+
+    // Call render_images if employee is present in URL
+    if (state.selected_employee) {
+        render_images(
+            state.selected_start_date,
+            state.selected_end_date,
+            state.selected_project,
+            state.selected_employee
+        );
+    }
 }
 
 function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
@@ -182,6 +192,15 @@ document.addEventListener('DOMContentLoaded', function() {
             state.selected_project,
             state.selected_employee
         );
+        // Add render_images call when employee is selected
+        if (state.selected_employee) {
+            render_images(
+                state.selected_start_date,
+                state.selected_end_date,
+                state.selected_project,
+                state.selected_employee
+            );
+        }
     });
 
     // Project select change handler
@@ -227,107 +246,117 @@ document.addEventListener('DOMContentLoaded', function() {
         bootstrap.Modal.getInstance(document.getElementById('timespanModal')).hide();
     });
 });
-// URL DATA Code Starts
+
+// URL DATA Code
 function fetch_url_data(r, selected_start_date, selected_end_date, selected_project, selected_employee) {
-	// console.log("r", r.data);
-	if (r.data) {
-		url_data(r.data, selected_start_date, selected_end_date, selected_project, selected_employee);
-		$(document).ready(function () {
-			$('#logCountModalTrigger').click(function () {
-				$('#logCountModal').modal('show');
-			});
-		});
-	}
+    if (r.data) {
+        url_data(r.data, selected_start_date, selected_end_date, selected_project, selected_employee);
+        $(document).ready(function () {
+            $('#logCountModalTrigger').click(function () {
+                $('#logCountModal').modal('show');
+            });
+        });
+    }
 }
+
 function url_data(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
-// console.log("data", data);
-function getBaseURL() {
-return window.location.origin + '/app/';
-}
+    function getBaseURL() {
+        return window.location.origin + '/app/';
+    }
 
-let employee_data;
-let start_date_ = this.selected_start_date;
-let end_date_ = this.selected_end_date;
-if (this.selected_employee != null) {
-employee_data = this.selected_employee;
-}
-var total_duration = 0;
-const baseUrl = getBaseURL();
-const container = $("#url-data");
-container.empty();
-let wholedata = `
-<div class="row mt-3">
-	<div class="col-md-12">
-		<div class="custom-card">
-			<h4 class="custom-title p-3" style="font-size: 14px !important;" align="center">All Resources</h4>
-			<div class="table-responsive">
-			<table class="table">
-				<thead>
-					<tr align="center">
-						<th>Resources</th>
-						<th>Total Time</th>
-					</tr>
-				</thead>
-				<tbody>`;
+    let employee_data;
+    let start_date_ = selected_start_date;
+    let end_date_ = selected_end_date;
+    if (selected_employee != null) {
+        employee_data = selected_employee;
+    }
+    
+    var total_duration = 0;
+    const baseUrl = getBaseURL();
+    const container = $("#url-data");
+    container.empty();
+    let wholedata = `
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="custom-card">
+                <h4 class="custom-title p-3" style="font-size: 14px !important;" align="center">All Resources</h4>
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr align="center">
+                            <th>Resources</th>
+                            <th>Total Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
 
-data.forEach(app => {
-wholedata += `
-	<tr align="center">
-		<td style="color:#00A6E0 !important;"><b><a href="#" style="text-decoration:none !important;color:#00A6E0 !important;" class="url-link" data-url="${app.employee_id}" data-employee="${app.employee_id}">${app.employee}</a></b></td>
-		<td style="color:#FF4001;">${this.convertSecondsToTime_(app.total_duration)} H</td>
-	</tr>`;
-total_duration += app.total_duration;
-});
+    data.forEach(app => {
+        wholedata += `
+            <tr align="center">
+                <td style="color:#00A6E0 !important;"><b><a href="#" style="text-decoration:none !important;color:#00A6E0 !important;" class="url-link" data-url="${app.employee_id}" data-employee="${app.employee_id}">${app.employee}</a></b></td>
+                <td style="color:#FF4001;">${convertSecondsToTime_(app.total_duration)} H</td>
+            </tr>`;
+        total_duration += app.total_duration;
+    });
 
-wholedata += `
-	<tr align="center">
-		<td><b><a href="#" style="text-decoration:none !important;" class="url-link" data-url="null" data-employee="null">Total</a></b></td>
-		<td><b>${this.convertSecondsToTime_(total_duration)} H</b></td>
-	</tr>`;
+    wholedata += `
+            <tr align="center">
+                <td><b><a href="#" style="text-decoration:none !important;" class="url-link" data-url="null" data-employee="null">Total</a></b></td>
+                <td><b>${convertSecondsToTime_(total_duration)} H</b></td>
+            </tr>`;
 
-wholedata += `
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>`;
-container.append(wholedata);
+    wholedata += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>`;
+    container.append(wholedata);
 
-$(document).ready(function () {
-$(document).on('click', '.url-link', function (e) {
-	e.preventDefault();
-	let clickedLink = $(this);
-	let selectedEmployee = e.target.getAttribute('data-employee');
+    $(document).ready(function () {
+        $(document).on('click', '.url-link', function (e) {
+            e.preventDefault();
+            let clickedLink = $(this);
+            let selectedEmployee = e.target.getAttribute('data-employee');
 
-	if (selectedEmployee === "null") {
-		selectedEmployee = employee_data;
-	}
+            if (selectedEmployee === "null") {
+                selectedEmployee = employee_data;
+            }
 
-	// Update selected employee and call required functions
-	this.selected_employee = selectedEmployee;
+            // Update selected employee and call required functions
+            state.selected_employee = selectedEmployee;
 
-	// Update URL with selected employee, start date, and end date
-	const newUrl = new URL(window.location);
-	const params = new URLSearchParams(newUrl.search);
-	params.set('employee', selectedEmployee);
-	newUrl.search = params.toString();
-	window.history.replaceState({}, '', newUrl);
+            // Update URL with selected employee, start date, and end date
+            const newUrl = new URL(window.location);
+            const params = new URLSearchParams(newUrl.search);
+            params.set('employee', selectedEmployee);
+            newUrl.search = params.toString();
+            window.history.replaceState({}, '', newUrl);
 
-	// Call functions to refresh data
-	initial_requirements.call(this);
-	frappe.xcall("finbyzweb.www.project_analysis.get_data", {
-		user: selected_employee,
-		start_date: selected_start_date,
-		end_date: selected_end_date,
-		project: selected_project
-	}).then((response) => {
-		work_intensity(response.work_intensity)
-		application_usage_time(response.application_usage)
-		web_browsing_time(response.web_browsing)
-	})
-	render_images(selected_start_date, selected_end_date, selected_project, selected_employee);
-}.bind(this));
-});
+            // Call functions to refresh data
+            initial_requirements();
+            frappe.xcall("finbyzweb.www.project_analysis.get_data", {
+                user: selectedEmployee,
+                start_date: selected_start_date,
+                end_date: selected_end_date,
+                project: selected_project
+            }).then((response) => {
+                work_intensity(response.work_intensity);
+                application_usage_time(response.application_usage);
+                web_browsing_time(response.web_browsing);
+            });
+            
+            // Call render_images when employee link is clicked
+            if (selectedEmployee) {
+                render_images(
+                    selected_start_date,
+                    selected_end_date,
+                    selected_project,
+                    selectedEmployee
+                );
+            }
+        });
+    });
 }
 function work_intensity(response) {
 		if (response.length === 0) {
