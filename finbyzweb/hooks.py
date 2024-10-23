@@ -121,14 +121,6 @@ doctype_js = {
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
-
 # Scheduled Tasks
 # ---------------
 
@@ -165,6 +157,9 @@ doctype_js = {
 doc_events = {
 	"Customer": {
 		"before_save": "finbyzweb.api.customer_before_save"
+	},
+	"Screen Screenshot Log":{
+		"before_save": "finbyzweb.finbyzweb.doc_events.screen_screenshot_log.before_validate"
 	}
 }
 
