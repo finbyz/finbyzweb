@@ -160,7 +160,13 @@ doc_events = {
 	},
 	"Screen Screenshot Log":{
 		"before_save": "finbyzweb.finbyzweb.doc_events.screen_screenshot_log.before_validate"
-	}
+	},
+	"Project":{
+		"before_save": "finbyzweb.finbyzweb.doc_events.project.before_validate"
+	},
+	"Customer":{
+		"before_save": "finbyzweb.finbyzweb.doc_events.customer.before_validate"
+	},
 }
 
 override_doctype_dashboards = {
