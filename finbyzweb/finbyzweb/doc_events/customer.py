@@ -9,5 +9,5 @@ def before_validate(self, method):
                 doc.allow = "Project"
                 doc.for_value = project.name
                 doc.apply_to_all_doctypes = 1
-                doc.save()
+                doc.save(ignore_permissions=True)
                 frappe.db.commit()
