@@ -177,11 +177,11 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
             i["time_"] = frappe.format(i["time"], "Datetime")
         return data
 # User Activity Images Code Ends
-
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
-        
+    
+    # Initialize conditions for SQL queries
     condition = ""
     app_condition = ""
     if user:
@@ -192,75 +192,83 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
 
     # Fetch application usage data
     application_time = frappe.db.sql(f"""
-        SELECT employee_name AS employee, employee AS employee_id, SUM(duration) AS total_duration
+        SELECT 
+            employee_name AS employee, 
+            employee AS employee_id, 
+            SUM(duration) AS total_duration
         FROM `tabApplication Usage log`
-        WHERE date >= '{start_date}' AND date <= '{end_date}' {app_condition}
+        WHERE date >= '{start_date}' 
+        AND date <= '{end_date}' 
+        {app_condition}
         GROUP BY employee_name, employee
     """, as_dict=True)
 
-    # Fetch meeting time data
+    # Fetch meeting time data - Converting to seconds and ensuring consistent units
     meeting_time = frappe.db.sql(f"""
-        SELECT mcr.employee AS employee_id, SUM(TIME_TO_SEC(TIMEDIFF(m.meeting_to, m.meeting_from))) AS total_duration
+        SELECT 
+            mcr.employee AS employee_id,
+            e.employee_name AS employee,
+            SUM(TIME_TO_SEC(TIMEDIFF(m.meeting_to, m.meeting_from))) AS total_duration
         FROM `tabMeeting` AS m
         JOIN `tabMeeting Company Representative` AS mcr ON mcr.parent = m.name
-        WHERE m.meeting_from >= '{start_date} 00:00:00' AND m.meeting_to <= '{end_date} 23:59:59' 
-        AND m.docstatus = 1 {condition} AND m.project = '{project}'
-        GROUP BY mcr.employee
+        LEFT JOIN `tabEmployee` e ON e.name = mcr.employee
+        WHERE m.meeting_from >= '{start_date} 00:00:00' 
+        AND m.meeting_to <= '{end_date} 23:59:59' 
+        AND m.docstatus = 1 
+        {condition} 
+        AND m.project = '{project}'
+        GROUP BY mcr.employee, e.employee_name
     """, as_dict=True)
-    
-    # Initialize cache key prefix
-    cache_prefix = f"url_data_{start_date}_{end_date}_{project}"
-    
+
     # Process application usage data
+    app_duration = {}
     for row in application_time:
         employee_id = row['employee_id']
-        cache_key = f"{cache_prefix}_{employee_id}"
-        
-        existing_data = frappe.db.get_default(cache_key) or {}
-        if not existing_data:
-            existing_data = {
-                'employee': row['employee'],
-                'total_duration': row['total_duration']
-            }
-        else:
-            existing_data['total_duration'] += row['total_duration']
-            
-        frappe.db.set_default(cache_key, existing_data)
-    
+        app_duration[employee_id] = {
+            'employee': row['employee'],
+            'total_duration': float(row['total_duration']),
+            'app_duration': float(row['total_duration']),
+            'meeting_duration': 0
+        }
+
     # Process meeting time data
+    # Note: Meeting time is in seconds, might need conversion depending on your application time unit
     for row in meeting_time:
         employee_id = row['employee_id']
-        cache_key = f"{cache_prefix}_{employee_id}"
+        meeting_duration = float(row['total_duration'])
         
-        existing_data = frappe.db.get_default(cache_key) or {}
-        if not existing_data:
-            existing_data = {
-                'employee': None,
-                'total_duration': row['total_duration']
-            }
+        if employee_id in app_duration:
+            # Add meeting duration to existing employee record
+            app_duration[employee_id]['meeting_duration'] = meeting_duration
+            app_duration[employee_id]['total_duration'] += meeting_duration
         else:
-            existing_data['total_duration'] += row['total_duration']
-            
-        frappe.db.set_default(cache_key, existing_data)
-    
-    # Combine and format results
+            # Create new record for employee who only has meeting data
+            app_duration[employee_id] = {
+                'employee': row['employee'],
+                'total_duration': meeting_duration,
+                'app_duration': 0,
+                'meeting_duration': meeting_duration
+            }
+
+    # Convert combined results to a list of dictionaries with detailed breakdown
     data = []
-    for row in application_time + meeting_time:
-        employee_id = row['employee_id']
-        cache_key = f"{cache_prefix}_{employee_id}"
-        emp_data = frappe.db.get_default(cache_key)
-        
-        if emp_data and emp_data.get('employee'):
+    for emp_id, emp_data in app_duration.items():
+        if emp_data['employee']:  # Only include if we have employee name
             data.append({
                 'employee': emp_data['employee'],
-                'employee_id': employee_id,
-                'total_duration': emp_data['total_duration']
+                'employee_id': emp_id,
+                'total_duration': round(emp_data['total_duration'], 2),
+                'application_duration': round(emp_data['app_duration'], 2),
+                'meeting_duration': round(emp_data['meeting_duration'], 2)
             })
-            
-        # Cleanup cache
-        frappe.db.set_default(cache_key, None)
-    
-    return {"data": data}
+
+    # Sort data by total duration in descending order
+    data = sorted(data, key=lambda x: x['total_duration'], reverse=True)
+
+    return {
+        "data": data
+    }
+
 
 @frappe.whitelist()
 def get_projects():
