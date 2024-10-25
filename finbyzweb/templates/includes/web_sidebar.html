@@ -34,13 +34,6 @@
 {%- endif -%}
 {% endmacro %}
 
-{% if frappe.user != 'Guest' %}
-<ul class="list-unstyled">
-	<li class="sidebar-item">
-		<a href="/project_analysis">{{ _("My Projects") }}</a>
-	</li>
-</ul>
-{% endif %}
 
 {% macro my_account() %}
 {% if frappe.user != 'Guest' %}
