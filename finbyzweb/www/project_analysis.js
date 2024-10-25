@@ -883,7 +883,7 @@ function overall_performance_timely(user,date, hour, selected_project) {
 					'Idle': 3,
 					'Internal Meeting': 4,
 					'External Meeting': 5,
-					'	Call': 6
+					'Call': 6
 			};
 
 			function makeOption() {

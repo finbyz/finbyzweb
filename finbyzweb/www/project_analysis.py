@@ -180,7 +180,7 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
-    
+    customer = frappe.db.get_value("Project", project, "customer")
     # Initialize conditions for SQL queries
     condition = ""
     app_condition = ""
@@ -203,7 +203,7 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
         GROUP BY employee_name, employee
     """, as_dict=True)
 
-    # Fetch meeting time data - Converting to seconds and ensuring consistent units
+    # Fetch meeting time data
     meeting_time = frappe.db.sql(f"""
         SELECT 
             mcr.employee AS employee_id,
@@ -220,6 +220,20 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
         GROUP BY mcr.employee, e.employee_name
     """, as_dict=True)
 
+    # Fetch calls data
+    calls_time = frappe.db.sql(f"""
+        SELECT 
+            employee AS employee_id,
+            employee_name AS employee,
+            SUM(duration) AS total_duration
+        FROM `tabEmployee Fincall` 
+        WHERE date >= '{start_date}'
+        AND date <= '{end_date}'
+        AND link_name = '{customer}'
+        AND employee = '{user}'
+        GROUP BY employee, employee_name
+    """, as_dict=True)
+    
     # Process application usage data
     app_duration = {}
     for row in application_time:
@@ -228,29 +242,45 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
             'employee': row['employee'],
             'total_duration': float(row['total_duration']),
             'app_duration': float(row['total_duration']),
-            'meeting_duration': 0
+            'meeting_duration': 0,
+            'call_duration': 0
         }
 
     # Process meeting time data
-    # Note: Meeting time is in seconds, might need conversion depending on your application time unit
     for row in meeting_time:
         employee_id = row['employee_id']
         meeting_duration = float(row['total_duration'])
         
         if employee_id in app_duration:
-            # Add meeting duration to existing employee record
             app_duration[employee_id]['meeting_duration'] = meeting_duration
             app_duration[employee_id]['total_duration'] += meeting_duration
         else:
-            # Create new record for employee who only has meeting data
             app_duration[employee_id] = {
                 'employee': row['employee'],
                 'total_duration': meeting_duration,
                 'app_duration': 0,
-                'meeting_duration': meeting_duration
+                'meeting_duration': meeting_duration,
+                'call_duration': 0
             }
 
-    # Convert combined results to a list of dictionaries with detailed breakdown
+    # Process calls data
+    for row in calls_time:
+        employee_id = row['employee_id']
+        call_duration = float(row['total_duration'])
+        
+        if employee_id in app_duration:
+            app_duration[employee_id]['call_duration'] = call_duration
+            app_duration[employee_id]['total_duration'] += call_duration
+        else:
+            app_duration[employee_id] = {
+                'employee': row['employee'],
+                'total_duration': call_duration,
+                'app_duration': 0,
+                'meeting_duration': 0,
+                'call_duration': call_duration
+            }
+
+    # Convert combined results to a list of dictionaries
     data = []
     for emp_id, emp_data in app_duration.items():
         if emp_data['employee']:  # Only include if we have employee name
@@ -259,16 +289,16 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
                 'employee_id': emp_id,
                 'total_duration': round(emp_data['total_duration'], 2),
                 'application_duration': round(emp_data['app_duration'], 2),
-                'meeting_duration': round(emp_data['meeting_duration'], 2)
+                'meeting_duration': round(emp_data['meeting_duration'], 2),
+                'call_duration': round(emp_data['call_duration'], 2)
             })
 
     # Sort data by total duration in descending order
     data = sorted(data, key=lambda x: x['total_duration'], reverse=True)
-
+    # frappe.throw(str(data))
     return {
         "data": data
     }
-
 
 @frappe.whitelist()
 def get_projects():
@@ -279,6 +309,7 @@ def get_projects():
         join `tabPortal User` as pu on p.customer = pu.parent 
         where p.status = 'Open' and pu.user = '{current_user}' and p.resource_based_project = 1""",as_dict=1)
     return projects
+from datetime import datetime, timedelta
 
 @frappe.whitelist()
 def overall_performance_timely(employee=None, date=None, hour=None, project=None):
@@ -287,16 +318,59 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
             "labels": [],
             "values": []
         }
+    
     portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.status = 'Open' and p.name = '{project}'""", as_dict=1)
+    customer = frappe.db.get_value("Project", project, "customer")
+    
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
-    else:
-        if not employee:
-            return {
-                "labels": [],
-                "values": []
-            }
-        applications = frappe.db.sql(f"""
+    
+    if not employee:
+        return {
+            "labels": [],
+            "values": []
+        }
+
+    def split_activity(activity_type, date_val, start, end, *args):
+        try:
+            # Convert strings to datetime objects if they aren't already
+            if isinstance(start, str):
+                start_time = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+            else:
+                start_time = start
+
+            if isinstance(end, str):
+                end_time = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+            else:
+                end_time = end
+
+            # Create hour boundaries
+            hour_start = datetime.combine(start_time.date(), datetime.min.time().replace(hour=int(hour)))
+            hour_end = hour_start + timedelta(hours=1)
+
+            # Adjust start and end times to fit within the hour
+            if start_time < hour_start:
+                start_time = hour_start
+            if end_time > hour_end:
+                end_time = hour_end
+
+            # Only return if there's actually time spent in this hour
+            if start_time < end_time:
+                return [
+                    activity_type,
+                    start_time.date(),
+                    start_time,
+                    end_time
+                ] + list(args)
+            return None
+        except Exception as e:
+            frappe.log_error(f"Error in split_activity: {str(e)}")
+            return None
+
+    base_data = []
+    
+    # Fetch applications
+    applications = frappe.db.sql(f"""
         SELECT 
             application_name AS name, 
             from_time AS application_start, 
@@ -315,44 +389,77 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
         AND application_name IS NOT NULL 
         AND HOUR(from_time) = {hour}
         AND project = '{project}'
-        """, as_dict=True)
+    """, as_dict=True)
 
-        base_data = []
-        for app in applications:
-            if app.process_name in ["chrome.exe","firefox.exe","msedge.exe","opera.exe","iexplore.exe","brave.exe","safari.exe","vivaldi.exe","chromium.exe","microsoftedge.exe"]:
-                base_data.append([
-                    "Browser",
-                    app['date'],
-                    app['application_start'],
-                    app['application_end'],
-                    app['application_title'].split(" - ")[0] if app['application_title'] else None,
-                    app['url'] if app['url'] else None,
-                    app['project'] if app['project'] else None,
-                    app['issue'] if app['issue'] else None,
-                    app['task'] if app['task'] else None,
-                    app['name']
-                ])
-            else:
-                base_data.append([
-                    "Application",
-                    app['date'],
-                    app['application_start'],
-                    app['application_end'],
-                    app['application_title'].split(" - ")[0] if app['application_title'] else None,
-                    app['url'] if app['url'] else None,
-                    app['project'] if app['project'] else None,
-                    app['issue'] if app['issue'] else None,
-                    app['task'] if app['task'] else None,
-                    app['name']         
-                ])
+    # Fetch calls
+    calls = frappe.db.sql(f"""
+        SELECT 
+            name AS parent, 
+            call_datetime AS call_start,
+            ADDTIME(call_datetime, SEC_TO_TIME(duration)) AS call_end,
+            employee, date, 
+            COALESCE(contact, client, customer_no) as caller,
+            calltype, link_to, link_name
+        FROM `tabEmployee Fincall`
+        WHERE date = '{date}' 
+        AND employee = '{employee}' 
+        AND (
+            (HOUR(call_datetime) = {hour}) OR
+            (HOUR(call_datetime) < {hour} AND HOUR(ADDTIME(call_datetime, SEC_TO_TIME(duration))) >= {hour})
+        )
+        AND link_name = '{customer}'
+        ORDER BY date
+    """, as_dict=True)
 
-        base_data = sorted(base_data, key=lambda x: x[2])
-        data = list(set([item[1] for item in base_data]))
-        # frappe.throw(str(data))
-        return{
-            "base_dimensions":['Activity', 'Employee', 'Start Time', 'End Time'],
-            "dimensions":['Employee', 'Employee Name'],
-            "base_data":base_data,
-            "data":data
-        }
-# Overall Performance Timely Code Ends  
+    # Process applications
+    for app in applications:
+        is_browser = app.process_name in [
+            "chrome.exe", "firefox.exe", "msedge.exe", "opera.exe",
+            "iexplore.exe", "brave.exe", "safari.exe", "vivaldi.exe",
+            "chromium.exe", "microsoftedge.exe"
+        ]
+        
+        activity_data = split_activity(
+            "Browser" if is_browser else "Application",
+            app.get('date'),
+            app.get('application_start'),
+            app.get('application_end'),
+            app.get('application_title', '').split(" - ")[0] if app.get('application_title') else None,
+            app.get('url'),
+            app.get('project'),
+            app.get('issue'),
+            app.get('task'),
+            app.get('name')
+        )
+        
+        if activity_data:
+            base_data.append(activity_data)
+
+    # Process calls
+    for call in calls:
+        activity_data = split_activity(
+            "Call",
+            call.get('date'),
+            call.get('call_start'),
+            call.get('call_end'),
+            call.get('caller'),
+            call.get('calltype'),
+            call.get('link_to'),
+            call.get('link_name')
+        )
+        
+        if activity_data:
+            base_data.append(activity_data)
+
+    # Sort by start time
+    base_data = sorted(base_data, key=lambda x: x[2] if x else datetime.max)
+    
+    # Get unique dates
+    data = list(set(str(item[1]) for item in base_data if item))
+
+    return {
+        "base_dimensions": ['Activity', 'Date', 'Start Time', 'End Time'],
+        "dimensions": ['Employee', 'Employee Name'],
+        "base_data": base_data,
+        "data": data
+    } 
