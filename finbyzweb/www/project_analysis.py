@@ -24,7 +24,7 @@ def get_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         frappe.throw(_("Please select a project"))
 
-    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.status = 'Open' and p.name = '{project}'""", as_dict=1)
+    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.name = '{project}'""", as_dict=1)
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
     else:
@@ -168,7 +168,7 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
     # frappe.throw(str(user) + " " + str(start_date) + " " + str(end_date) + " " + str(project))
     if not project:
         return []
-    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.status = 'Open' and p.name = '{project}'""", as_dict=1)
+    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.name = '{project}'""", as_dict=1)
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
     else:
@@ -320,7 +320,7 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
             "values": []
         }
     
-    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.status = 'Open' and p.name = '{project}'""", as_dict=1)
+    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.name = '{project}'""", as_dict=1)
     customer = frappe.db.get_value("Project", project, "customer")
     
     if frappe.session.user not in [user['user'] for user in portal_users]:
