@@ -307,7 +307,8 @@ def get_projects():
         SELECT DISTINCT p.name as name, p.project_name 
         from `tabProject` as p 
         join `tabPortal User` as pu on p.customer = pu.parent 
-        where p.status = 'Open' and pu.user = '{current_user}' and p.resource_based_project = 1""",as_dict=1)
+        where pu.user = '{current_user}'
+        order by  p.resource_based_project DESC""",as_dict=1)
     return projects
 from datetime import datetime, timedelta
 
@@ -463,3 +464,4 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
         "base_data": base_data,
         "data": data
     } 
+    
