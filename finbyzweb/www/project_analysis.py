@@ -177,6 +177,7 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
             i["time_"] = frappe.format(i["time"], "Datetime")
         return data
 # User Activity Images Code Ends
+
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
@@ -190,25 +191,25 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     if project:
         app_condition += "AND project = '{0}'".format(project)
 
-    # Fetch application usage data
-    application_time = frappe.db.sql(f"""
+    # Get raw time intervals for each type of activity
+    application_intervals = frappe.db.sql(f"""
         SELECT 
             employee_name AS employee, 
-            employee AS employee_id, 
-            SUM(duration) AS total_duration
+            employee AS employee_id,
+            from_time as start_time,
+            to_time as end_time
         FROM `tabApplication Usage log`
         WHERE date >= '{start_date}' 
         AND date <= '{end_date}' 
         {app_condition}
-        GROUP BY employee_name, employee
     """, as_dict=True)
 
-    # Fetch meeting time data
-    meeting_time = frappe.db.sql(f"""
+    meeting_intervals = frappe.db.sql(f"""
         SELECT 
             mcr.employee AS employee_id,
             e.employee_name AS employee,
-            SUM(TIME_TO_SEC(TIMEDIFF(m.meeting_to, m.meeting_from))) AS total_duration
+            m.meeting_from as start_time,
+            m.meeting_to as end_time
         FROM `tabMeeting` AS m
         JOIN `tabMeeting Company Representative` AS mcr ON mcr.parent = m.name
         LEFT JOIN `tabEmployee` e ON e.name = mcr.employee
@@ -216,90 +217,112 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
         AND m.meeting_to <= '{end_date} 23:59:59' 
         AND m.docstatus = 1 
         {condition} 
-        AND m.project = '{project}'
-        GROUP BY mcr.employee, e.employee_name
+        AND m.party = '{customer}'
     """, as_dict=True)
 
-    # Fetch calls data
-    calls_time = frappe.db.sql(f"""
+    calls_intervals = frappe.db.sql(f"""
         SELECT 
             employee AS employee_id,
             employee_name AS employee,
-            SUM(duration) AS total_duration
+            call_datetime as start_time,
+            ADDTIME(call_datetime, SEC_TO_TIME(duration)) as end_time
         FROM `tabEmployee Fincall` 
         WHERE date >= '{start_date}'
         AND date <= '{end_date}'
         AND link_name = '{customer}'
         AND employee = '{user}'
-        GROUP BY employee, employee_name
+        AND (calltype != 'Missed' AND calltype != 'Rejected')
     """, as_dict=True)
+
+    # Process data employee-wise
+    employee_data = {}
     
-    # Process application usage data
-    app_duration = {}
-    for row in application_time:
-        employee_id = row['employee_id']
-        app_duration[employee_id] = {
-            'employee': row['employee'],
-            'total_duration': float(row['total_duration']),
-            'app_duration': float(row['total_duration']),
-            'meeting_duration': 0,
-            'call_duration': 0
-        }
+    # Helper function to calculate duration in seconds
+    def get_duration(start_time, end_time):
+        if isinstance(start_time, str):
+            start_time = frappe.utils.get_datetime(start_time)
+        if isinstance(end_time, str):
+            end_time = frappe.utils.get_datetime(end_time)
+        return (end_time - start_time).total_seconds()
 
-    # Process meeting time data
-    for row in meeting_time:
-        employee_id = row['employee_id']
-        meeting_duration = float(row['total_duration'])
+    # Process each employee's data
+    for intervals in [application_intervals, meeting_intervals, calls_intervals]:
+        for interval in intervals:
+            emp_id = interval['employee_id']
+            if emp_id not in employee_data:
+                employee_data[emp_id] = {
+                    'employee': interval['employee'],
+                    'intervals': [],
+                    'app_intervals': [],
+                    'meeting_intervals': [],
+                    'call_intervals': []
+                }
+            
+            # Store intervals by type
+            if intervals == application_intervals:
+                employee_data[emp_id]['app_intervals'].append(interval)
+            elif intervals == meeting_intervals:
+                employee_data[emp_id]['meeting_intervals'].append(interval)
+            elif intervals == calls_intervals:
+                employee_data[emp_id]['call_intervals'].append(interval)
+            
+            employee_data[emp_id]['intervals'].append(interval)
+
+    # Process the intervals for each employee
+    result_data = []
+    for emp_id, emp_data in employee_data.items():
+        if not emp_data['intervals']:
+            continue
+
+        # Sort intervals by start time
+        sorted_intervals = sorted(emp_data['intervals'], key=lambda x: x['start_time'])
         
-        if employee_id in app_duration:
-            app_duration[employee_id]['meeting_duration'] = meeting_duration
-            app_duration[employee_id]['total_duration'] += meeting_duration
-        else:
-            app_duration[employee_id] = {
-                'employee': row['employee'],
-                'total_duration': meeting_duration,
-                'app_duration': 0,
-                'meeting_duration': meeting_duration,
-                'call_duration': 0
-            }
-
-    # Process calls data
-    for row in calls_time:
-        employee_id = row['employee_id']
-        call_duration = float(row['total_duration'])
+        # Merge overlapping intervals
+        merged_intervals = []
+        current_interval = sorted_intervals[0]
         
-        if employee_id in app_duration:
-            app_duration[employee_id]['call_duration'] = call_duration
-            app_duration[employee_id]['total_duration'] += call_duration
-        else:
-            app_duration[employee_id] = {
-                'employee': row['employee'],
-                'total_duration': call_duration,
-                'app_duration': 0,
-                'meeting_duration': 0,
-                'call_duration': call_duration
-            }
+        for interval in sorted_intervals[1:]:
+            if get_duration(interval['start_time'], current_interval['end_time']) > 0:
+                # Overlap exists, merge the intervals
+                current_interval['end_time'] = max(
+                    current_interval['end_time'],
+                    interval['end_time'],
+                    key=lambda x: frappe.utils.get_datetime(x)
+                )
+            else:
+                # No overlap, add current interval and start a new one
+                merged_intervals.append(current_interval)
+                current_interval = interval
+        
+        merged_intervals.append(current_interval)
 
-    # Convert combined results to a list of dictionaries
-    data = []
-    for emp_id, emp_data in app_duration.items():
-        if emp_data['employee']:  # Only include if we have employee name
-            data.append({
-                'employee': emp_data['employee'],
-                'employee_id': emp_id,
-                'total_duration': round(emp_data['total_duration'], 2),
-                'application_duration': round(emp_data['app_duration'], 2),
-                'meeting_duration': round(emp_data['meeting_duration'], 2),
-                'call_duration': round(emp_data['call_duration'], 2)
-            })
+        # Calculate total duration from merged intervals
+        total_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
+                           for interval in merged_intervals)
+
+        # Calculate individual durations without overlap
+        app_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
+                         for interval in emp_data['app_intervals'])
+        meeting_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
+                             for interval in emp_data['meeting_intervals'])
+        call_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
+                          for interval in emp_data['call_intervals'])
+
+        result_data.append({
+            'employee': emp_data['employee'],
+            'employee_id': emp_id,
+            'total_duration': round(total_duration, 2),
+            'application_duration': round(app_duration, 2),
+            'meeting_duration': round(meeting_duration, 2),
+            'call_duration': round(call_duration, 2)
+        })
 
     # Sort data by total duration in descending order
-    data = sorted(data, key=lambda x: x['total_duration'], reverse=True)
-    # frappe.throw(str(data))
+    result_data = sorted(result_data, key=lambda x: x['total_duration'], reverse=True)
+    
     return {
-        "data": data
+        "data": result_data
     }
-
 @frappe.whitelist()
 def get_projects():
     current_user = frappe.session.user
