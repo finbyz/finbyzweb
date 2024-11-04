@@ -38,7 +38,9 @@
             {% if frappe.session.user != 'Guest' %}
             <a href="#" class="rootLink hasDropdown" data-dropdown="finbyz-login">
                 <span class="user-image-wrapper"></span>
+                {% if full_name != "Guest" %}
                 <span class="full-name ml-1"></span>
+                {% endif %}
                 <b class="caret"></b>
             </a>
             {% endif %}
