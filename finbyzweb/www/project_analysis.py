@@ -172,7 +172,7 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
     else:
-        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date, dayfirst=True), parse(end_date, dayfirst=True)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
+        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date), parse(end_date)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
         for i in data:
             i["time_"] = frappe.format(i["time"], "Datetime")
         return data
@@ -183,7 +183,7 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
         return []
     customer = frappe.db.get_value("Project", project, "customer")
     # Initialize conditions for SQL queries
-    condition = ""
+    condition = ""  
     app_condition = ""
     if user:
         condition += "AND mcr.employee = '{0}'".format(user)
@@ -217,7 +217,7 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
         AND m.meeting_to <= '{end_date} 23:59:59' 
         AND m.docstatus = 1 
         {condition} 
-        AND m.party = '{customer}'
+        AND m.project = '{project}'
     """, as_dict=True)
 
     calls_intervals = frappe.db.sql(f"""

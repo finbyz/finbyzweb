@@ -649,6 +649,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
     }
 
     function loadImages(user = null, start_time, end_time, selected_project) {
+        console.log(user, start_time, end_time, selected_project);
         const self = this;
         return frappe.xcall("finbyzweb.www.project_analysis.user_activity_images", {
             user: user,
@@ -799,12 +800,12 @@ function render_images(selected_start_date, selected_end_date, selected_project,
 
     let formattedStartTime = formatDatetime(start_time);
     let formattedEndTime = formatDatetime(end_time);
-
+ 
     function fetchImages() {
         if (start_time < startDatetime) {
             return;
         }
-        loadImages(data, formattedStartTime, formattedEndTime, selected_project).then(function (flag) {
+        loadImages(data, start_time.toLocaleString('en-in'), end_time.toLocaleString('en-in'), selected_project).then(function (flag) {
             if (flag === 0 && start_time > startDatetime) {
                 end_time = new Date(start_time);
                 start_time = new Date(end_time);
@@ -862,6 +863,7 @@ function overall_performance_timely(user,date, hour, selected_project) {
 		hour: hour,
 		project: selected_project
 	}).then((r) => {
+        console.log("r", r);
 		if (r.base_data.length === 0) {
 			// Handle no data scenario if needed
 		} else {
