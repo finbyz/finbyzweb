@@ -66,7 +66,7 @@
 				(doctype == "Web Page" and (name == "career" or name == "contact" or name =="productify-privacy-policy")) or 
 				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening" or doctype == "Web Stories") or (route == "login" or route == "me" or route == "app")
 			) %}
-			{% if frappe.db.get_value("User", frappe.session.user, "user_type") != "Website User" %}
+			{% if frappe.session.user == "Guest" %}
 				{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
 			{% endif %}
@@ -82,7 +82,7 @@
 				(doctype == "Web Page" and (name == "career" or name == "contact" or name == "productify-privacy-policy")) or 
 				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening" or doctype == "Web Stories") or (route == "login" or route == "me" or route == "app")
 			) %}
-			{% if frappe.db.get_value("User", frappe.session.user, "user_type") != "Website User" %}
+			{% if frappe.session.user == "Guest" %}
 				{% include 'templates/includes/form/campaign_inquiry_form.html' %}
 			{% endif %}
 			{% endif %}
