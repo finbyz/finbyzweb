@@ -657,7 +657,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
             end_date: end_time,
             project: selected_project
         }).then((imagedata) => {
-            // console.log("imagedata", imagedata);
+            console.log("imagedata", imagedata);
             let flag = imagedata.length > 0 ? 1 : 0;
             
             let slotImages = {};
