@@ -792,26 +792,37 @@ function render_images(selected_start_date, selected_end_date, selected_project,
 		}
 	}
 
-    let currentDatetime = new Date(endDatetime);
+    let currentDatetime = endDatetime;
+    let start_time = new Date(currentDatetime);
     let end_time = new Date(currentDatetime);
-    end_time.setMinutes(0, 0, 0);
-    let start_time = new Date(end_time);
-    start_time.setHours(start_time.getHours() - 1);
 
-    let formattedStartTime = formatDatetime(start_time);
-    let formattedEndTime = formatDatetime(end_time);
- 
+    imageContainer.empty();
+
+    end_time = new Date(currentDatetime);
+    currentDatetime.setHours(currentDatetime.getHours(), currentDatetime.getMinutes(), currentDatetime.getSeconds(), 0);
+    currentDatetime.setHours(currentDatetime.getHours() - 1);
+    start_time = new Date(currentDatetime);
+
+    function formatDateTime(date) {
+        return date.getFullYear() + '-' + 
+            String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+            String(date.getDate()).padStart(2, '0') + ' ' + 
+            String(date.getHours()).padStart(2, '0') + ':' + 
+            String(date.getMinutes()).padStart(2, '0') + ':' + 
+            String(date.getSeconds()).padStart(2, '0');
+    }
+
     function fetchImages() {
         if (start_time < startDatetime) {
             return;
         }
-        loadImages(data, start_time.toLocaleString('en-in'), end_time.toLocaleString('en-in'), selected_project).then(function (flag) {
+        loadImages(data, formatDateTime(start_time), formatDateTime(end_time), selected_project).then(function (flag) {
             if (flag === 0 && start_time > startDatetime) {
                 end_time = new Date(start_time);
                 start_time = new Date(end_time);
                 start_time.setHours(start_time.getHours() - 1);
-                formattedStartTime = formatDatetime(start_time);
-                formattedEndTime = formatDatetime(end_time);
+                formattedStartTime = formatDateTime(start_time);
+                formattedEndTime = formatDateTime(end_time);
                 fetchImages();
             }
         });
