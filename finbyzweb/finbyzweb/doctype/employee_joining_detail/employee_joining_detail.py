@@ -27,6 +27,10 @@ class EmployeeJoiningDetail(Document):
             "salary_mode": joining_detail.salary_mode,
             "marital_status": joining_detail.marital_status,
             "blood_group": joining_detail.blood_group,
+            "department": joining_detail.department,
+            "designation": joining_detail.designation,
+            "company_email": joining_detail.company_email,
+            "salutation": joining_detail.salutation,
         })
 
         new_employee.insert() 

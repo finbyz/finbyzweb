@@ -29,8 +29,8 @@
   "marital_status",
   "blood_group",
   "salutation",
-  "designation",
   "department",
+  "designation",
   "column_break_rgz4",
   "bank_name",
   "bank_ac_no",
@@ -41,7 +41,9 @@
   "pan_card",
   "salary_mode",
   "naming_series",
-  "token"
+  "token",
+  "job_offer",
+  "job_applicant"
  ],
  "fields": [
   {
@@ -210,11 +212,6 @@
    "options": "Salutation"
   },
   {
-   "fieldname": "designation",
-   "fieldtype": "Data",
-   "label": "Designation"
-  },
-  {
    "fieldname": "employment_type",
    "fieldtype": "Link",
    "label": "Employment Type",
@@ -236,11 +233,30 @@
    "fieldtype": "Data",
    "label": "Company Email",
    "options": "Email"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Link",
+   "label": "Designation",
+   "options": "Designation"
+  },
+  {
+   "fieldname": "job_offer",
+   "fieldtype": "Link",
+   "label": "Job Offer",
+   "options": "Job Offer"
+  },
+  {
+   "fetch_from": "job_offer.job_applicant",
+   "fieldname": "job_applicant",
+   "fieldtype": "Link",
+   "label": "Job Applicant",
+   "options": "Job Applicant"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-18 14:52:03.114933",
+ "modified": "2024-11-18 15:09:34.495250",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Employee Joining Detail",
