@@ -93,3 +93,28 @@ def select_category(gallery_category=None,gallery_sub_category=None):
 def get_sub_category(category=None):
 	output = frappe.db.get_all('Gallery Sub Category',filters={'category':category},fields=['name','category'])
 	return output
+
+
+@frappe.whitelist(allow_guest=True)
+def get_employee_joining_detail(token):
+	if not frappe.db.exists("Employee Joining Detail", {"token": token}):
+		frappe.throw(_("You are not authorized to view this record!"))
+		return
+	joining_detail = frappe.get_doc("Employee Joining Detail", {"token": token})
+	return joining_detail.as_dict()
+
+from frappe import _
+@frappe.whitelist(allow_guest=True,methods=['POST'])
+def update_employee_joining_detail(email,data):
+	"""
+	ENDPOINT: /api/method/finbyzweb.api.update_employee_joining_detail
+	"""
+	data = frappe.parse_json(data)
+	if not frappe.db.exists("Employee Joining Detail", {"personal_email": email}):
+		frappe.throw(_("You are not authorized to update this record!"))
+		return
+	joining_detail = frappe.get_doc("Employee Joining Detail", {"personal_email": email})
+	joining_detail.update(data)
+	joining_detail.flags.ignore_permissions = True
+	joining_detail.save()
+	return _("Updated successfully!")

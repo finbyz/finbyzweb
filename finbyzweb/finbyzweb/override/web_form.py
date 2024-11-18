@@ -1,11 +1,11 @@
-from  frappe.website.doctype.web_form.web_form import WebForm as WebForm,get_in_list_view_fields,get_link_options
+from  frappe.website.doctype.web_form.web_form import WebForm as _WebForm,get_in_list_view_fields,get_link_options
 import frappe
 from frappe import _
 from frappe.utils import strip_html
 from frappe.core.api.file import get_max_file_size
 
 
-class WebForm(WebForm):
+class WebForm(_WebForm):
 	def load_form_data(self, context):
 		context.parents = []
 		if self.show_list:
@@ -50,6 +50,7 @@ class WebForm(WebForm):
 		context.reference_doc = {}
 
 		# load reference doc
+
 		if frappe.form_dict.name:
 			context.doc_name = frappe.form_dict.name
 			context.reference_doc = frappe.get_doc(self.doc_type, context.doc_name)
@@ -79,6 +80,7 @@ class WebForm(WebForm):
 				)
 
 			context.reference_doc = context.reference_doc.as_dict(no_nulls=True)
+	
 	def get_comment_list(self,doctype, name):
 		comments = frappe.get_all(
 			"Comment",

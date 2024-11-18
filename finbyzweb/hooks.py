@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from . import __version__ as app_version
 
+
 app_name = "finbyzweb"
 app_title = "Finbyzweb"
 app_publisher = "Finbyz Tech Pvt Ltd"
@@ -69,7 +70,8 @@ override_doctype_class = {
 
 
 doctype_js = {
-	"Web Page": "public/js/doctype_js/web_page.js"
+	"Web Page": "public/js/doctype_js/web_page.js",
+	"Job Offer": "public/js/job_offer.js"
 }
 
 
@@ -167,6 +169,7 @@ doc_events = {
 	"Customer":{
 		"before_save": "finbyzweb.finbyzweb.doc_events.customer.before_validate"
 	},
+ 
 }
 
 override_doctype_dashboards = {
