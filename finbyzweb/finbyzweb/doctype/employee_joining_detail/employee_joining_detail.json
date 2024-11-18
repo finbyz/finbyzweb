@@ -15,8 +15,10 @@
   "status",
   "gender",
   "date_of_joining",
+  "employment_type",
   "applicant_type",
   "salary_slip",
+  "company_email",
   "column_break_2db1",
   "cell_number",
   "current_address",
@@ -26,6 +28,9 @@
   "reference",
   "marital_status",
   "blood_group",
+  "salutation",
+  "designation",
+  "department",
   "column_break_rgz4",
   "bank_name",
   "bank_ac_no",
@@ -33,6 +38,7 @@
   "micr_code",
   "aadhar_card",
   "pan_number",
+  "pan_card",
   "salary_mode",
   "naming_series",
   "token"
@@ -196,11 +202,45 @@
    "fieldname": "token",
    "fieldtype": "Data",
    "label": "Token"
+  },
+  {
+   "fieldname": "salutation",
+   "fieldtype": "Link",
+   "label": "Salutation",
+   "options": "Salutation"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "employment_type",
+   "fieldtype": "Link",
+   "label": "Employment Type",
+   "options": "Employment Type"
+  },
+  {
+   "fieldname": "pan_card",
+   "fieldtype": "Attach",
+   "label": "Pan Card"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fieldname": "company_email",
+   "fieldtype": "Data",
+   "label": "Company Email",
+   "options": "Email"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-16 10:51:12.998853",
+ "modified": "2024-11-18 14:52:03.114933",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Employee Joining Detail",
@@ -216,6 +256,19 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "select": 1,
    "share": 1,
    "write": 1
   }
