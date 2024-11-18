@@ -31,6 +31,7 @@ class EmployeeJoiningDetail(Document):
             "designation": joining_detail.designation,
             "company_email": joining_detail.company_email,
             "salutation": joining_detail.salutation,
+            "employment_type": joining_detail.employment_type,
         })
 
         new_employee.insert() 
