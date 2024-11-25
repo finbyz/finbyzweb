@@ -1,4 +1,3 @@
-# Add project as finbyz tech where project is empty in screenshot log
 import frappe
 def before_validate(self, method):
     if not self.project:
@@ -15,7 +14,5 @@ def before_validate(self, method):
             self.proxy_employee = row.for_employee
         if self.employee == row.for_employee and self.project == row.project:
             self.project == "Finbyz.tech"
-
     if not self.proxy_employee:
         self.proxy_employee = self.employee
-    

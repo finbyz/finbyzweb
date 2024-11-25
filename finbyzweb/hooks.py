@@ -169,6 +169,12 @@ doc_events = {
 	"Customer":{
 		"before_save": "finbyzweb.finbyzweb.doc_events.customer.before_validate"
 	},
+	"Application Usage log":{
+		"before_save": "finbyzweb.finbyzweb.doc_events.application_usage_log.before_validate"
+	},
+	"Work Intensity":{
+		"before_save": "finbyzweb.finbyzweb.doc_events.work_intensity.before_validate"
+	}
  
 }
 

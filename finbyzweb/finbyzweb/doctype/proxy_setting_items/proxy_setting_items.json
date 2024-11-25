@@ -1,0 +1,51 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-25 15:35:10.671080",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "for_employee",
+  "proxy_employee",
+  "project"
+ ],
+ "fields": [
+  {
+   "description": "Enter employee for whom you are working for.",
+   "fieldname": "for_employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "For Employee",
+   "options": "Employee"
+  },
+  {
+   "description": "Enter employee that is working as proxy for some other employee.",
+   "fieldname": "proxy_employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Proxy Employee",
+   "options": "Employee"
+  },
+  {
+   "description": "Enter the clients project you are working for.",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Project",
+   "options": "Project"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-25 15:44:05.209134",
+ "modified_by": "Administrator",
+ "module": "Finbyzweb",
+ "name": "Proxy Setting Items",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

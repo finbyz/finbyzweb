@@ -1,9 +1,5 @@
-# Add project as finbyz tech where project is empty in screenshot log
 import frappe
 def before_validate(self, method):
-    if not self.project:
-        self.project = "Finbyz.tech"
-
     proxy_setting = frappe.cache().hget("proxy_setting", "Proxy Setting")
     if not proxy_setting:
         proxy_setting = frappe.get_doc("Proxy Setting", "Proxy Setting")
@@ -18,4 +14,3 @@ def before_validate(self, method):
 
     if not self.proxy_employee:
         self.proxy_employee = self.employee
-    
