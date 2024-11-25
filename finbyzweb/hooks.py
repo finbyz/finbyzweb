@@ -126,23 +126,13 @@ doctype_js = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"finbyzweb.tasks.all"
-# 	],
-# 	"daily": [
-# 		"finbyzweb.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"finbyzweb.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"finbyzweb.tasks.weekly"
-# 	]
-# 	"monthly": [
-# 		"finbyzweb.tasks.monthly"
-# 	]
-# }
+scheduler_events = {
+    "cron": {
+        "0 0 * * *": [
+            "finbyzweb.finbyzweb.doctype.proxy_setting.proxy_setting.clear_proxy_settings",
+        ],
+    },
+}
 
 # Testing
 # -------

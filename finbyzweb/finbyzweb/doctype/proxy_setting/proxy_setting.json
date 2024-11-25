@@ -5,15 +5,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "date",
   "items"
  ],
  "fields": [
-  {
-   "fieldname": "date",
-   "fieldtype": "Date",
-   "label": "Date"
-  },
   {
    "fieldname": "items",
    "fieldtype": "Table",
@@ -24,7 +18,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-25 15:46:55.469869",
+ "modified": "2024-11-25 17:09:34.385442",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Proxy Setting",

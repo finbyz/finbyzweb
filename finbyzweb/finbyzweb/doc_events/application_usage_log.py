@@ -1,16 +1,17 @@
 import frappe
 def before_validate(self, method):
-    proxy_setting = frappe.cache().hget("proxy_setting", "Proxy Setting")
-    if not proxy_setting:
-        proxy_setting = frappe.get_doc("Proxy Setting", "Proxy Setting")
-        frappe.cache().hset("proxy_setting", "Proxy Setting", proxy_setting)
-    items = proxy_setting.get("items", [])
-    for row in items:
-        print(f"For Employee: {row.for_employee}, Proxy Employee: {row.proxy_employee}, Project: {row.project}")
-        if row.proxy_employee == self.employee and row.project == self.project:
-            self.proxy_employee = row.for_employee
-        if self.employee == row.for_employee and self.project == row.project:
-            self.project == "Finbyz.tech"
+    employee = self.employee
+    project = self.project
 
+    cache_key = f"proxy_setting_{employee}_{project}"
+    cached_value = frappe.cache().get_value(cache_key)
+    
+    if cached_value:
+        for_employee, proxy_employee, project_value = cached_value.split()
+        if proxy_employee == self.employee and project_value == self.project:
+            self.proxy_employee = for_employee
+        if self.employee == for_employee and self.project == project_value:
+            self.project = "Finbyz.tech"
+    
     if not self.proxy_employee:
         self.proxy_employee = self.employee
