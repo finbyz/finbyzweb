@@ -58,7 +58,10 @@ web_include_css = "/assets/finbyzweb/css/finbyzweb.css"
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {
+    "Opportunity": "public/js/opportunity_list.js",
+    "Lead": "public/js/lead_list.js"
+}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -67,13 +70,10 @@ override_doctype_class = {
     "Web Form": "finbyzweb.finbyzweb.override.web_form.WebForm"
 }
 
-
-
 doctype_js = {
 	"Web Page": "public/js/doctype_js/web_page.js",
 	"Job Offer": "public/js/job_offer.js"
 }
-
 
 # Home Pages
 # ----------
