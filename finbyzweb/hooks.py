@@ -58,10 +58,7 @@ web_include_css = "/assets/finbyzweb/css/finbyzweb.css"
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
-doctype_list_js = {
-    "Opportunity": "public/js/opportunity_list.js",
-    "Lead": "public/js/lead_list.js"
-}
+# doctype_list_js = {}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
