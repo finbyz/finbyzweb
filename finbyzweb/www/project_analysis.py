@@ -48,7 +48,7 @@ def work_intensity(user=None, start_date=None, end_date=None, project=None):
         return []
     condition = ""
     if user:
-        condition += "and employee = '{0}' ".format(user)
+        condition += "and proxy_employee = '{0}' ".format(user)
     if project:
         condition += "and project = '{0}' ".format(project)
 
@@ -102,7 +102,7 @@ def application_usage_time(user=None, start_date=None, end_date=None, project=No
         return []
     condition = ""
     if user:
-        condition += "and employee = '{0}' ".format(user)
+        condition += "and proxy_employee = '{0}' ".format(user)
     if project:
         condition += "and project = '{0}' ".format(project)
     application_name = frappe.db.sql(f"""
@@ -141,7 +141,7 @@ def web_browsing_time(user=None, start_date=None, end_date=None, project=None):
         return []
     condition = ""
     if user:
-        condition += "and employee = '{0}' ".format(user)
+        condition += "and proxy_employee = '{0}' ".format(user)
     if project:
         condition += "and project = '{0}' ".format(project)
     domain_data = frappe.db.sql(f"""
@@ -175,7 +175,7 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
     else:
-        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date), parse(end_date)]],"employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
+        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date), parse(end_date)]],"proxy_employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
         for i in data:
             i["time_"] = frappe.format(i["time"], "Datetime")
         return data
@@ -190,20 +190,21 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     app_condition = ""
     if user:
         condition += "AND mcr.employee = '{0}'".format(user)
-        app_condition += "AND employee = '{0}'".format(user)
+        app_condition += "AND a.proxy_employee = '{0}'".format(user)
     if project:
-        app_condition += "AND project = '{0}'".format(project)
+        app_condition += "AND a.project = '{0}'".format(project)
 
     # Get raw time intervals for each type of activity
     application_intervals = frappe.db.sql(f"""
         SELECT 
-            employee_name AS employee, 
-            employee AS employee_id,
-            from_time as start_time,
-            to_time as end_time
-        FROM `tabApplication Usage log`
-        WHERE date >= '{start_date}' 
-        AND date <= '{end_date}'
+            e.employee_name AS employee, 
+            a.proxy_employee AS employee_id,
+            a.from_time as start_time,
+            a.to_time as end_time
+        FROM `tabApplication Usage log` as a
+        Join `tabEmployee` as e on e.name = a.proxy_employee
+        WHERE a.date >= '{start_date}' 
+        AND a.date <= '{end_date}'
         {app_condition}
     """, as_dict=True)
 
@@ -411,7 +412,7 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
             process_name
         FROM `tabApplication Usage log`
         WHERE date = '{date}' 
-        AND employee = '{employee}' 
+        AND proxy_employee = '{employee}' 
         AND application_name != '' 
         AND application_name IS NOT NULL 
         AND HOUR(from_time) = {hour}
