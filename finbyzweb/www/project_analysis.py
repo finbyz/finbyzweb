@@ -498,7 +498,7 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
     customer = frappe.db.get_value("Project", project, "customer")
     if not frappe.db.exists("Portal User", {"user": frappe.session.user, "parent": customer}):
         return []
-    query_params = {'Project': project}
+    query_params = {'project': project}
 
     conditions = []  
     app_condition = ""

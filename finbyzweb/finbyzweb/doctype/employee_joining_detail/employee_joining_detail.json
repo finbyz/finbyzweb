@@ -42,6 +42,7 @@
   "salary_mode",
   "naming_series",
   "token",
+  "url",
   "job_offer",
   "job_applicant"
  ],
@@ -252,11 +253,16 @@
    "fieldtype": "Link",
    "label": "Job Applicant",
    "options": "Job Applicant"
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "URL"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-18 15:09:34.495250",
+ "modified": "2024-12-04 12:52:30.779618",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Employee Joining Detail",
