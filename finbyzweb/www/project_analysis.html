@@ -161,7 +161,6 @@
         margin-right: 0.5rem;
         flex: auto;
     }
-
 }
 
 .clickable-image {
@@ -327,7 +326,115 @@ path[paint-order="stroke"] {
 #overallChartLegends > li:not([selected='selected']) {
     opacity: 0.5;
 }
-        </style>
+.nested-card {
+    cursor: pointer;
+}
+
+/*0 Styling for the card title */
+.nested-card .card-title {
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.nested-card .title-divider {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin: 10px 0; 
+}
+.nested-card .card-body {
+    font-size: 10px;
+    line-height: 1.6; 
+    word-wrap: break-word; 
+    word-break: break-word;
+    white-space: normal; 
+    overflow-wrap: break-word;
+    padding: 5px;
+}
+
+.nested-card .card-title,
+.nested-card .card-text {
+    white-space: normal; 
+    word-wrap: break-word; 
+    word-break: break-word; 
+    overflow-wrap: break-word;
+}
+
+.main-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; 
+    width: 100%;
+    max-width: 1500px;
+}
+.main-card {
+    flex: 1 1 calc(25% - 20px);
+    border-radius: 15px;
+    padding: 20px; 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    height: 500px; 
+}
+.main-card .card-title {
+    margin-bottom: 5px;
+}
+.nested-cards-container {
+    display: flex;
+    flex-direction: column;
+    max-height: 400px; 
+    overflow-y: auto; 
+    gap: 2px; 
+    padding: 0;
+    margin-top: 12px; 
+}
+
+.nested-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 5px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    flex-shrink: 0; 
+}
+.nested-cards-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.nested-cards-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.nested-cards-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.nested-cards-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Background colors for main cards */
+.main-card-1 { background-color: #fff1e7; }
+.main-card-2 { background-color: #fff7d3; }
+.main-card-3 { background-color: #fcd4fc; }
+.main-card-4 { background-color: #e4f5e9; }
+
+/* Border colors for nested cards */
+.nested-card-1 { border-left: 5px solid #FF6B6B; }
+.nested-card-2 { border-left: 5px solid #4ECDC4; }
+.nested-card-3 { border-left: 5px solid #45B7D1; }
+.nested-card-4 { border-left: 5px solid #FDCB6E; }
+.nested-card-5 { border-left: 5px solid #6C5CE7; }
+
+</style>
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script></head>
     <body>
@@ -335,8 +442,7 @@ path[paint-order="stroke"] {
         <div class="d-flex justify-content-end">
             <button id="select-project-btn" class="btn btn-primary me-2 mr-2" data-bs-toggle="modal" data-bs-target="#projectModal">Select Project</button>
             <button id="select-timespan-btn" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#timespanModal">Select Timespan</button>
-        </div>
-        
+        </div>        
 
         <!-- Project Selection Modal -->
         <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
@@ -385,7 +491,15 @@ path[paint-order="stroke"] {
             </div>
         </div>
         </div>
+        
         <div class="ml-2">
+
+            <div id="task-list" class="row mt-4">
+                <div class="chart-column-container">
+                <!--  -->
+                </div>
+            </div>  
+
             <!-- Activity Summary -->
             <div class="row mt-4">
                 <div class="chart-column-container" id="url-data">
@@ -395,6 +509,7 @@ path[paint-order="stroke"] {
                 </div>
             </div>
 
+            
             <!-- System Activity -->
             <div class="row mt-4">
                 <div class="frappe-card chart-column-container col-md-12">
@@ -413,7 +528,6 @@ path[paint-order="stroke"] {
                     </div>
                 </div>
                 
-
                 <div class="frappe-card chart-column-container col-md-6 short" style="height: 500px;">
                     <h5 class="mt-2 ml-2">Web Browsing Time</h5>
                     <div class="chart-wrapper" id="web-browsing-time" style="width: 100%; min-height: 500px;">

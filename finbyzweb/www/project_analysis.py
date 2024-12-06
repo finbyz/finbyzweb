@@ -18,6 +18,7 @@ def get_context(context):
     context.current_user = frappe.get_doc("User", frappe.session.user)
     context.show_sidebar = True
 
+
 @frappe.whitelist()
 def get_data(user=None, start_date=None, end_date=None, project=None):
     # frappe.throw(str(user) + " " + str(start_date) + " " + str(end_date) + " " + str(project))
@@ -32,11 +33,13 @@ def get_data(user=None, start_date=None, end_date=None, project=None):
         application_usage_data = application_usage_time(user, start_date, end_date, project)
         web_browsing_data = web_browsing_time(user, start_date, end_date, project)
         url_data = fetch_url_data(user, start_date, end_date, project)
+        task_list = get_project_status_data(user, start_date, end_date, project)
         return {
             "work_intensity": work_intensity_data,
             "application_usage": application_usage_data,
             "web_browsing": web_browsing_data,
-            "url_data": url_data
+            "url_data": url_data,
+            "task_list": task_list
         }
     
 
@@ -200,7 +203,7 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
             to_time as end_time
         FROM `tabApplication Usage log`
         WHERE date >= '{start_date}' 
-        AND date <= '{end_date}' 
+        AND date <= '{end_date}'
         {app_condition}
     """, as_dict=True)
 
@@ -486,5 +489,53 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
         "dimensions": ['Employee', 'Employee Name'],
         "base_data": base_data,
         "data": data
-    } 
+    }
+
+def get_project_status_data(user=None, start_date=None, end_date=None, project=None):
+    if not project:
+        return []
+    customer = frappe.db.get_value("Project", project, "customer")
+    if not frappe.db.exists("Portal User", {"user": frappe.session.user, "parent": customer}):
+        return []
+    query_params = {'Project': project}
+
+    conditions = []  
+    app_condition = ""
+    if user:
+        conditions.append("t.task_owner = %(user)s")
+        query_params['user'] = user
+    if start_date:
+        conditions.append("t.exp_start_date >= %(start_date)s")
+        query_params['start_date'] = start_date
     
+    if end_date:
+        conditions.append("t.exp_end_date <= %(end_date)s")
+        query_params['end_date'] = end_date
+
+    query = """
+    SELECT 
+        t.name, 
+        t.subject, 
+        t.status, 
+        t.exp_start_date,
+        t.exp_end_date,
+        t.task_owner,
+        u.full_name 
+    FROM 
+        `tabTask` as t
+    JOIN 
+        `tabUser` as u on u.name = t.task_owner
+    WHERE 
+        {conditions}
+    ORDER BY 
+        t.status, exp_start_date
+    """.format(conditions=' AND '.join(conditions))
+    
+    tasks = frappe.db.sql(query, query_params, as_dict=True)
+    grouped_tasks = {}
+    for status in ['Open', 'Working', 'Pending Review', 'Completed']:
+        grouped_tasks[status] = [
+            task for task in tasks if task['status'] == status
+        ]
+
+    return grouped_tasks

@@ -168,6 +168,7 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
         application_usage_time(response.application_usage);
         web_browsing_time(response.web_browsing);
         fetch_url_data(response.url_data, selected_start_date, selected_end_date, selected_project, selected_employee);
+        get_project_status_data(response.task_list, selected_start_date, selected_end_date, selected_project, selected_employee);
     }).catch(error => {
         console.error('Error updating data:', error);
     });
@@ -258,6 +259,86 @@ function fetch_url_data(r, selected_start_date, selected_end_date, selected_proj
         });
     }
 }
+
+function get_project_status_data(r, selected_start_date, selected_end_date, selected_project, selected_employee) {
+    if (r) {
+        task_list(r, selected_start_date, selected_end_date, selected_project, selected_employee);
+
+        $(document).ready(function () {
+            $('#logCountModalTrigger').click(function () {
+                $('#logCountModal').modal('show');
+            });
+        });
+    }
+}
+
+function task_list(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
+    const container = $("#task-list");
+    container.empty();
+
+    const statuses = ["Open", "Working", "Pending Review", "Completed"];
+    const statusColors = {
+        "Open": "main-card-1",
+        "Working": "main-card-2",
+        "Pending Review": "main-card-3",
+        "Completed": "main-card-4"
+    };
+
+    statuses.forEach(status => {
+        // Dynamically apply main card colors based on status
+        const mainCardClass = statusColors[status];
+
+        const mainCard = $(`
+            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                <div class="main-card ${mainCardClass} frappe-card">
+                    <h5 class="card-header">${status}</h5>
+                    <div class="nested-cards-container card-body">
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const darkenedColors = {
+            "main-card-1": "#bd3e0c", // Darkened color for #fff1e7
+            "main-card-2": "#ab6e05", // Darkened color for #fff7d3
+            "main-card-3": "#b52a2a", // Darkened color for #fcd4fc
+            "main-card-4": "#16794c"  // Darkened color for #e4f5e9
+        };
+
+        const nestedContainer = mainCard.find(".nested-cards-container");
+        (data[status] || []).forEach((task, index) => {
+            // Assign nested card classes based on index (1-based for CSS classes)
+            const nestedCardClass = `nested-card-${(index % 5) + 1}`;
+
+            const nestedCard = $(`
+                <div class="nested-card card mb-3 ${nestedCardClass}">
+                    <div class="card-body">
+                        <h6 class="card-title">${task.subject}</h6>
+                        <div class="extra-info" style="display: none;">
+                            <div class="title-divider"></div>
+                            <p class="card-text" style="font-size: 15px;"><strong>Owner:</strong> ${task.full_name || ' '}</p>
+                            <p class="card-text" style="font-size: 15px;"><strong>Start:</strong> ${task.exp_start_date || ' '}</p>
+                            <p class="card-text" style="font-size: 15px;"><strong>End:</strong> ${task.exp_end_date || ' '}</p>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            const nestedCardBorderColor = darkenedColors[mainCardClass];
+            nestedCard.css('border-left', `5px solid ${nestedCardBorderColor}`);
+
+            nestedCard.on('click', function() {
+                const extraInfo = nestedCard.find('.extra-info');
+                extraInfo.toggle(); // Toggle visibility of extra information
+            });
+
+            nestedContainer.append(nestedCard);
+        });
+
+        container.append(mainCard);
+    });
+}
+
 
 function url_data(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
     function getBaseURL() {
