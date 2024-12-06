@@ -502,6 +502,7 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
 
     conditions = []  
     app_condition = ""
+    conditions.append("t.project = %(project)s")
     if user:
         conditions.append("t.task_owner = %(user)s")
         query_params['user'] = user
