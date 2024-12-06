@@ -7,7 +7,10 @@ def before_validate(self, method):
     cached_value = frappe.cache().get_value(cache_key)
     
     if cached_value:
-        for_employee, proxy_employee, project_value = cached_value.split()
+        parts = cached_value.split()
+        for_employee = parts[0]
+        proxy_employee = parts[1]
+        project_value = ' '.join(parts[2:])
         if proxy_employee == self.employee and project_value == self.project:
             self.proxy_employee = for_employee
         if self.employee == for_employee and self.project == project_value:
