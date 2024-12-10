@@ -28,7 +28,7 @@ class EmployeeJoiningDetail(Document):
 		self.token = res
 	
 	def generate_url(self):
-		self.url = f"https://website.finbyz.com/employee-joining-details?token={self.token}"
+		self.url = f"https://finbyz.tech/employee-joining-details?token={self.token}"
 
 
 	@frappe.whitelist()

@@ -16,7 +16,7 @@ def send_to_employee_joining_detail(job_offer_id):
 		"job_offer":job_offer.name,
 		"job_applicant":job_offer.job_applicant,
 		"token":res,
-		"url":f"https://website.finbyz.com/employee-joining-details?token={res}"
+		"url":f"https://finbyz.tech/employee-joining-details?token={res}"
 	})
 
 	joining_detail.insert()
