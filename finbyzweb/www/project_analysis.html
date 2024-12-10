@@ -536,14 +536,21 @@ path[paint-order="stroke"] {
                 </div>                
             </div>
 
+            {% if recent_activity_list and recent_activity_list|length > 0 %}
             <div class="row mt-4">
                 <div class="frappe-card chart-column-container user-activity-images">
-                    <!-- <h5 class="mt-2 ml-2">User Activity Images</h5> -->
                     <div class="image-wrapper recent-activity-list row">
                         <!-- User Activity Images -->
+                        {% for activity in recent_activity_list %}
+                            <div class="activity-image">
+                                <img src="{{ activity.image_url }}" alt="{{ activity.alt_text }}">
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
+            {% endif %}
+
         </div>
     </body>
     </html>

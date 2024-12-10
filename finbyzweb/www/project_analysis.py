@@ -168,10 +168,10 @@ def web_browsing_time(user=None, start_date=None, end_date=None, project=None):
 # User Activity Images Code Starts
 @frappe.whitelist()
 def user_activity_images(user=None, start_date=None, end_date=None, project=None, offset=0):
-    parsed_datetime = datetime.strptime(start_date, '%m/%d/%Y, %I:%M:%S %p')
+    parsed_datetime = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
     start_date = parsed_datetime.strftime('%d-%m-%Y  %H:%M:%S')
-    parsed_end = datetime.strptime(end_date, '%m/%d/%Y, %I:%M:%S %p')
-    end_date = parsed_end.strftime('%d-%m-%Y  %H:%M:%S')
+    parsed_datetime_ = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
+    end_date = parsed_datetime_.strftime('%d-%m-%Y  %H:%M:%S')
     # frappe.throw(str(user) + " " + str(start_date) + " " + str(end_date) + " " + str(project))
     if not project:
         return []
