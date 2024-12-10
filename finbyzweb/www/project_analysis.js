@@ -276,66 +276,82 @@ function task_list(data, selected_start_date, selected_end_date, selected_projec
     const container = $("#task-list");
     container.empty();
 
-    const statuses = ["Open", "Working", "Pending Review", "Completed"];
-    const statusColors = {
-        "Open": "main-card-1",
-        "Working": "main-card-2",
-        "Pending Review": "main-card-3",
-        "Completed": "main-card-4"
-    };
+    frappe.call({
+        method: "frappe.client.get",
+        args: {
+            doctype: "Project",
+            name: selected_project
+        },
+        callback: function(response) {
+            if (response.message) {
+                let checkbox_value = response.message.show_task; 
+                if (checkbox_value) {
+                    console.log("Checkbox is enabled (checked)");
+                    
+                    const statuses = ["Open", "Working", "Pending Review", "Completed"];
+                    const statusColors = {
+                        "Open": "main-card-1",
+                        "Working": "main-card-2",
+                        "Pending Review": "main-card-3",
+                        "Completed": "main-card-4"
+                    };
 
-    statuses.forEach(status => {
-        // Dynamically apply main card colors based on status
-        const mainCardClass = statusColors[status];
+                    statuses.forEach(status => {
+                        const mainCardClass = statusColors[status];
 
-        const mainCard = $(`
-            <div class="col-12 col-md-6 col-lg-3 mb-4">
-                <div class="main-card ${mainCardClass} frappe-card">
-                    <h5 class="card-header">${status}</h5>
-                    <div class="nested-cards-container card-body">
-                    </div>
-                </div>
-            </div>
-        `);
+                        const mainCard = $(`
+                            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                                <div class="main-card ${mainCardClass} frappe-card">
+                                    <h5 class="card-header">${status}</h5>
+                                    <div class="nested-cards-container card-body">
+                                    </div>
+                                </div>
+                            </div>
+                        `);
 
-        const darkenedColors = {
-            "main-card-1": "#bd3e0c", // Darkened color for #fff1e7
-            "main-card-2": "#ab6e05", // Darkened color for #fff7d3
-            "main-card-3": "#b52a2a", // Darkened color for #fcd4fc
-            "main-card-4": "#16794c"  // Darkened color for #e4f5e9
-        };
+                        const darkenedColors = {
+                            "main-card-1": "#bd3e0c", // Darkened color for #fff1e7
+                            "main-card-2": "#ab6e05", // Darkened color for #fff7d3
+                            "main-card-3": "#b52a2a", // Darkened color for #fcd4fc
+                            "main-card-4": "#16794c"  // Darkened color for #e4f5e9
+                        };
 
-        const nestedContainer = mainCard.find(".nested-cards-container");
-        (data[status] || []).forEach((task, index) => {
-            // Assign nested card classes based on index (1-based for CSS classes)
-            const nestedCardClass = `nested-card-${(index % 5) + 1}`;
+                        const nestedContainer = mainCard.find(".nested-cards-container");
+                        (data[status] || []).forEach((task, index) => {
+                            const nestedCardClass = `nested-card-${(index % 5) + 1}`;
 
-            const nestedCard = $(`
-                <div class="nested-card card mb-3 ${nestedCardClass}">
-                    <div class="card-body">
-                        <h6 class="card-title">${task.subject}</h6>
-                        <div class="extra-info" style="display: none;">
-                            <div class="title-divider"></div>
-                            <p class="card-text" style="font-size: 15px;"><strong>Owner:</strong> ${task.full_name || ' '}</p>
-                            <p class="card-text" style="font-size: 15px;"><strong>Start:</strong> ${task.exp_start_date || ' '}</p>
-                            <p class="card-text" style="font-size: 15px;"><strong>End:</strong> ${task.exp_end_date || ' '}</p>
-                        </div>
-                    </div>
-                </div>
-            `);
+                            const nestedCard = $(`
+                                <div class="nested-card card mb-3 ${nestedCardClass}">
+                                    <div class="card-body">
+                                        <h6 class="card-title">${task.subject}</h6>
+                                        <div class="extra-info" style="display: none;">
+                                            <div class="title-divider"></div>
+                                            <p class="card-text" style="font-size: 15px;"><strong>Owner:</strong> ${task.full_name || ' '}</p>
+                                            <p class="card-text" style="font-size: 15px;"><strong>Start:</strong> ${task.exp_start_date || ' '}</p>
+                                            <p class="card-text" style="font-size: 15px;"><strong>End:</strong> ${task.exp_end_date || ' '}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `);
 
-            const nestedCardBorderColor = darkenedColors[mainCardClass];
-            nestedCard.css('border-left', `5px solid ${nestedCardBorderColor}`);
+                            const nestedCardBorderColor = darkenedColors[mainCardClass];
+                            nestedCard.css('border-left', `5px solid ${nestedCardBorderColor}`);
 
-            nestedCard.on('click', function() {
-                const extraInfo = nestedCard.find('.extra-info');
-                extraInfo.toggle(); // Toggle visibility of extra information
-            });
+                            nestedCard.on('click', function() {
+                                const extraInfo = nestedCard.find('.extra-info');
+                                extraInfo.toggle(); 
+                            });
 
-            nestedContainer.append(nestedCard);
-        });
+                            nestedContainer.append(nestedCard);
+                        });
 
-        container.append(mainCard);
+                        container.append(mainCard);
+                    });
+                } else {
+                    console.log("Checkbox is disabled (unchecked)");
+                }
+            }
+        }
     });
 }
 

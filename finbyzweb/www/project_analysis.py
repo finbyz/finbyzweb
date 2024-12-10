@@ -543,5 +543,4 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
         grouped_tasks[status] = [
             task for task in tasks if task['status'] == status
         ]
-
     return grouped_tasks
