@@ -1,0 +1,30 @@
+{% extends "templates/web.html" %}
+{%- block title -%}{{_("Thank You for submitting form")}}{%- endblock -%}
+
+{% block page_content %}
+
+<div class="container mt-50">
+	<div class="row">
+		<div class="col-md-4 web-title">
+			<div class="title-font pt-100">
+				<h1 class="title-underline">Thank You</h1>
+			</div>
+		</div>
+		
+		<div class="col-md-8"><img src="/files/Thank-you.svg" style="float: right;" width="700px" height="300px" alt="Page Missing or Moved" title="Page Missing or Moved">
+		</div>
+	</div>
+</div>
+
+<div class='page-card'>
+
+	<p>{{_("Thank You for Sharing your details.")}}</p>
+	
+	<div class="button mt-15"><a href='https://finbyz.tech'><button  class='finbyz-button'>{{ _("Home") }}</button></a></div>
+</div>
+<style>
+.hero-and-content {
+	background-color: #f5f7fa;
+}
+</style>
+{% endblock %}

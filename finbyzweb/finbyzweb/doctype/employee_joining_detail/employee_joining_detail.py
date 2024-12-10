@@ -95,11 +95,13 @@ def get_employee_joining_detail_fields():
 	fields = meta.fields
 	return fields
 
+from frappe.utils.file_manager import save_file
+
 @frappe.whitelist(allow_guest=True)
 def update_employee_data():
 	"""
 	Updates the Employee Joining Detail document based on the token provided in the URL.
-	All fields from the form will be updated dynamically.
+	Handles both dynamic field updates and file uploads.
 	"""
 	data = frappe.local.form_dict  # Retrieve data from the request
 	token = data.get("token")
@@ -110,41 +112,51 @@ def update_employee_data():
 	# Fetch the document using the token
 	try:
 		doc = frappe.get_doc("Employee Joining Detail", {"token": token})
-	except frappe.DoesNotExistError:
-		frappe.throw("Document not found for the given token.")
 	except Exception as e:
-		frappe.log_error(message=str(e), title="Error Fetching Document")
-		frappe.throw("An unexpected error occurred while retrieving the document.")
+		frappe.throw("Document not found for the given token.")
 
 	# Dynamically update fields based on the provided data
 	for field, value in data.items():
 		if hasattr(doc, field):  # Check if the field exists in the document
 			setattr(doc, field, value)
 
+	# Handle file uploads (attachments)
+	if frappe.request.files:
+		for fieldname, file in frappe.request.files.items():
+			if file.filename:
+				# raise Exception(str(fieldname) + str(file.filename))
+				# Save the file and link it to the document
+				file_doc = save_file(file.filename, file.stream.read(), doc.doctype, doc.name, decode=True, is_private=0)
+				if hasattr(doc, fieldname):  # Check if the field exists in the document
+					setattr(doc, fieldname, file_doc.file_url)  # Save the file URL to the document field
+
 	try:
 		# Save changes while ignoring permissions
 		doc.save(ignore_permissions=True)
+		doc.random_token()
+		doc.generate_url()
+		doc.save(ignore_permissions=True)
 		frappe.db.commit()  # Commit the transaction
+		return {"message": "Document updated successfully."}
 	except Exception as e:
 		frappe.log_error(message=str(e), title="Error Updating Document")
 		frappe.throw(f"Failed to update Employee Data: {str(e)}")
 
-
 @frappe.whitelist(allow_guest=True)
 def get_employee_data(token):
-	# Find the document using the token
-	doc = frappe.get_doc("Employee Joining Detail", {"token": token})
-	
-	if not doc:
+	try:
+		# Find the document using the token
+		doc = frappe.get_doc("Employee Joining Detail", {"token": token})
+		
+		# Return the required data if document is found
+		return {
+			"name": doc.name,
+			"first_name": doc.first_name,
+			"last_name": doc.last_name,
+			"personal_email": getattr(doc, 'personal_email', None),
+			"token": doc.token
+		}
+	except frappe.DoesNotExistError:
+		# Handle the case where no document is found for the given token
 		frappe.throw("Document not found for the given token.")
-	
-	# Safely get the personal_email field, if it exists
-	personal_email = getattr(doc, 'personal_email', None)
-	
-	return {
-		"name": doc.name,
-		"first_name": doc.first_name,
-		"last_name": doc.last_name,
-		"personal_email": doc.personal_email,
-		"token":doc.token
-	}
+

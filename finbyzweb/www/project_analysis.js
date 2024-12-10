@@ -756,19 +756,27 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                 }
                 slotImages[date][hour][slot] = image;
             });
-
+            
             Object.keys(slotImages).reverse().forEach(date => {
                 Object.keys(slotImages[date]).reverse().forEach(hour => {
                     const timeSlotKey = `${date}-${hour}`;
                     if (!renderedTimeSlots.has(timeSlotKey)) {
                         renderedTimeSlots.add(timeSlotKey);
-                        
                         if (lastPrintedDate !== date || lastPrintedHour !== hour) {
-                            const hourHeader = `<div class="col-md-1"><h5><b>${date} ${hour}:00</b></h5></div><br><div class="col-md-11">
-                                <div class="overall-performance-timely" id="performance-chart-${self.formattedDate_}-${hour}" style="min-height: 50px; max-height: 50px;">
-                                    <!-- Overall Performance Chart Container -->
+                            const hourHeader = `
+                                <h5 class="mt-2 ml-2">User Activity Images</h5>
+                                <div class="col-md-12 d-flex">
+                                    <div class="col-md-1">
+                                        <h5><b>${date} ${hour}:00</b></h5>
+                                    </div>
+                                    <div class="col-md-11">
+                                        <div class="overall-performance-timely" id="performance-chart-${self.formattedDate_}-${hour}" style="min-height: 50px; max-height: 50px;">
+                                            <!-- Overall Performance Chart Container -->
+                                        </div>
+                                    </div>
                                 </div>
-                                </div>`;
+                            `;
+
                             imageContainer.append(hourHeader);
                             lastPrintedDate = date;
                             lastPrintedHour = hour;
