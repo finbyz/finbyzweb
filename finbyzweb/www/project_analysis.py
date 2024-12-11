@@ -544,3 +544,22 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
             task for task in tasks if task['status'] == status
         ]
     return grouped_tasks
+
+
+@frappe.whitelist()
+def get_project_details(project_name):
+    """
+    Fetch project details for a given project name using a query.
+    """
+    try:
+        project_data = frappe.db.sql("""
+            SELECT show_task 
+            FROM `tabProject` 
+            WHERE name = %s
+        """, (project_name,), as_dict=True) 
+        return {
+            "show_task": project_data[0]["show_task"],
+            "statuses": ["Open", "Working", "Pending Review", "Completed"]
+        }
+    except Exception as e:
+        frappe.throw(str(e))

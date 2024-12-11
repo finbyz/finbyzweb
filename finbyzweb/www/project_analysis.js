@@ -275,12 +275,11 @@ function get_project_status_data(r, selected_start_date, selected_end_date, sele
 function task_list(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
     const container = $("#task-list");
     container.empty();
-
+    
     frappe.call({
-        method: "frappe.client.get",
+        method: "finbyzweb.www.project_analysis.get_project_details",
         args: {
-            doctype: "Project",
-            name: selected_project
+            project_name:selected_project
         },
         callback: function(response) {
             if (response.message) {
