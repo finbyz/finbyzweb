@@ -24,6 +24,25 @@ class ProxySetting(Document):
             if key not in current_combinations:
                 frappe.cache().delete_key(key)
 
+def update_proxy_setting_cache():
+    """
+    Background job to update and maintain proxy setting cache
+    """
+    try:
+        # Directly fetch the single Proxy Setting document
+        doc = frappe.get_single("Proxy Setting")
+        
+        # Reload the document to get the latest data
+        doc.reload()
+        
+        # Run the validation method to update cache
+        doc.validate()
+        
+        frappe.logger().info("Proxy Setting cache update completed successfully")
+    except Exception as e:
+        # Log any errors that occur during cache update
+        frappe.logger().error(f"Error updating Proxy Setting cache: {str(e)}")
+
 @frappe.whitelist()
 def clear_proxy_settings():
     try:

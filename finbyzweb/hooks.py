@@ -129,6 +129,9 @@ scheduler_events = {
             "finbyzweb.finbyzweb.doctype.proxy_setting.proxy_setting.clear_proxy_settings",
         ],
     },
+    "all": [
+        "finbyzweb.finbyzweb.doctype.proxy_setting.proxy_setting.update_proxy_setting_cache"
+    ],
 }
 
 # Testing
