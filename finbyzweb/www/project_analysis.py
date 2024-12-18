@@ -21,7 +21,6 @@ def get_context(context):
 
 @frappe.whitelist()
 def get_data(user=None, start_date=None, end_date=None, project=None):
-    # frappe.throw(str(user) + " " + str(start_date) + " " + str(end_date) + " " + str(project))
     if not project:
         frappe.throw(_("Please select a project"))
 
@@ -496,26 +495,48 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
         "data": data
     }
 
+
 def get_project_status_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
-    customer = frappe.db.get_value("Project", project, "customer")
-    if not frappe.db.exists("Portal User", {"user": frappe.session.user, "parent": customer}):
-        return []
-    query_params = {'project': project}
+    conditions = []
+    query_params = {}
 
-    conditions = []  
-    app_condition = ""
-    conditions.append("t.project = %(project)s")
-    if user:
-        conditions.append("t.task_owner = %(user)s")
-        query_params['user'] = user
-    if start_date:
-        conditions.append("t.exp_start_date >= %(start_date)s")
+    if project:
+        conditions.append("t.project = %(project)s")
+        query_params['project'] = project
+
+    conditions.append("""((t.status = 'Open' OR t.status = 'Working'  OR t.status = 'Pending Review') AND (t.exp_start_date IS NOT NULL))
+                       OR ((t.status = 'Completed') AND (t.completed_on IS NOT NULL))""") 
+
+    if project:
+        conditions.append("t.project = %(project)s")
+        query_params['project'] = project
+
+    if start_date and end_date:
+        conditions.append("""
+            (
+                (t.status != 'Completed') OR
+                (t.status = 'Completed' AND t.completed_on BETWEEN %(start_date)s AND %(end_date)s)
+            )
+        """)
         query_params['start_date'] = start_date
-    
-    if end_date:
-        conditions.append("t.exp_end_date <= %(end_date)s")
+        query_params['end_date'] = end_date
+    elif start_date:
+        conditions.append("""
+            (
+                (t.status != 'Completed') OR
+                (t.status = 'Completed' AND t.completed_on >= %(start_date)s)
+            )
+        """)
+        query_params['start_date'] = start_date
+    elif end_date:
+        conditions.append("""
+            (
+                (t.status != 'Completed') OR
+                ((t.status = 'Completed' AND t.completed_on <= %(end_date)s) OR (t.status = 'Completed' AND t.completed_on >= %(end_date)s))
+            )
+        """)
         query_params['end_date'] = end_date
 
     query = """
@@ -525,6 +546,7 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
         t.status, 
         t.exp_start_date,
         t.exp_end_date,
+        t.completed_on,
         t.task_owner,
         u.full_name 
     FROM 
@@ -534,9 +556,9 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
     WHERE 
         {conditions}
     ORDER BY 
-        t.status, exp_start_date
+        t.status, t.completed_on DESC, t.exp_start_date DESC
     """.format(conditions=' AND '.join(conditions))
-    
+
     tasks = frappe.db.sql(query, query_params, as_dict=True)
     grouped_tasks = {}
     for status in ['Open', 'Working', 'Pending Review', 'Completed']:
@@ -544,7 +566,6 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
             task for task in tasks if task['status'] == status
         ]
     return grouped_tasks
-
 
 @frappe.whitelist()
 def get_project_details(project_name):

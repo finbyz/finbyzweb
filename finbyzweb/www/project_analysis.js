@@ -177,7 +177,6 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize the application
     initial_requirements().catch(console.error);
-
     // Employee select change handler
     document.getElementById('employeeSelect')?.addEventListener('change', function(event) {
         state.selected_employee = event.target.value;
@@ -275,7 +274,6 @@ function get_project_status_data(r, selected_start_date, selected_end_date, sele
 function task_list(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
     const container = $("#task-list");
     container.empty();
-    
     frappe.call({
         method: "finbyzweb.www.project_analysis.get_project_details",
         args: {
@@ -326,8 +324,9 @@ function task_list(data, selected_start_date, selected_end_date, selected_projec
                                         <div class="extra-info" style="display: none;">
                                             <div class="title-divider"></div>
                                             <p class="card-text" style="font-size: 15px;"><strong>Owner:</strong> ${task.full_name || ' '}</p>
-                                            <p class="card-text" style="font-size: 15px;"><strong>Start:</strong> ${task.exp_start_date || ' '}</p>
-                                            <p class="card-text" style="font-size: 15px;"><strong>End:</strong> ${task.exp_end_date || ' '}</p>
+                                            ${status !== 'Completed' && task.exp_start_date ? `<p class="card-text" style="font-size: 15px;"><strong>Start:</strong> ${task.exp_start_date}</p>` : ''}
+                                            ${status !== 'Completed' && task.exp_end_date ? `<p class="card-text" style="font-size: 15px;"><strong>End:</strong> ${task.exp_end_date}</p>` : '' }
+                                            ${status === 'Completed' && task.completed_on ? `<p class="card-text" style="font-size: 15px;"><strong>Completed On:</strong> ${task.completed_on}</p>` : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -428,9 +427,8 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
             params.set('employee', selectedEmployee);
             newUrl.search = params.toString();
             window.history.replaceState({}, '', newUrl);
-
-            // Call functions to refresh data
             initial_requirements();
+            // Call functions to refresh data
             frappe.xcall("finbyzweb.www.project_analysis.get_data", {
                 user: selectedEmployee,
                 start_date: selected_start_date,
@@ -441,7 +439,6 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
                 application_usage_time(response.application_usage);
                 web_browsing_time(response.web_browsing);
             });
-            
             // Call render_images when employee link is clicked
             if (selectedEmployee) {
                 render_images(
@@ -453,7 +450,7 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
             }
         });
     });
-}
+}   
 function work_intensity(response) {
 		if (response.length === 0) {
 			return;
@@ -745,7 +742,6 @@ function render_images(selected_start_date, selected_end_date, selected_project,
     }
 
     function loadImages(user = null, start_time, end_time, selected_project) {
-        console.log(user, start_time, end_time, selected_project);
         const self = this;
         return frappe.xcall("finbyzweb.www.project_analysis.user_activity_images", {
             user: user,
@@ -753,9 +749,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
             end_date: end_time,
             project: selected_project
         }).then((imagedata) => {
-            // console.log("imagedata", imagedata);
             let flag = imagedata.length > 0 ? 1 : 0;
-            
             let slotImages = {};
             imagedata.forEach((image) => {
                 const imageDateTime = new Date(image.time);
@@ -779,7 +773,9 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                         renderedTimeSlots.add(timeSlotKey);
                         if (lastPrintedDate !== date || lastPrintedHour !== hour) {
                             const hourHeader = `
-                                <h5 class="mt-2 ml-2">User Activity Images</h5>
+                                <div class="col-md-12 title-area" style="padding: 15px;">
+                                    <h4 class="card-title">User Activity Images</h4>    
+                                </div>
                                 <div class="col-md-12 d-flex">
                                     <div class="col-md-1">
                                         <h5><b>${date} ${hour}:00</b></h5>
@@ -939,7 +935,6 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                 fetchImages();
             }
         }, 100);
-
         $(window).on('scroll', handleScroll);
     }
 }
@@ -960,7 +955,6 @@ function overall_performance_timely(user,date, hour, selected_project) {
 	}
 	let overallPerformance = echarts.init(overallPerformanceDom, null, { renderer: 'svg' });
 	window.addEventListener('resize', overallPerformance.resize);
-	// console.log("selected_employee", user);	
 	frappe.xcall("finbyzweb.www.project_analysis.overall_performance_timely", {
 		employee: user,
 		date: date,
