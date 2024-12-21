@@ -179,7 +179,7 @@
    "fieldname": "applicant_type",
    "fieldtype": "Select",
    "label": "Applicant Type",
-   "options": "\nFresher\nExperienced"
+   "options": "Fresher\nExperienced"
   },
   {
    "fieldname": "salary_slip",
@@ -262,7 +262,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-04 12:52:30.779618",
+ "modified": "2024-12-19 11:54:40.898407",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Employee Joining Detail",

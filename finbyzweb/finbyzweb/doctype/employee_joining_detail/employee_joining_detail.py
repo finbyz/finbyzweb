@@ -154,7 +154,8 @@ def get_employee_data(token):
 			"first_name": doc.first_name,
 			"last_name": doc.last_name,
 			"personal_email": getattr(doc, 'personal_email', None),
-			"token": doc.token
+			"token": doc.token,
+			"applicant_type":doc.applicant_type
 		}
 	except frappe.DoesNotExistError:
 		# Handle the case where no document is found for the given token
