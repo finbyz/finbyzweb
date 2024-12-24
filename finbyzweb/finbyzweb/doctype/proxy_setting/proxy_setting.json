@@ -18,7 +18,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-25 17:09:34.385442",
+ "modified": "2024-12-24 15:46:53.879928",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Proxy Setting",
@@ -31,6 +31,16 @@
    "print": 1,
    "read": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Projects User",
    "share": 1,
    "write": 1
   }
