@@ -285,12 +285,12 @@ function task_list(data, selected_start_date, selected_end_date, selected_projec
                 if (checkbox_value) {
                     console.log("Checkbox is enabled (checked)");
                     
-                    const statuses = ["Open", "Working", "Pending Review", "Completed"];
+                    const statuses = ["Open", "In-Progress", "Pending Review", "Completed"];
                     const statusColors = {
                         "Open": "main-card-1",
-                        "Working": "main-card-2",
+                        "In-Progress": "main-card-2",
                         "Pending Review": "main-card-3",
-                        "Completed": "main-card-4"
+                        "Completed": "main-card-4" 
                     };
 
                     statuses.forEach(status => {

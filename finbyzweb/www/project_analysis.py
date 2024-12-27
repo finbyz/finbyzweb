@@ -506,7 +506,7 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
         conditions.append("t.project = %(project)s")
         query_params['project'] = project
 
-    conditions.append("""((t.status = 'Open' OR t.status = 'Working'  OR t.status = 'Pending Review') AND (t.exp_start_date IS NOT NULL))
+    conditions.append("""((t.status = 'Open' OR t.status = 'In-Progress'  OR t.status = 'Pending Review') AND (t.exp_start_date IS NOT NULL))
                        OR ((t.status = 'Completed') AND (t.completed_on IS NOT NULL))""") 
 
     if project:
@@ -561,7 +561,7 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
 
     tasks = frappe.db.sql(query, query_params, as_dict=True)
     grouped_tasks = {}
-    for status in ['Open', 'Working', 'Pending Review', 'Completed']:
+    for status in ['Open', 'In-Progress', 'Pending Review', 'Completed']:
         grouped_tasks[status] = [
             task for task in tasks if task['status'] == status
         ]
@@ -580,7 +580,7 @@ def get_project_details(project_name):
         """, (project_name,), as_dict=True) 
         return {
             "show_task": project_data[0]["show_task"],
-            "statuses": ["Open", "Working", "Pending Review", "Completed"]
+            "statuses": ["Open", "In-Progress", "Pending Review", "Completed"]
         }
     except Exception as e:
         frappe.throw(str(e))
