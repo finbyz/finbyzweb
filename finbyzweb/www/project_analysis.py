@@ -537,7 +537,6 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
             )
         """)
         query_params['end_date'] = end_date
-
     query = """
     SELECT 
         t.name, 
@@ -551,7 +550,7 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
     FROM 
         `tabTask` as t
     JOIN 
-        `tabUser` as u on u.name = t.task_owner
+        `tabUser` as u on u.name = t.assignee
     WHERE 
         {conditions}
     ORDER BY 
