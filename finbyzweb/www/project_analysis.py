@@ -168,17 +168,16 @@ def web_browsing_time(user=None, start_date=None, end_date=None, project=None):
 @frappe.whitelist()
 def user_activity_images(user=None, start_date=None, end_date=None, project=None, offset=0):
     parsed_datetime = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
-    start_date = parsed_datetime.strftime('%d-%m-%Y  %H:%M:%S')
+    start_date = parsed_datetime.strftime('%Y-%m-%d  %H:%M:%S')
     parsed_datetime_ = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
-    end_date = parsed_datetime_.strftime('%d-%m-%Y  %H:%M:%S')
-    # frappe.throw(str(user) + " " + str(start_date) + " " + str(end_date) + " " + str(project))
+    end_date = parsed_datetime_.strftime('%Y-%m-%d  %H:%M:%S')
     if not project:
         return []
     portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.name = '{project}'""", as_dict=1)
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
     else:
-        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [parse(start_date), parse(end_date)]],"proxy_employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
+        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [start_date, end_date]],"proxy_employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
         for i in data:
             i["time_"] = frappe.format(i["time"], "Datetime")
         return data

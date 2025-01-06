@@ -705,7 +705,6 @@ function web_browsing_time(r) {
             });
 }
 function render_images(selected_start_date, selected_end_date, selected_project, selected_employee) {
-
     let startDatetime = new Date(selected_start_date + "T00:00:00");
     let endDatetime = new Date(selected_end_date + "T23:59:59");
     let data = selected_employee
