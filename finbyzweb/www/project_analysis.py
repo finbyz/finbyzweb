@@ -183,6 +183,31 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
         return data
 # User Activity Images Code Ends
 
+@frappe.whitelist()
+def last_screenshot_time(user=None, start_date=None, end_date=None, project=None):
+    parsed_start_date = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
+    start_date = parsed_start_date.strftime('%Y-%m-%d %H:%M:%S')
+    parsed_end_date = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
+    end_date = parsed_end_date.strftime('%Y-%m-%d %H:%M:%S')
+    
+    if not project:
+        return None
+    
+    portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.name = '{project}'""", as_dict=1)
+    if frappe.session.user not in [user['user'] for user in portal_users]:
+        raise frappe.PermissionError
+    else:
+        last_screenshot = frappe.db.sql("""
+            SELECT time 
+            FROM `tabScreen Screenshot Log` 
+            WHERE proxy_employee = %s AND project = %s AND time BETWEEN %s AND %s
+            ORDER BY time DESC 
+            LIMIT 1
+        """, (user, project, start_date, end_date), as_dict=1)
+        
+        return last_screenshot[0]['time'] if last_screenshot else None
+
+
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []

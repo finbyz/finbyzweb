@@ -704,10 +704,11 @@ function web_browsing_time(r) {
                 myChart.resize();
             });
 }
+
 function render_images(selected_start_date, selected_end_date, selected_project, selected_employee) {
     let startDatetime = new Date(selected_start_date + "T00:00:00");
     let endDatetime = new Date(selected_end_date + "T23:59:59");
-    let data = selected_employee
+    let data = selected_employee;
 
     let lastPrintedDate = null;
     let lastPrintedHour = null;
@@ -764,7 +765,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                 }
                 slotImages[date][hour][slot] = image;
             });
-            
+
             Object.keys(slotImages).reverse().forEach(date => {
                 Object.keys(slotImages[date]).reverse().forEach(hour => {
                     const timeSlotKey = `${date}-${hour}`;
@@ -801,7 +802,6 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                             const slotTimeString = slotTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
                             if (image) {
-								// console.log("image", image);
                                 const imgElement = `
                                     <div class="col-md-3">
                                         <div style="display: flex; justify-content: center; align-items: center; height: 160px;">
@@ -837,7 +837,6 @@ function render_images(selected_start_date, selected_end_date, selected_project,
             window.addEventListener('resize', setImageHeight);
 
             $('.clickable-image').off('click').on('click', function () {
-				// console.log("clickable-image");
                 const imgSrc = $(this).attr('src');
                 const activeApp = $(this).data('active-app');
                 showImageDialog(imgSrc, activeApp);
@@ -847,49 +846,47 @@ function render_images(selected_start_date, selected_end_date, selected_project,
         });
     }
 
-	function showImageDialog(imgSrc, activeApp) {
-		// console.log("imgSrc", imgSrc);
-		// console.log("activeApp", activeApp);
-	
-		// Create modal HTML
-		const modalHTML = `
-			<div id="imageModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9);">
-				<div class="modal-content" style="margin: 2% auto; padding: 20px; width: 90%; max-width: 1200px; height: 90%; background-color: #fff; position: relative; display: flex; flex-direction: column;">
-					<span class="close" style="color: #aaa; position: absolute; top: 10px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer;">&times;</span>
-					<h5 style="margin-top: 0; margin-bottom: 5px;">${activeApp || 'Unknown App'}</h5>
-					<div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-						<img id="zoomedImg" src="${imgSrc}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-					</div>
-				</div>
-			</div>
-		`;
-	
-		// Append modal to body
-		$('body').append(modalHTML);
-	
-		// Get modal element
-		const modal = document.getElementById('imageModal');
-	
-		// Get the <span> element that closes the modal
-		const span = modal.querySelector('.close');
-	
-		// Show the modal
-		modal.style.display = "block";
-	
-		// When the user clicks on <span> (x), close the modal
-		span.onclick = function() {
-			modal.style.display = "none";
-			modal.remove(); // Remove the modal from DOM after closing
-		}
-	
-		// When the user clicks anywhere outside of the modal, close it
-		window.onclick = function(event) {
-			if (event.target == modal) {
-				modal.style.display = "none";
-				modal.remove(); // Remove the modal from DOM after closing
-			}
-		}
-	}
+    function getLastScreenshotTime(user, start_time, end_time, selected_project) {
+        return frappe.xcall("finbyzweb.www.project_analysis.last_screenshot_time", {
+            user: user,
+            start_date: start_time,
+            end_date: end_time,
+            project: selected_project
+        });
+    }
+
+    function showImageDialog(imgSrc, activeApp) {
+        const modalHTML = `
+            <div id="imageModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9);">
+                <div class="modal-content" style="margin: 2% auto; padding: 20px; width: 90%; max-width: 1200px; height: 90%; background-color: #fff; position: relative; display: flex; flex-direction: column;">
+                    <span class="close" style="color: #aaa; position: absolute; top: 10px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer;">&times;</span>
+                    <h5 style="margin-top: 0; margin-bottom: 5px;">${activeApp || 'Unknown App'}</h5>
+                    <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+                        <img id="zoomedImg" src="${imgSrc}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('body').append(modalHTML);
+
+        const modal = document.getElementById('imageModal');
+        const span = modal.querySelector('.close');
+
+        modal.style.display = "block";
+
+        span.onclick = function() {
+            modal.style.display = "none";
+            modal.remove();
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                modal.remove();
+            }
+        }
+    }
 
     let currentDatetime = new Date(endDatetime);
     let end_time = new Date(currentDatetime);
@@ -897,21 +894,23 @@ function render_images(selected_start_date, selected_end_date, selected_project,
     let start_time = new Date(end_time);
     start_time.setHours(start_time.getHours() - 1);
 
-    let formattedStartTime = formatDatetime(start_time);
-    let formattedEndTime = formatDatetime(end_time);
- 
     function fetchImages() {
-        if (start_time < startDatetime) {
-            return;
-        }
-        loadImages(data, start_time.toLocaleString('en-in'), end_time.toLocaleString('en-in'), selected_project).then(function (flag) {
-            if (flag === 0 && start_time > startDatetime) {
-                end_time = new Date(start_time);
-                start_time = new Date(end_time);
+        getLastScreenshotTime(data, startDatetime.toLocaleString('en-in'), endDatetime.toLocaleString('en-in'), selected_project).then(lastScreenshotTime => {
+            if (lastScreenshotTime) {
+                start_time = new Date(lastScreenshotTime);
                 start_time.setHours(start_time.getHours() - 1);
-                formattedStartTime = formatDatetime(start_time);
-                formattedEndTime = formatDatetime(end_time);
-                fetchImages();
+
+                let formattedStartTime = formatDatetime(start_time);
+                let formattedEndTime = formatDatetime(end_time);
+
+                loadImages(data, formattedStartTime, formattedEndTime, selected_project).then(function (flag) {
+                    if (flag === 0 && start_time > startDatetime) {
+                        end_time = new Date(start_time);
+                        start_time = new Date(end_time);
+                        start_time.setHours(start_time.getHours() - 1);
+                        fetchImages();
+                    }
+                });
             }
         });
     }
@@ -929,14 +928,13 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                 end_time = new Date(start_time);
                 start_time = new Date(end_time);
                 start_time.setHours(start_time.getHours() - 1);
-                formattedStartTime = formatDatetime(start_time);
-                formattedEndTime = formatDatetime(end_time);
                 fetchImages();
             }
         }, 100);
         $(window).on('scroll', handleScroll);
     }
 }
+
 
 
 
