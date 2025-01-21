@@ -167,10 +167,10 @@ def web_browsing_time(user=None, start_date=None, end_date=None, project=None):
 # User Activity Images Code Starts
 @frappe.whitelist()
 def user_activity_images(user=None, start_date=None, end_date=None, project=None, offset=0):
-    parsed_datetime = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
-    start_date = parsed_datetime.strftime('%Y-%m-%d  %H:%M:%S')
-    parsed_datetime_ = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
-    end_date = parsed_datetime_.strftime('%Y-%m-%d  %H:%M:%S')
+    # parsed_datetime = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
+    # start_date = parsed_datetime.strftime('%Y-%m-%d  %H:%M:%S')
+    # parsed_datetime_ = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
+    # end_date = parsed_datetime_.strftime('%Y-%m-%d  %H:%M:%S')
     if not project:
         return []
     portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.name = '{project}'""", as_dict=1)
