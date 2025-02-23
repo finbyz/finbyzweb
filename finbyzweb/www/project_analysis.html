@@ -5,7 +5,7 @@
 {% endblock %}
 {% block page_content %}
 <div class="">
-    <h3 class="">{{_("My Project") }}</h3>
+    <h3 class="" style="font-family: 'Poppins', sans-serif;">{{_("My Project") }}</h3>
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -434,62 +434,371 @@ path[paint-order="stroke"] {
 .nested-card-4 { border-left: 5px solid #FDCB6E; }
 .nested-card-5 { border-left: 5px solid #6C5CE7; }
 
+.d-flex.justify-content-end {
+    justify-content: center !important;
+}
+
+.d-flex.align-items-end {
+    align-items: flex-end;
+}
+
+.me-3, .me-2 {
+    margin-right: 1rem;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.form-select, .form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    font-size: 16px;
+}
+
+input[type="date"] {
+    width: 160px;
+}
+
+.d-flex.justify-content-end.mb-3 {
+    margin: 20px auto;
+    max-width: 600px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.task-board {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.task-card {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+}
+
+.task-header {
+    padding: 15px;
+    color: #fff;
+    font-weight: 600;
+    text-align: center;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.task-body {
+    padding: 15px;
+}
+
+.task-item {
+    background: #f4f4f4;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.task-item:hover {
+    background: #e9ecef;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.task-title {
+    font-weight: 500;
+}
+
+.task-details {
+    display: none;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Status Colors */
+.task-header[data-status="Open"] { background-color: #FF7043; }
+.task-header[data-status="In-Progress"] { background-color: #FFA726; }
+.task-header[data-status="Pending Review"] { background-color: #AB47BC; }
+.task-header[data-status="Completed"] { background-color: #66BB6A; }
+.task-board {
+    display: flex;
+    justify-content: space-between;  /* Evenly distribute columns */
+    gap: 15px;
+    padding: 20px;
+    width: 100%;
+    flex-wrap: wrap;  /* Ensure responsiveness */
+}
+
+.task-card {
+    flex-grow: 1;  /* Allow cards to expand */
+    max-width: 24.9%; /* Ensures 4 columns, adjust as needed */
+    min-width: 200px;
+    border-radius: 12px;
+    margin:1px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+}
+
+.task-header {
+    padding: 15px;
+    color: #fff;
+    font-weight: 600;
+    text-align: center;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.task-body {
+    padding: 15px;
+}
+
+/* Responsive Fix */
+@media (max-width: 1024px) {
+    .task-card {
+        max-width: 45%; /* Two per row on medium screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .task-card {
+        max-width: 100%; /* Full width on small screens */
+    }
+}
+.custom-card {
+    background: rgba(255, 255, 255, 0.15); /* Light glass effect */
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.custom-card:hover {
+    transform: translateY(-5px);
+}
+
+.custom-title {
+    font-size: 18px !important;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* General Styles */
+.resource-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+.resource-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.resource-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.resource-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+
+.resource-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e2e8f0;
+    width: 100%;
+    max-width: 400px;
+}
+
+.resource-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.resource-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.resource-badge {
+    background: #4299e1;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.resource-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid #e2e8f0;
+}
+
+.resource-name {
+    font-weight: 700;
+    font-size: 18px;
+    color: #2d3748;
+    margin-bottom: 8px;
+    text-decoration: none;
+    display: block;
+    transition: color 0.3s ease;
+    text-align: center;
+}
+
+.resource-name:hover {
+    color: #3182ce;
+}
+
+.resource-time {
+    color: #4a5568;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.resource-time i {
+    color: #718096;
+}
+
+.resource-progress {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4299e1, #3182ce);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+/* Total Allocation Card */
+.resource-total {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+    padding: 30px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
+}
+
+.total-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.total-icon {
+    background: #4299e1;
+    color: white;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 24px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.total-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.total-time {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2b6cb0;
+}
+
 </style>
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script></head>
     <body>
         <!-- Add these buttons where you want them in your HTML -->
-        <div class="d-flex justify-content-end">
-            <button id="select-project-btn" class="btn btn-primary me-2 mr-2" data-bs-toggle="modal" data-bs-target="#projectModal">Select Project</button>
-            <button id="select-timespan-btn" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#timespanModal">Select Timespan</button>
-        </div>        
-
-        <!-- Project Selection Modal -->
-        <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="projectModalLabel">Select Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
+        <div class="d-flex justify-content-end mb-3">
+            <div class="me-3">
+                <label for="projectSelect" class="form-label">Select Project</label>
                 <select id="projectSelect" class="form-select">
-                <option selected>Choose a project...</option>
-                <!-- Add project options dynamically using JavaScript -->
+                    <option selected>Choose a project...</option>
+                    <!-- Add project options dynamically using JavaScript -->
                 </select>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveProjectBtn">Save changes</button>
-            </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- Timespan Selection Modal -->
-        <div class="modal fade" id="timespanModal" tabindex="-1" aria-labelledby="timespanModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="timespanModalLabel">Select Timespan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                <label for="fromDate" class="form-label">From Date</label>
-                <input type="date" class="form-control" id="fromDate">
+            <div class="d-flex align-items-end">
+                <div class="me-2">
+                    <label for="fromDate" class="form-label">From Date</label>
+                    <input type="date" class="form-control" id="fromDate">
                 </div>
-                <div class="mb-3">
-                <label for="toDate" class="form-label">To Date</label>
-                <input type="date" class="form-control" id="toDate">
+                <div>
+                    <label for="toDate" class="form-label">To Date</label>
+                    <input type="date" class="form-control" id="toDate">
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveTimespanBtn">Save changes</button>
-            </div>
-            </div>
-        </div>
         </div>
         
         <div class="ml-2">
@@ -511,7 +820,7 @@ path[paint-order="stroke"] {
             <!-- System Activity -->
             <div class="row mt-4">
                 <div class="frappe-card chart-column-container col-md-12">
-                        <h5 class="mt-2 ml-2">Work Intensity</h5>
+                        <h5 class="mt-2 ml-2" style="font-family: 'Poppins', sans-serif;">Work Intensity</h5>
                     <div class="work-intensity" style="width: 100%; min-height: 350px">
                         <!-- Work Intensity Chart Container -->
                     </div>
@@ -520,14 +829,14 @@ path[paint-order="stroke"] {
 
             <div class="row mt-4">
                 <div class="frappe-card chart-column-container col-md-6 short" style="height: 500px;">
-                    <h5 class="mt-2 ml-2">Applications Used</h5>
+                    <h5 class="mt-2 ml-2" style="font-family: 'Poppins', sans-serif;">Applications Used</h5>
                     <div class="chart-wrapper" id="application-usage-time" style="width: 100%; min-height: 500px;">
                         <!-- Application usage chart content -->
                     </div>
                 </div>
                 
                 <div class="frappe-card chart-column-container col-md-6 short" style="height: 500px;">
-                    <h5 class="mt-2 ml-2">Web Browsing Time</h5>
+                    <h5 class="mt-2 ml-2" style="font-family: 'Poppins', sans-serif;">Web Browsing Time</h5>
                     <div class="chart-wrapper" id="web-browsing-time" style="width: 100%; min-height: 500px;">
                         <!-- Web browsing chart content -->
                     </div>

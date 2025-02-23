@@ -5,18 +5,37 @@ const state = {
     selected_end_date: null,
     selected_employee: null
 };
-
 function updateUrlParams(from_date, to_date, project, employee) {
     const url = new URL(window.location);
     const params = new URLSearchParams(url.search);
-    if (from_date) params.set('from_date', from_date);
-    if (to_date) params.set('to_date', to_date);
-    if (project) params.set('project', project);
-    if (employee) params.set('employee', employee);
+    
+    let reloadNeeded = false;
 
-    url.search = params.toString();
-    window.history.replaceState({}, '', url);
+    if (from_date && params.get('from_date') !== from_date) {
+        params.set('from_date', from_date);
+        reloadNeeded = true;
+    }
+    if (to_date && params.get('to_date') !== to_date) {
+        params.set('to_date', to_date);
+        reloadNeeded = true;
+    }
+    if (project && params.get('project') !== project) {
+        params.set('project', project);
+        reloadNeeded = true;
+    }
+    if (employee && params.get('employee') !== employee) {
+        params.set('employee', employee);
+        reloadNeeded = true;
+    }
+
+    const newUrl = `${url.pathname}?${params.toString()}`;
+
+    if (reloadNeeded) {
+        window.history.replaceState({}, '', newUrl);
+        location.reload();
+    }
 }
+
 
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -45,13 +64,11 @@ async function populateProjectOptions() {
     try {
         const projects = await frappe.xcall("finbyzweb.www.project_analysis.get_projects");
         
-        // Add default option
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = 'Select a project';
         projectSelect.appendChild(defaultOption);
 
-        // Add project options
         projects.forEach(project => {
             const option = document.createElement('option');
             option.value = project.name;
@@ -59,19 +76,18 @@ async function populateProjectOptions() {
             projectSelect.appendChild(option);
         });
 
-        // Get project from URL params
-        const { project: projectFromUrl } = getUrlParams();
+        setTimeout(() => {
+            const { project: projectFromUrl } = getUrlParams();
+            if (projectFromUrl) {
+                state.selected_project = projectFromUrl;
+            } else if (!state.selected_project && projects.length > 0) {
+                state.selected_project = projects[0].name;
+            }
 
-        if (projectFromUrl) {
-            state.selected_project = projectFromUrl;
-        } else if (!state.selected_project && projects.length > 0) {
-            state.selected_project = projects[0].name;
-        }
-
-        // Set the selected project in the dropdown
-        if (state.selected_project) {
-            projectSelect.value = state.selected_project;
-        }
+            if (state.selected_project) {
+                projectSelect.value = state.selected_project;
+            }
+        }, 100);
 
         return state.selected_project;
     } catch (error) {
@@ -92,10 +108,8 @@ function updateDates(fromDate, toDate) {
 }
 
 async function initial_requirements() {
-    // Get URL parameters
     const { from_date, to_date, project, employee } = getUrlParams();
-
-    // Set dates
+    
     if (from_date && to_date) {
         state.selected_start_date = from_date;
         state.selected_end_date = to_date;
@@ -108,7 +122,6 @@ async function initial_requirements() {
         state.selected_start_date = formatDateToYYYYMMDD(startDate);
     }
 
-    // Set project and employee from URL if available
     if (project) {
         state.selected_project = project;
     }
@@ -116,16 +129,11 @@ async function initial_requirements() {
         state.selected_employee = employee;
     }
 
-    // Wait for project options to be populated
     await populateProjectOptions();
 
-    // Initialize date inputs with current state values
-    const fromDateInput = document.getElementById('fromDate');
-    const toDateInput = document.getElementById('toDate');
-    if (fromDateInput) fromDateInput.value = state.selected_start_date;
-    if (toDateInput) toDateInput.value = state.selected_end_date;
+    document.getElementById('fromDate').value = state.selected_start_date;
+    document.getElementById('toDate').value = state.selected_end_date;
 
-    // Update URL and fetch data
     updateUrlParams(
         state.selected_start_date, 
         state.selected_end_date, 
@@ -139,20 +147,9 @@ async function initial_requirements() {
         state.selected_project, 
         state.selected_employee
     );
-
-    // Call render_images if employee is present in URL
-    if (state.selected_employee) {
-        render_images(
-            state.selected_start_date,
-            state.selected_end_date,
-            state.selected_project,
-            state.selected_employee
-        );
-    }
 }
 
 function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
-    // Ensure we have valid dates before making the call
     if (!selected_start_date || !selected_end_date) {
         console.error('Invalid dates:', { selected_start_date, selected_end_date });
         return Promise.reject(new Error('Invalid dates'));
@@ -175,9 +172,8 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the application
     initial_requirements().catch(console.error);
-    // Employee select change handler
+
     document.getElementById('employeeSelect')?.addEventListener('change', function(event) {
         state.selected_employee = event.target.value;
         updateUrlParams(
@@ -186,24 +182,8 @@ document.addEventListener('DOMContentLoaded', function() {
             state.selected_project,
             state.selected_employee
         );
-        updateDataBasedOnSelection(
-            state.selected_start_date,
-            state.selected_end_date,
-            state.selected_project,
-            state.selected_employee
-        );
-        // Add render_images call when employee is selected
-        if (state.selected_employee) {
-            render_images(
-                state.selected_start_date,
-                state.selected_end_date,
-                state.selected_project,
-                state.selected_employee
-            );
-        }
     });
 
-    // Project select change handler
     document.getElementById('projectSelect').addEventListener('change', function(event) {
         state.selected_project = event.target.value;
         updateUrlParams(
@@ -214,36 +194,12 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     });
 
-    // Save project button handler
-    document.getElementById('saveProjectBtn').addEventListener('click', function() {
-        state.selected_project = document.getElementById('projectSelect').value;
-        updateUrlParams(
-            state.selected_start_date,
-            state.selected_end_date,
-            state.selected_project,
-            state.selected_employee
-        );
-        updateDataBasedOnSelection(
-            state.selected_start_date,
-            state.selected_end_date,
-            state.selected_project,
-            state.selected_employee
-        );
-        bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
+    document.getElementById('fromDate').addEventListener('change', function() {
+        updateDates(this.value, document.getElementById('toDate').value);
     });
 
-    // Save timespan button handler
-    document.getElementById('saveTimespanBtn').addEventListener('click', function() {
-        const fromDate = document.getElementById('fromDate').value;
-        const toDate = document.getElementById('toDate').value;
-        updateDates(fromDate, toDate);
-        updateDataBasedOnSelection(
-            state.selected_start_date,
-            state.selected_end_date,
-            state.selected_project,
-            state.selected_employee
-        );
-        bootstrap.Modal.getInstance(document.getElementById('timespanModal')).hide();
+    document.getElementById('toDate').addEventListener('change', function() {
+        updateDates(document.getElementById('fromDate').value, this.value);
     });
 });
 
@@ -274,70 +230,45 @@ function get_project_status_data(r, selected_start_date, selected_end_date, sele
 function task_list(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
     const container = $("#task-list");
     container.empty();
+
     frappe.call({
         method: "finbyzweb.www.project_analysis.get_project_details",
-        args: {
-            project_name:selected_project
-        },
-        callback: function(response) {
+        args: { project_name: selected_project },
+        callback: function (response) {
             if (response.message) {
-                let checkbox_value = response.message.show_task; 
+                let checkbox_value = response.message.show_task;
                 if (checkbox_value) {
                     console.log("Checkbox is enabled (checked)");
-                    
+
                     const statuses = ["Open", "In-Progress", "Pending Review", "Completed"];
-                    const statusColors = {
-                        "Open": "main-card-1",
-                        "In-Progress": "main-card-2",
-                        "Pending Review": "main-card-3",
-                        "Completed": "main-card-4" 
-                    };
 
                     statuses.forEach(status => {
-                        const mainCardClass = statusColors[status];
-
                         const mainCard = $(`
-                            <div class="col-12 col-md-6 col-lg-3 mb-4">
-                                <div class="main-card ${mainCardClass} frappe-card">
-                                    <h5 class="card-header">${status}</h5>
-                                    <div class="nested-cards-container card-body">
-                                    </div>
+                            <div class="task-card">
+                                <div class="task-header" data-status="${status}">
+                                    <h5 style="font-family: 'Poppins', sans-serif;">${status}</h5>
                                 </div>
+                                <div class="task-body"></div>
                             </div>
                         `);
 
-                        const darkenedColors = {
-                            "main-card-1": "#bd3e0c", // Darkened color for #fff1e7
-                            "main-card-2": "#ab6e05", // Darkened color for #fff7d3
-                            "main-card-3": "#b52a2a", // Darkened color for #fcd4fc
-                            "main-card-4": "#16794c"  // Darkened color for #e4f5e9
-                        };
+                        const nestedContainer = mainCard.find(".task-body");
 
-                        const nestedContainer = mainCard.find(".nested-cards-container");
-                        (data[status] || []).forEach((task, index) => {
-                            const nestedCardClass = `nested-card-${(index % 5) + 1}`;
-
+                        (data[status] || []).forEach(task => {
                             const nestedCard = $(`
-                                <div class="nested-card card mb-3 ${nestedCardClass}">
-                                    <div class="card-body">
-                                        <h6 class="card-title">${task.subject}</h6>
-                                        <div class="extra-info" style="display: none;">
-                                            <div class="title-divider"></div>
-                                            <p class="card-text" style="font-size: 15px;"><strong>Owner:</strong> ${task.full_name || ' '}</p>
-                                            ${status !== 'Completed' && task.exp_start_date ? `<p class="card-text" style="font-size: 15px;"><strong>Start:</strong> ${task.exp_start_date}</p>` : ''}
-                                            ${status !== 'Completed' && task.exp_end_date ? `<p class="card-text" style="font-size: 15px;"><strong>End:</strong> ${task.exp_end_date}</p>` : '' }
-                                            ${status === 'Completed' && task.completed_on ? `<p class="card-text" style="font-size: 15px;"><strong>Completed On:</strong> ${task.completed_on}</p>` : ''}
-                                        </div>
+                                <div class="task-item">
+                                    <div class="task-title">${task.subject}</div>
+                                    <div class="task-details">
+                                        <p><strong>Owner:</strong> ${task.full_name || ' '}</p>
+                                        ${status !== 'Completed' && task.exp_start_date ? `<p><strong>Start:</strong> ${task.exp_start_date}</p>` : ''}
+                                        ${status !== 'Completed' && task.exp_end_date ? `<p><strong>End:</strong> ${task.exp_end_date}</p>` : ''}
+                                        ${status === 'Completed' && task.completed_on ? `<p><strong>Completed On:</strong> ${task.completed_on}</p>` : ''}
                                     </div>
                                 </div>
                             `);
 
-                            const nestedCardBorderColor = darkenedColors[mainCardClass];
-                            nestedCard.css('border-left', `5px solid ${nestedCardBorderColor}`);
-
-                            nestedCard.on('click', function() {
-                                const extraInfo = nestedCard.find('.extra-info');
-                                extraInfo.toggle(); 
+                            nestedCard.on('click', function () {
+                                $(this).find(".task-details").slideToggle(200);
                             });
 
                             nestedContainer.append(nestedCard);
@@ -354,103 +285,125 @@ function task_list(data, selected_start_date, selected_end_date, selected_projec
 }
 
 
+
 function url_data(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
     function getBaseURL() {
         return window.location.origin + '/app/';
     }
 
-    let employee_data;
-    let start_date_ = selected_start_date;
-    let end_date_ = selected_end_date;
-    if (selected_employee != null) {
-        employee_data = selected_employee;
-    }
-    
-    var total_duration = 0;
-    const baseUrl = getBaseURL();
     const container = $("#url-data");
     container.empty();
-    let wholedata = `
-    <div class="row mt-3">
-        <div class="col-md-12">
-            <div class="custom-card">
-                <h4 class="custom-title p-3" style="font-size: 14px !important;" align="center">All Resources</h4>
-                <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr align="center">
-                            <th>Resources</th>
-                            <th>Total Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
+    
+    let total_duration = 0;
+    let cardsHTML = `
+        <div class="resource-header">
+            <h3 class="section-title" style="font-family: 'Poppins', sans-serif;">Team Allocation</h3>
+            <div class="resource-stats">Active Members: ${data.length} <br> (Click on username to get data of a particular user)</div>
+        </div>
+        <div class="resource-grid">`;
 
+    // Process individual resources
     data.forEach(app => {
-        wholedata += `
-            <tr align="center">
-                <td style="color:#00A6E0 !important;"><b><a href="#" style="text-decoration:none !important;color:#00A6E0 !important;" class="url-link" data-url="${app.employee_id}" data-employee="${app.employee_id}">${app.employee}</a></b></td>
-                <td style="color:#FF4001;">${convertSecondsToTime_(app.total_duration)} H</td>
-            </tr>`;
         total_duration += app.total_duration;
+        const timeFormatted = convertSecondsToTime_(app.total_duration);
+        
+        cardsHTML += `
+            <div class="resource-card">
+                <div class="resource-meta">
+                    <span class="resource-badge">Employee Details</span>
+                    <div class="resource-avatar"></div>
+                </div>
+                <div class="resource-content">
+                    <a href="#" class="resource-name url-link" 
+                       data-employee="${app.employee_id}"
+                       data-url="${app.employee_id}">
+                        ${app.employee}
+                    </a>
+                    <div class="resource-time">
+                        <i class="fas fa-clock"></i>
+                        ${timeFormatted}
+                    </div>
+                    <div class="resource-progress">
+                        <div class="progress-bar" style="width: ${(app.total_duration/total_duration)*100}%"></div>
+                    </div>
+                </div>
+            </div>
+        `;
     });
 
-    wholedata += `
-            <tr align="center">
-                <td><b><a href="#" style="text-decoration:none !important;" class="url-link" data-url="null" data-employee="null">Total</a></b></td>
-                <td><b>${convertSecondsToTime_(total_duration)} H</b></td>
-            </tr>`;
+    cardsHTML += `</div>`; // Close resource-grid
 
-    wholedata += `
-                    </tbody>
-                </table>
+    // Add total card
+    cardsHTML += `
+        <div class="resource-grid">
+            <div class="resource-card resource-total">
+                <div class="total-content">
+                    <div class="total-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="total-info">
+                        <div class="total-label">Total Allocation</div>
+                        <div class="total-time">
+                            ${convertSecondsToTime_(total_duration)}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>`;
-    container.append(wholedata);
+    `; // Close resource-grid
 
-    $(document).ready(function () {
-        $(document).on('click', '.url-link', function (e) {
-            e.preventDefault();
-            let clickedLink = $(this);
-            let selectedEmployee = e.target.getAttribute('data-employee');
+    container.html(cardsHTML);
 
-            if (selectedEmployee === "null") {
-                selectedEmployee = employee_data;
-            }
+    // Auto-call render_images if only one employee exists
+    if (data.length === 1) {
+        const singleEmployee = data[0].employee_id;
+        render_images(selected_start_date, selected_end_date, selected_project, singleEmployee);
+    }
 
-            // Update selected employee and call required functions
-            state.selected_employee = selectedEmployee;
+    // Click handler for employee selection
+    $(document).off('click', '.url-link').on('click', '.url-link', function(e) {
+        e.preventDefault();
 
-            // Update URL with selected employee, start date, and end date
-            const newUrl = new URL(window.location);
-            const params = new URLSearchParams(newUrl.search);
-            params.set('employee', selectedEmployee);
-            newUrl.search = params.toString();
-            window.history.replaceState({}, '', newUrl);
-            initial_requirements();
-            // Call functions to refresh data
-            frappe.xcall("finbyzweb.www.project_analysis.get_data", {
-                user: selectedEmployee,
-                start_date: selected_start_date,
-                end_date: selected_end_date,
-                project: selected_project
-            }).then((response) => {
-                work_intensity(response.work_intensity);
-                application_usage_time(response.application_usage);
-                web_browsing_time(response.web_browsing);
-            });
-            // Call render_images when employee link is clicked
+        // Check if the panel is already blocked
+        if ($('.resource-grid').hasClass('blocked')) {
+            return; // Do nothing if blocked
+        }
+
+        // Add blocking class to prevent further clicks
+        $('.resource-grid').addClass('blocked').css({ 
+            'pointer-events': 'none', 
+            'opacity': '0.6'
+        });
+
+        const selectedEmployee = $(this).data('employee') || null;
+
+        // Update state and URL
+        state.selected_employee = selectedEmployee;
+        history.replaceState({}, '', `?${new URLSearchParams({
+            from_date: state.selected_start_date,
+            to_date: state.selected_end_date,
+            project: state.selected_project,
+            employee: selectedEmployee
+        })}`);
+
+        // Refresh data
+        frappe.xcall("finbyzweb.www.project_analysis.get_data", {
+            user: selectedEmployee,
+            start_date: selected_start_date,
+            end_date: selected_end_date,
+            project: selected_project
+        }).then(response => {
+            work_intensity(response.work_intensity);
+            application_usage_time(response.application_usage);
+            web_browsing_time(response.web_browsing);
+
             if (selectedEmployee) {
-                render_images(
-                    selected_start_date,
-                    selected_end_date,
-                    selected_project,
-                    selectedEmployee
-                );
+                render_images(selected_start_date, selected_end_date, selected_project, selectedEmployee);
             }
         });
     });
-}   
+}
+
 function work_intensity(response) {
 		if (response.length === 0) {
 			return;
@@ -774,11 +727,11 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                         if (lastPrintedDate !== date || lastPrintedHour !== hour) {
                             const hourHeader = `
                                 <div class="col-md-12 title-area" style="padding: 15px;">
-                                    <h4 class="card-title">User Activity Images</h4>    
+                                    <h4 class="card-title" style="font-family: 'Poppins', sans-serif;">User Activity Images</h4>    
                                 </div>
                                 <div class="col-md-12 d-flex">
                                     <div class="col-md-1">
-                                        <h5><b>${date} ${hour}:00</b></h5>
+                                        <h5><b style="font-family: 'Poppins', sans-serif;">${date} ${hour}:00</b></h5>
                                     </div>
                                     <div class="col-md-11">
                                         <div class="overall-performance-timely" id="performance-chart-${self.formattedDate_}-${hour}" style="min-height: 50px; max-height: 50px;">
@@ -816,7 +769,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                                         <div style="width: 100%; height: 160px; background-color: #dddddd; display: flex; justify-content: center; align-items: center;">
                                             <span style="font-weight: bold;">Not Active</span>
                                         </div>
-                                        <p style="text-align: center;"><b>${slotTimeString}</b></p>
+                                        <p style="text-align: center;"><b style="font-family: 'Poppins', sans-serif;">${slotTimeString}</b></p>
                                     </div>`;
                                 imageContainer.append(gapMessage);
                             }
