@@ -185,10 +185,10 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
 
 @frappe.whitelist()
 def last_screenshot_time(user=None, start_date=None, end_date=None, project=None):
-    parsed_start_date = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
-    start_date = parsed_start_date.strftime('%Y-%m-%d %H:%M:%S')
-    parsed_end_date = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
-    end_date = parsed_end_date.strftime('%Y-%m-%d %H:%M:%S')
+    # parsed_start_date = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
+    # start_date = parsed_start_date.strftime('%Y-%m-%d %H:%M:%S')
+    # parsed_end_date = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
+    # end_date = parsed_end_date.strftime('%Y-%m-%d %H:%M:%S')
     
     if not project:
         return None
@@ -204,7 +204,6 @@ def last_screenshot_time(user=None, start_date=None, end_date=None, project=None
             ORDER BY time DESC 
             LIMIT 1
         """, (user, project, start_date, end_date), as_dict=1)
-        
         return last_screenshot[0]['time'] if last_screenshot else None
 
 
@@ -523,6 +522,7 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
 def get_project_status_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
+    
     conditions = []
     query_params = {}
 
@@ -530,13 +530,18 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
         conditions.append("t.project = %(project)s")
         query_params['project'] = project
 
-    conditions.append("""((t.status = 'Open' OR t.status = 'In-Progress'  OR t.status = 'Pending Review') AND (t.exp_start_date IS NOT NULL))
-                       OR ((t.status = 'Completed') AND (t.completed_on IS NOT NULL))""") 
+    # Base condition for task statuses
+    status_condition = """
+        (
+            (t.status NOT IN ('Completed', 'Cancelled', 'In-Progress', 'Pending Review') AND (t.exp_start_date IS NOT NULL))
+            OR (t.status = 'In-Progress' AND (t.exp_start_date IS NOT NULL))
+            OR (t.status = 'Pending Review' AND (t.exp_start_date IS NOT NULL))
+            OR (t.status = 'Completed' AND (t.completed_on IS NOT NULL))
+        )
+    """
+    conditions.append(status_condition)
 
-    if project:
-        conditions.append("t.project = %(project)s")
-        query_params['project'] = project
-
+    # Date range conditions
     if start_date and end_date:
         conditions.append("""
             (
@@ -558,20 +563,25 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
         conditions.append("""
             (
                 (t.status != 'Completed') OR
-                ((t.status = 'Completed' AND t.completed_on <= %(end_date)s) OR (t.status = 'Completed' AND t.completed_on >= %(end_date)s))
+                ((t.status = 'Completed' AND t.completed_on <= %(end_date)s) OR 
+                 (t.status = 'Completed' AND t.completed_on >= %(end_date)s))
             )
         """)
         query_params['end_date'] = end_date
+
     query = """
     SELECT 
-        t.name, 
-        t.subject, 
-        t.status, 
+        t.name,
+        t.subject,
+        CASE 
+            WHEN t.status NOT IN ('Completed', 'Cancelled', 'In-Progress', 'Pending Review') THEN 'Open'
+            ELSE t.status
+        END as status,
         t.exp_start_date,
         t.exp_end_date,
         t.completed_on,
         t.task_owner,
-        u.full_name 
+        u.full_name
     FROM 
         `tabTask` as t
     JOIN 
@@ -583,11 +593,21 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
     """.format(conditions=' AND '.join(conditions))
 
     tasks = frappe.db.sql(query, query_params, as_dict=True)
-    grouped_tasks = {}
-    for status in ['Open', 'In-Progress', 'Pending Review', 'Completed']:
-        grouped_tasks[status] = [
-            task for task in tasks if task['status'] == status
-        ]
+
+    # Group tasks by status
+    grouped_tasks = {
+        'Open': [],
+        'In-Progress': [],
+        'Pending Review': [],
+        'Completed': []
+    }
+
+    # Distribute tasks to appropriate groups
+    for task in tasks:
+        status = task['status']
+        if status in grouped_tasks:
+            grouped_tasks[status].append(task)
+
     return grouped_tasks
 
 @frappe.whitelist()

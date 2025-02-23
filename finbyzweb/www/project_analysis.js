@@ -253,7 +253,6 @@ function task_list(data, selected_start_date, selected_end_date, selected_projec
                         `);
 
                         const nestedContainer = mainCard.find(".task-body");
-
                         (data[status] || []).forEach(task => {
                             const nestedCard = $(`
                                 <div class="task-item">
@@ -659,235 +658,192 @@ function web_browsing_time(r) {
 }
 
 function render_images(selected_start_date, selected_end_date, selected_project, selected_employee) {
-    let startDatetime = new Date(selected_start_date + "T00:00:00");
-    let endDatetime = new Date(selected_end_date + "T23:59:59");
-    let data = selected_employee;
-
-    let lastPrintedDate = null;
-    let lastPrintedHour = null;
-    let renderedTimeSlots = new Set();
-
+    const startDatetime = new Date(selected_start_date + "T00:00:00");
+    const endDatetime = new Date(selected_end_date + "T23:59:59");
+    const data = selected_employee;
+    let isLoading = false;
+    const renderedTimeSlots = new Set();
     const imageContainer = $(".recent-activity-list");
     imageContainer.empty();
 
-    // Remove any existing scroll event listeners
     $(window).off('scroll');
 
     const debounce = (func, delay) => {
         let debounceTimer;
-        return function () {
+        return function() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => func.apply(this, arguments), delay);
         };
     };
 
-    function formatDate(date) {
-        return date.toISOString().split('T')[0];
-    }
+    const formatDatetime = date => 
+        `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-` +
+        `${date.getDate().toString().padStart(2,'0')} ${date.getHours().toString().padStart(2,'0')}:` +
+        `${date.getMinutes().toString().padStart(2,'0')}:${date.getSeconds().toString().padStart(2,'0')}`;
 
-    function formatDatetime(date) {
-        return date.getFullYear() + '-' +
-            String(date.getMonth() + 1).padStart(2, '0') + '-' +
-            String(date.getDate()).padStart(2, '0') + ' ' +
-            String(date.getHours()).padStart(2, '0') + ':' +
-            String(date.getMinutes()).padStart(2, '0') + ':' +
-            String(date.getSeconds()).padStart(2, '0');
-    }
+    const roundUpToHour = date => {
+        const d = new Date(date);
+        if(d.getMinutes() > 0 || d.getSeconds() > 0 || d.getMilliseconds() > 0) {
+            d.setHours(d.getHours() + 1);
+        }
+        d.setMinutes(0, 0, 0);
+        return d;
+    };
 
-    function loadImages(user = null, start_time, end_time, selected_project) {
-        const self = this;
+    let currentEnd = new Date(endDatetime);
+    let currentStart = new Date(currentEnd);
+    currentStart.setHours(currentStart.getHours() - 1);
+
+    const loadImages = (user, start, end, project) => {
+        if (isLoading || start < startDatetime) return Promise.resolve();
+        isLoading = true;
+
         return frappe.xcall("finbyzweb.www.project_analysis.user_activity_images", {
             user: user,
-            start_date: start_time,
-            end_date: end_time,
-            project: selected_project
-        }).then((imagedata) => {
-            let flag = imagedata.length > 0 ? 1 : 0;
-            let slotImages = {};
-            imagedata.forEach((image) => {
-                const imageDateTime = new Date(image.time);
-                const hour = imageDateTime.getHours();
-                const date = imageDateTime.toDateString();
-                const slot = Math.floor(imageDateTime.getMinutes() / 5);
-                self.formattedDate_ = formatDate(imageDateTime);
-                if (!slotImages[date]) {
-                    slotImages[date] = {};
-                }
-                if (!slotImages[date][hour]) {
-                    slotImages[date][hour] = new Array(12).fill(null);
-                }
-                slotImages[date][hour][slot] = image;
-            });
-
-            Object.keys(slotImages).reverse().forEach(date => {
-                Object.keys(slotImages[date]).reverse().forEach(hour => {
-                    const timeSlotKey = `${date}-${hour}`;
-                    if (!renderedTimeSlots.has(timeSlotKey)) {
-                        renderedTimeSlots.add(timeSlotKey);
-                        if (lastPrintedDate !== date || lastPrintedHour !== hour) {
-                            const hourHeader = `
-                                <div class="col-md-12 title-area" style="padding: 15px;">
-                                    <h4 class="card-title" style="font-family: 'Poppins', sans-serif;">User Activity Images</h4>    
-                                </div>
-                                <div class="col-md-12 d-flex">
-                                    <div class="col-md-1">
-                                        <h5><b style="font-family: 'Poppins', sans-serif;">${date} ${hour}:00</b></h5>
-                                    </div>
-                                    <div class="col-md-11">
-                                        <div class="overall-performance-timely" id="performance-chart-${self.formattedDate_}-${hour}" style="min-height: 50px; max-height: 50px;">
-                                            <!-- Overall Performance Chart Container -->
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-
-                            imageContainer.append(hourHeader);
-                            lastPrintedDate = date;
-                            lastPrintedHour = hour;
-                            self.overall_performance_timely(user, self.formattedDate_, hour, selected_project);
-                        }
-
-                        for (let slot = 11; slot >= 0; slot--) {
-                            const image = slotImages[date][hour][slot];
-                            const slotTime = new Date(date);
-                            slotTime.setHours(hour);
-                            slotTime.setMinutes(slot * 5);
-                            const slotTimeString = slotTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-
-                            if (image) {
-                                const imgElement = `
-                                    <div class="col-md-3">
-                                        <div style="display: flex; justify-content: center; align-items: center; height: 160px;">
-                                            <img src="${image.screenshot}" title="${image.time_}" data-active-app="${image.active_app}" alt="User Activity Image" style="max-width: 100%; max-height: 100%; object-fit: contain;" class="clickable-image">
-                                        </div>
-                                        <p style="text-align: center;"><b>${slotTimeString}</b></p>
-                                    </div>`;
-                                imageContainer.append(imgElement);
-                            } else {
-                                const gapMessage = `
-                                    <div class="col-md-3">
-                                        <div style="width: 100%; height: 160px; background-color: #dddddd; display: flex; justify-content: center; align-items: center;">
-                                            <span style="font-weight: bold;">Not Active</span>
-                                        </div>
-                                        <p style="text-align: center;"><b style="font-family: 'Poppins', sans-serif;">${slotTimeString}</b></p>
-                                    </div>`;
-                                imageContainer.append(gapMessage);
-                            }
-                        }
-                    }
-                });
-            });
-
-            function setImageHeight() {
-                const windowHeight = window.innerHeight;
-                const imageHeight = windowHeight * 0.2;
-                const images = document.querySelectorAll('.clickable-image');
-                images.forEach(img => {
-                    img.style.height = `${imageHeight}px`;
-                });
+            start_date: formatDatetime(start),
+            end_date: formatDatetime(end),
+            project: project
+        }).then(imagedata => {
+            isLoading = false;
+            
+            if (imagedata.length > 0) {
+                processImageData(imagedata);
+                return true;
             }
-            setImageHeight();
-            window.addEventListener('resize', setImageHeight);
+            
+            currentEnd = new Date(start);
+            currentStart = new Date(currentEnd);
+            currentStart.setHours(currentStart.getHours() - 1);
+            return loadImages(user, currentStart, currentEnd, project);
+        }).catch(error => {
+            console.error("Image load error:", error);
+            isLoading = false;
+        });
+    };
 
-            $('.clickable-image').off('click').on('click', function () {
-                const imgSrc = $(this).attr('src');
-                const activeApp = $(this).data('active-app');
-                showImageDialog(imgSrc, activeApp);
+    const processImageData = imagedata => {
+        const slotImages = {};
+        imagedata.sort((a, b) => new Date(b.time) - new Date(a.time));
+        
+        imagedata.forEach(image => {
+            const imageDate = new Date(image.time);
+            const dateKey = imageDate.toISOString().split('T')[0];
+            const hour = imageDate.getHours();
+            const slot = Math.floor(imageDate.getMinutes() / 5);
+
+            if (!slotImages[dateKey]) slotImages[dateKey] = {};
+            if (!slotImages[dateKey][hour]) slotImages[dateKey][hour] = Array(12).fill(null);
+            slotImages[dateKey][hour][slot] = image;
+        });
+
+        renderImageSlots(slotImages);
+    };
+
+    const renderImageSlots = slotImages => {
+        Object.keys(slotImages).sort().reverse().forEach(date => {
+            Object.keys(slotImages[date]).sort((a,b) => b - a).forEach(hour => {
+                const timeSlotKey = `${date}-${hour}`;
+                if (renderedTimeSlots.has(timeSlotKey)) return;
+
+                renderedTimeSlots.add(timeSlotKey);
+                const formattedDate = new Date(date).toLocaleDateString('en-US', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
+
+                imageContainer.append(`
+                    <div class="col-md-12 title-area" style="padding: 15px;">
+                        <h4 class="card-title">User Activity Images</h4>    
+                    </div>
+                    <div class="col-md-12 d-flex">
+                        <div class="col-md-2">
+                            <h5><b>${formattedDate} ${String(hour).padStart(2,'0')}:00</b></h5>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="overall-performance-timely" 
+                                 id="performance-chart-${date}-${hour}"
+                                 style="min-height: 50px; max-height: 50px;">
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+                const row = $('<div class="row"></div>');
+                for(let slot = 11; slot >= 0; slot--) {
+                    const image = slotImages[date][hour][slot];
+                    const slotTime = new Date(`${date}T${String(hour).padStart(2,'0')}:${String(slot*5).padStart(2,'0')}:00`);
+                    const timeString = slotTime.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: false});
+                    
+                    row.append(image ? `
+                        <div class="col-md-3">
+                            <div style="height: 160px; display: flex; justify-content: center; align-items: center;">
+                                <img src="${image.screenshot}" 
+                                     data-time="${image.time}" 
+                                     class="clickable-image"
+                                     style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                            </div>
+                            <p style="text-align: center;"><b>${timeString}</b></p>
+                        </div>
+                    ` : `
+                        <div class="col-md-3">
+                            <div style="height: 160px; background: #ddd; display: flex; justify-content: center; align-items: center;">
+                                <span>No Activity</span>
+                            </div>
+                            <p style="text-align: center;"><b>${timeString}</b></p>
+                        </div>
+                    `);
+                }
+                imageContainer.append(row);
+                initializeImageInteractions();
             });
-
-            return flag;
         });
-    }
+    };
 
-    function getLastScreenshotTime(user, start_time, end_time, selected_project) {
-        return frappe.xcall("finbyzweb.www.project_analysis.last_screenshot_time", {
-            user: user,
-            start_date: start_time,
-            end_date: end_time,
-            project: selected_project
-        });
-    }
-
-    function showImageDialog(imgSrc, activeApp) {
-        const modalHTML = `
-            <div id="imageModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9);">
-                <div class="modal-content" style="margin: 2% auto; padding: 20px; width: 90%; max-width: 1200px; height: 90%; background-color: #fff; position: relative; display: flex; flex-direction: column;">
-                    <span class="close" style="color: #aaa; position: absolute; top: 10px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer;">&times;</span>
-                    <h5 style="margin-top: 0; margin-bottom: 5px;">${activeApp || 'Unknown App'}</h5>
-                    <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-                        <img id="zoomedImg" src="${imgSrc}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+    const initializeImageInteractions = () => {
+        $('.clickable-image').off('click').on('click', function() {
+            const modalContent = `
+                <div class="modal" style="display: block; background: rgba(0,0,0,0.8); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999;">
+                    <div style="position: relative; width: 90%; height: 90%; margin: 2% auto; background: white; padding: 20px;">
+                        <span class="close" style="position: absolute; right: 25px; top: 15px; font-size: 40px; cursor: pointer;">&times;</span>
+                        <img src="${$(this).attr('src')}" style="max-width: 100%; max-height: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                     </div>
                 </div>
-            </div>
-        `;
-
-        $('body').append(modalHTML);
-
-        const modal = document.getElementById('imageModal');
-        const span = modal.querySelector('.close');
-
-        modal.style.display = "block";
-
-        span.onclick = function() {
-            modal.style.display = "none";
-            modal.remove();
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-                modal.remove();
-            }
-        }
-    }
-
-    let currentDatetime = new Date(endDatetime);
-    let end_time = new Date(currentDatetime);
-    end_time.setMinutes(0, 0, 0);
-    let start_time = new Date(end_time);
-    start_time.setHours(start_time.getHours() - 1);
-
-    function fetchImages() {
-        getLastScreenshotTime(data, startDatetime.toLocaleString('en-in'), endDatetime.toLocaleString('en-in'), selected_project).then(lastScreenshotTime => {
-            if (lastScreenshotTime) {
-                start_time = new Date(lastScreenshotTime);
-                start_time.setHours(start_time.getHours() - 1);
-
-                let formattedStartTime = formatDatetime(start_time);
-                let formattedEndTime = formatDatetime(end_time);
-
-                loadImages(data, formattedStartTime, formattedEndTime, selected_project).then(function (flag) {
-                    if (flag === 0 && start_time > startDatetime) {
-                        end_time = new Date(start_time);
-                        start_time = new Date(end_time);
-                        start_time.setHours(start_time.getHours() - 1);
-                        fetchImages();
-                    }
-                });
-            }
+            `;
+            $('body').append(modalContent);
+            $('.close').on('click', () => $('.modal').remove());
         });
-    }
+    };
 
-    fetchImages();
+    // Initial load setup
+    frappe.xcall("finbyzweb.www.project_analysis.last_screenshot_time", {
+        user: data,
+        start_date: formatDatetime(startDatetime),
+        end_date: formatDatetime(endDatetime),
+        project: selected_project
+    }).then(lastScreenshotTime => {
+        if (lastScreenshotTime) {
+            let newEnd = roundUpToHour(new Date(lastScreenshotTime));
+            newEnd = newEnd > endDatetime ? new Date(endDatetime) : newEnd;
+            currentEnd = newEnd;
+            currentStart = new Date(currentEnd);
+            currentStart.setHours(currentStart.getHours() - 1);
+        }
+        loadImages(data, currentStart, currentEnd, selected_project);
+    });
 
-    if (currentDatetime > startDatetime) {
-        const handleScroll = debounce(function () {
-            const windowHeight = $(window).height();
-            const documentHeight = $(document).height();
-            const scrollTop = $(window).scrollTop();
-            const scrollPercentage = (scrollTop / (documentHeight - windowHeight)) * 100;
+    // Scroll handler
+    const handleScroll = debounce(() => {
+        if (isLoading || currentStart <= startDatetime) return;
 
-            if (scrollPercentage >= 50) {
-                end_time = new Date(start_time);
-                start_time = new Date(end_time);
-                start_time.setHours(start_time.getHours() - 1);
-                fetchImages();
-            }
-        }, 100);
-        $(window).on('scroll', handleScroll);
-    }
+        const scrollBottom = window.innerHeight + window.scrollY;
+        if (scrollBottom >= document.documentElement.offsetHeight * 0.8) {
+            currentEnd = new Date(currentStart);
+            currentStart.setHours(currentStart.getHours() - 1);
+            loadImages(data, currentStart, currentEnd, selected_project);
+        }
+    }, 200);
+
+    $(window).on('scroll', handleScroll);
 }
-
 
 
 

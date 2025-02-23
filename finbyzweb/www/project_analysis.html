@@ -554,7 +554,7 @@ body {
 
 .task-card {
     flex-grow: 1;  /* Allow cards to expand */
-    max-width: 24.9%; /* Ensures 4 columns, adjust as needed */
+    max-width: 24%; /* Ensures 4 columns, adjust as needed */
     min-width: 200px;
     border-radius: 12px;
     margin:1px;
@@ -591,6 +591,68 @@ body {
 @media (max-width: 768px) {
     .task-card {
         max-width: 100%; /* Full width on small screens */
+    }
+}
+/* Task card container styles */
+.task-card {
+    flex-grow: 1;
+    max-width: 24%;
+    min-width: 200px;
+    border-radius: 12px;
+    margin: 1px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Task body with scrollbar */
+.task-body {
+    padding: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+/* Webkit scrollbar styles */
+.task-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.task-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.task-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.task-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Ensure task items are properly spaced */
+.task-item {
+    background: #f4f4f4;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .task-card {
+        max-width: 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    .task-card {
+        max-width: 100%;
     }
 }
 .custom-card {
