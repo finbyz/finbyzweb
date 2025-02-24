@@ -15,8 +15,9 @@ class ProxySetting(Document):
             if item.for_employee and (not item.proxy_employee or not item.project):
                 frappe.throw("Enter value in all child table fields.")
             
-            cache_key = f"proxy_setting_{item.proxy_employee}_{item.project}"
+            cache_key = f"proxy_setting_{item.for_employee}_{item.project}"
             cache_value = f"{item.for_employee} {item.proxy_employee} {item.project}"
+            frappe.msgprint(str(cache_key))
             frappe.cache().set_value(cache_key, cache_value)
             current_combinations.add(cache_key)
         
