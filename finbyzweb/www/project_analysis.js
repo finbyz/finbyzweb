@@ -1,3 +1,69 @@
+// Loading Indicator Functions
+function showLoadingIndicator() {
+    if (!document.getElementById('loadingOverlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'loadingOverlay';
+        overlay.innerHTML = `
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading...</div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+    document.getElementById('loadingOverlay').style.display = 'flex';
+}
+
+function hideLoadingIndicator() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
+// Add Loading Indicator Styles
+const style = document.createElement('style');
+style.textContent = `
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    text-align: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+.loading-text {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+    font-size: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+document.head.appendChild(style);
+
 // Global state object to manage selections
 const state = {
     selected_project: null,
@@ -5,6 +71,7 @@ const state = {
     selected_end_date: null,
     selected_employee: null
 };
+
 function updateUrlParams(from_date, to_date, project, employee) {
     const url = new URL(window.location);
     const params = new URLSearchParams(url.search);
@@ -36,7 +103,6 @@ function updateUrlParams(from_date, to_date, project, employee) {
     }
 }
 
-
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
     return {
@@ -58,6 +124,7 @@ function formatDateToYYYYMMDD(date) {
 }
 
 async function populateProjectOptions() {
+    showLoadingIndicator();
     const projectSelect = document.getElementById('projectSelect');
     projectSelect.innerHTML = '';
     
@@ -89,14 +156,17 @@ async function populateProjectOptions() {
             }
         }, 100);
 
+        hideLoadingIndicator();
         return state.selected_project;
     } catch (error) {
         console.error("Error fetching projects:", error);
+        hideLoadingIndicator();
         return null;
     }
 }
 
 function updateDates(fromDate, toDate) {
+    showLoadingIndicator();
     state.selected_start_date = formatDateToYYYYMMDD(fromDate);
     state.selected_end_date = formatDateToYYYYMMDD(toDate);
     updateUrlParams(
@@ -105,9 +175,11 @@ function updateDates(fromDate, toDate) {
         state.selected_project,
         state.selected_employee
     );
+    hideLoadingIndicator();
 }
 
 async function initial_requirements() {
+    showLoadingIndicator();
     const { from_date, to_date, project, employee } = getUrlParams();
     
     if (from_date && to_date) {
@@ -147,6 +219,7 @@ async function initial_requirements() {
         state.selected_project, 
         state.selected_employee
     );
+    hideLoadingIndicator();
 }
 
 function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
@@ -154,6 +227,8 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
         console.error('Invalid dates:', { selected_start_date, selected_end_date });
         return Promise.reject(new Error('Invalid dates'));
     }
+
+    showLoadingIndicator();
 
     return frappe.xcall("finbyzweb.www.project_analysis.get_data", {
         user: selected_employee,
@@ -168,6 +243,8 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
         get_project_status_data(response.task_list, selected_start_date, selected_end_date, selected_project, selected_employee);
     }).catch(error => {
         console.error('Error updating data:', error);
+    }).finally(() => {
+        hideLoadingIndicator();
     });
 }
 
@@ -175,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initial_requirements().catch(console.error);
 
     document.getElementById('employeeSelect')?.addEventListener('change', function(event) {
+        showLoadingIndicator();
         state.selected_employee = event.target.value;
         updateUrlParams(
             state.selected_start_date,
@@ -182,9 +260,11 @@ document.addEventListener('DOMContentLoaded', function() {
             state.selected_project,
             state.selected_employee
         );
+        hideLoadingIndicator();
     });
 
     document.getElementById('projectSelect').addEventListener('click', function(event) {
+        showLoadingIndicator();
         state.selected_project = event.target.value;
         updateUrlParams(
             state.selected_start_date,
@@ -192,6 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
             state.selected_project,
             state.selected_employee
         );
+        hideLoadingIndicator();
     });
 
     document.getElementById('fromDate').addEventListener('change', function() {
@@ -228,6 +309,7 @@ function get_project_status_data(r, selected_start_date, selected_end_date, sele
 }
 
 function task_list(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
+    showLoadingIndicator();
     const container = $("#task-list");
     container.empty();
 
@@ -279,13 +361,13 @@ function task_list(data, selected_start_date, selected_end_date, selected_projec
                     console.log("Checkbox is disabled (unchecked)");
                 }
             }
+            hideLoadingIndicator();
         }
     });
 }
 
-
-
 function url_data(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
+    showLoadingIndicator();
     function getBaseURL() {
         return window.location.origin + '/app/';
     }
@@ -294,6 +376,7 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
     
     if (!data || data.length === 0) {
         console.warn("No data received, preventing section from disappearing.");
+        hideLoadingIndicator();
         return;
     }
 
@@ -369,9 +452,10 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
     }
 
     $(document).off('click', '.url-link').on('click', '.url-link', function(e) {
-        if (data.length === 1) return; // Prevent click when only one employee
+        if (data.length === 1) return;
         
         e.preventDefault();
+        showLoadingIndicator();
 
         const selectedEmployee = $(this).data('employee') || null;
         const newURL = `${window.location.pathname}?${new URLSearchParams({
@@ -383,6 +467,7 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
 
         if (e.ctrlKey || e.metaKey) {
             window.open(newURL, '_blank');
+            hideLoadingIndicator();
         } else {
             history.replaceState({}, '', newURL);
 
@@ -401,16 +486,19 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
                 application_usage_time(response.application_usage);
                 web_browsing_time(response.web_browsing);
                 render_images(selected_start_date, selected_end_date, selected_project, selectedEmployee);
-                url_data(response.team_allocation, selected_start_date, selected_end_date, selected_project, selectedEmployee);
+                fetch_url_data(response.url_data, selected_start_date, selected_end_date, selected_project, selectedEmployee);
                 
                 location.reload();
             }).catch(error => {
                 console.error("Error fetching data: ", error);
+            }).finally(() => {
+                hideLoadingIndicator();
             });
         }
     });
 
     $(document).off('click', '#reset-filter').on('click', '#reset-filter', function() {
+        showLoadingIndicator();
         const newURL = `${window.location.pathname}?${new URLSearchParams({
             from_date: selected_start_date,
             to_date: selected_end_date,
@@ -432,15 +520,18 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
             work_intensity(response.work_intensity);
             application_usage_time(response.application_usage);
             web_browsing_time(response.web_browsing);
-            url_data(response.team_allocation, selected_start_date, selected_end_date, selected_project, null);
+            fetch_url_data(response.url_data, selected_start_date, selected_end_date, selected_project, null);
             
             location.reload();
         }).catch(error => {
             console.error("Error fetching all employees: ", error);
+        }).finally(() => {
+            hideLoadingIndicator();
         });
     });
-}
 
+    hideLoadingIndicator();
+}
 
 function work_intensity(response) {
 		if (response.length === 0) {

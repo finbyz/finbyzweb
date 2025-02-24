@@ -211,149 +211,151 @@ def last_screenshot_time(user=None, start_date=None, end_date=None, project=None
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
+        
+    # Get customer once and cache it
     customer = frappe.db.get_value("Project", project, "customer")
-    # Initialize conditions for SQL queries
-    condition = ""  
-    app_condition = ""
-    if project:
-        app_condition += "AND a.project = '{0}'".format(project)
+    
+    # Build base conditions using list for better performance
+    base_conditions = []
     if user:
-        condition += "AND mcr.employee = '{0}'".format(user)
-        app_condition += "AND a.proxy_employee = '{0}'".format(user)
+        base_conditions.append(f"a.proxy_employee = '{user}'")
+    if project:
+        base_conditions.append(f"a.project = '{project}'")
+    
+    # Join conditions efficiently
+    app_condition = " AND ".join(base_conditions) if base_conditions else ""
+    app_condition = f"AND {app_condition}" if app_condition else ""
 
-    # Get raw time intervals for each type of activity
+    # Optimize application query with proper date indexing
     application_intervals = frappe.db.sql(f"""
         SELECT 
             e.employee_name AS employee, 
             a.proxy_employee AS employee_id,
             a.from_time as start_time,
             a.to_time as end_time
-        FROM `tabApplication Usage log` as a
-        Join `tabEmployee` as e on e.name = a.proxy_employee
-        WHERE a.date >= '{start_date}' 
-        AND a.date <= '{end_date}'
+        FROM `tabApplication Usage log` a
+        JOIN `tabEmployee` e ON e.name = a.proxy_employee
+        WHERE a.date BETWEEN '{start_date}' AND '{end_date}'
         {app_condition}
     """, as_dict=True)
 
+    # Optimize meeting query
     meeting_intervals = frappe.db.sql(f"""
         SELECT 
             mcr.employee AS employee_id,
             e.employee_name AS employee,
             m.meeting_from as start_time,
             m.meeting_to as end_time
-        FROM `tabMeeting` AS m
-        JOIN `tabMeeting Company Representative` AS mcr ON mcr.parent = m.name
-        LEFT JOIN `tabEmployee` e ON e.name = mcr.employee
-        WHERE m.meeting_from >= '{start_date} 00:00:00' 
-        AND m.meeting_to <= '{end_date} 23:59:59' 
+        FROM `tabMeeting` m
+        JOIN `tabMeeting Company Representative` mcr ON mcr.parent = m.name
+        JOIN `tabEmployee` e ON e.name = mcr.employee
+        WHERE m.meeting_from >= '{start_date} 00:00:00'
+        AND m.meeting_to <= '{end_date} 23:59:59'
         AND m.docstatus = 1 
-        {condition} 
         AND m.project = '{project}'
+        {f"AND mcr.employee = '{user}'" if user else ""}
     """, as_dict=True)
 
-    calls_intervals = frappe.db.sql(f"""
+    # Optimize calls query - Now always fetch calls data
+    calls_query = f"""
         SELECT 
             employee AS employee_id,
             employee_name AS employee,
             call_datetime as start_time,
             ADDTIME(call_datetime, SEC_TO_TIME(duration)) as end_time
-        FROM `tabEmployee Fincall` 
-        WHERE date >= '{start_date}'
-        AND date <= '{end_date}'
+        FROM `tabEmployee Fincall`
+        WHERE date BETWEEN '{start_date}' AND '{end_date}'
         AND link_name = '{customer}'
-        AND employee = '{user}'
-        AND (calltype != 'Missed' AND calltype != 'Rejected')
-    """, as_dict=True)
+        AND calltype NOT IN ('Missed', 'Rejected')
+    """
+    
+    if user:
+        calls_query += f" AND employee = '{user}'"
+    
+    calls_intervals = frappe.db.sql(calls_query, as_dict=True)
 
-    # Process data employee-wise
+    # Process data using dictionary for O(1) lookups
     employee_data = {}
     
-    # Helper function to calculate duration in seconds
+    # Optimize datetime conversion
+    datetime_cache = {}
+    def cached_datetime(time_str):
+        if time_str not in datetime_cache:
+            datetime_cache[time_str] = frappe.utils.get_datetime(time_str)
+        return datetime_cache[time_str]
+
     def get_duration(start_time, end_time):
         if isinstance(start_time, str):
-            start_time = frappe.utils.get_datetime(start_time)
+            start_time = cached_datetime(start_time)
         if isinstance(end_time, str):
-            end_time = frappe.utils.get_datetime(end_time)
+            end_time = cached_datetime(end_time)
         return (end_time - start_time).total_seconds()
 
-    # Process each employee's data
-    for intervals in [application_intervals, meeting_intervals, calls_intervals]:
-        for interval in intervals:
+    # Initialize employee_data dictionary with all employees from all sources
+    for interval_list in [application_intervals, meeting_intervals, calls_intervals]:
+        for interval in interval_list:
             emp_id = interval['employee_id']
             if emp_id not in employee_data:
                 employee_data[emp_id] = {
                     'employee': interval['employee'],
                     'intervals': [],
-                    'app_intervals': [],
-                    'meeting_intervals': [],
-                    'call_intervals': []
+                    'durations': {
+                        'app': 0,
+                        'meeting': 0,
+                        'call': 0
+                    }
                 }
-            
-            # Store intervals by type
-            if intervals == application_intervals:
-                employee_data[emp_id]['app_intervals'].append(interval)
-            elif intervals == meeting_intervals:
-                employee_data[emp_id]['meeting_intervals'].append(interval)
-            elif intervals == calls_intervals:
-                employee_data[emp_id]['call_intervals'].append(interval)
-            
+
+    # Process intervals in a single pass
+    for interval_type, intervals in [
+        ('app', application_intervals),
+        ('meeting', meeting_intervals),
+        ('call', calls_intervals)
+    ]:
+        for interval in intervals:
+            emp_id = interval['employee_id']
+            # Calculate duration once
+            duration = get_duration(interval['start_time'], interval['end_time'])
+            employee_data[emp_id]['durations'][interval_type] += duration
             employee_data[emp_id]['intervals'].append(interval)
 
-    # Process the intervals for each employee
+    # Process final results
     result_data = []
     for emp_id, emp_data in employee_data.items():
-        if not emp_data['intervals']:
-            continue
-
-        # Sort intervals by start time
-        sorted_intervals = sorted(emp_data['intervals'], key=lambda x: x['start_time'])
+        intervals = emp_data['intervals']
         
-        # Merge overlapping intervals
-        merged_intervals = []
-        current_interval = sorted_intervals[0]
+        # Sort and merge intervals only once per employee
+        sorted_intervals = sorted(intervals, 
+                                key=lambda x: cached_datetime(x['start_time']))
         
-        for interval in sorted_intervals[1:]:
-            if get_duration(interval['start_time'], current_interval['end_time']) > 0:
-                # Overlap exists, merge the intervals
-                current_interval['end_time'] = max(
-                    current_interval['end_time'],
-                    interval['end_time'],
-                    key=lambda x: frappe.utils.get_datetime(x)
-                )
+        total_duration = 0
+        current_end = None
+        
+        for interval in sorted_intervals:
+            start_time = cached_datetime(interval['start_time'])
+            end_time = cached_datetime(interval['end_time'])
+            
+            if current_end is None or start_time > current_end:
+                total_duration += (end_time - start_time).total_seconds()
             else:
-                # No overlap, add current interval and start a new one
-                merged_intervals.append(current_interval)
-                current_interval = interval
-        
-        merged_intervals.append(current_interval)
-
-        # Calculate total duration from merged intervals
-        total_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                           for interval in merged_intervals)
-
-        # Calculate individual durations without overlap
-        app_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                         for interval in emp_data['app_intervals'])
-        meeting_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                             for interval in emp_data['meeting_intervals'])
-        call_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                          for interval in emp_data['call_intervals'])
+                if end_time > current_end:
+                    total_duration += (end_time - current_end).total_seconds()
+            
+            current_end = max(end_time, current_end) if current_end else end_time
 
         result_data.append({
             'employee': emp_data['employee'],
             'employee_id': emp_id,
             'total_duration': round(total_duration, 2),
-            'application_duration': round(app_duration, 2),
-            'meeting_duration': round(meeting_duration, 2),
-            'call_duration': round(call_duration, 2)
+            'application_duration': round(emp_data['durations']['app'], 2),
+            'meeting_duration': round(emp_data['durations']['meeting'], 2),
+            'call_duration': round(emp_data['durations']['call'], 2)
         })
 
-    # Sort data by total duration in descending order
-    result_data = sorted(result_data, key=lambda x: x['total_duration'], reverse=True)
-    
     return {
-        "data": result_data
+        "data": sorted(result_data, key=lambda x: x['total_duration'], reverse=True)
     }
+
 @frappe.whitelist()
 def get_projects():
     current_user = frappe.session.user
