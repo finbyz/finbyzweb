@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     });
 
-    document.getElementById('projectSelect').addEventListener('change', function(event) {
+    document.getElementById('projectSelect').addEventListener('click', function(event) {
         state.selected_project = event.target.value;
         updateUrlParams(
             state.selected_start_date,

@@ -130,7 +130,8 @@ scheduler_events = {
         ],
     },
     "all": [
-        "finbyzweb.finbyzweb.doctype.proxy_setting.proxy_setting.update_proxy_setting_cache"
+        "finbyzweb.finbyzweb.doctype.proxy_setting.proxy_setting.update_proxy_setting_cache",
+        "finbyzweb.finbyzweb.doc_events.update_proxy_employee.update_proxy_employee",  
     ],
 }
 
@@ -150,20 +151,11 @@ doc_events = {
 	"Customer": {
 		"before_save": "finbyzweb.api.customer_before_save"
 	},
-	"Screen Screenshot Log":{
-		"before_save": "finbyzweb.finbyzweb.doc_events.screen_screenshot_log.before_validate"
-	},
 	"Project":{
 		"before_save": "finbyzweb.finbyzweb.doc_events.project.before_validate"
 	},
 	"Customer":{
 		"before_save": "finbyzweb.finbyzweb.doc_events.customer.before_validate"
-	},
-	"Application Usage log":{
-		"before_save": "finbyzweb.finbyzweb.doc_events.application_usage_log.before_validate"
-	},
-	"Work Intensity":{
-		"before_save": "finbyzweb.finbyzweb.doc_events.work_intensity.before_validate"
 	}
  
 }

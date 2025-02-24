@@ -242,7 +242,7 @@
 
    {%- block base_scripts -%}
    <script>
-		frappe.boot = {{ boot }}
+		frappe.boot = {{ boot | json }}
 		// for backward compatibility of some libs
 		frappe.sys_defaults = frappe.boot.sysdefaults;
 	</script>
