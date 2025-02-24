@@ -62,10 +62,10 @@
 				{% include "templates/includes/gallery_links.html" %}
 			{% endif %}
 
-			{% if not (
-				(doctype == "Web Page" and (name == "career" or name == "contact" or name =="productify-privacy-policy")) or 
-				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening" or doctype == "Web Stories") or (route == "login" or route == "me" or route == "app")
-			) %}
+			{% if frappe.session.user == "Guest" and not (
+				(doctype == "Web Page" and (name == "career" or name == "contact" or name == "productify-privacy-policy")) or 
+				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening" or doctype == "Web Stories") or 
+				(route == "login" or route == "me" or route == "app" or route == "jobs"))  %}
 				{% include "templates/includes/form/inquiry_form.html" %}
 			{% endif %}
 		
@@ -76,9 +76,9 @@
 			</div>
 			{% endif %}
 
-			{% if not (
+			{% if frappe.session.user == "Guest" and not (
 				(doctype == "Web Page" and (name == "career" or name == "contact" or name == "productify-privacy-policy")) or 
-				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening" or doctype == "Web Stories") or (route == "login" or route == "me" or route == "app")
+				(doctype == "Ad Campaign" or doctype == "Web Form" or doctype == "Job Opening" or doctype == "Web Stories") or (route == "login" or route == "me" or route == "app" or route == "jobs") 
 			) %}
 				{% include 'templates/includes/form/campaign_inquiry_form.html' %}
 			{% endif %}
