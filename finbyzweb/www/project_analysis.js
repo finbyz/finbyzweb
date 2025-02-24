@@ -291,6 +291,12 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
     }
 
     const container = $("#url-data");
+    
+    if (!data || data.length === 0) {
+        console.warn("No data received, preventing section from disappearing.");
+        return;
+    }
+
     container.empty();
     
     let total_duration = 0;
@@ -301,7 +307,6 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
         </div>
         <div class="resource-grid">`;
 
-    // Process individual resources
     data.forEach(app => {
         total_duration += app.total_duration;
         const timeFormatted = convertSecondsToTime_(app.total_duration);
@@ -314,8 +319,7 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
                 </div>
                 <div class="resource-content">
                     <a href="#" class="resource-name url-link" 
-                       data-employee="${app.employee_id}"
-                       data-url="${app.employee_id}">
+                       data-employee="${app.employee_id}" ${data.length === 1 ? 'style="pointer-events: none; opacity: 0.5;"' : ''}>
                         ${app.employee}
                     </a>
                     <div class="resource-time">
@@ -323,16 +327,15 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
                         ${timeFormatted}
                     </div>
                     <div class="resource-progress">
-                        <div class="progress-bar" style="width: ${(app.total_duration/total_duration)*100}%"></div>
+                        <div class="progress-bar" style="width: ${(app.total_duration / total_duration) * 100}%"></div>
                     </div>
                 </div>
             </div>
         `;
     });
 
-    cardsHTML += `</div>`; // Close resource-grid
+    cardsHTML += `</div>`;
 
-    // Add total card
     cardsHTML += `
         <div class="resource-grid">
             <div class="resource-card resource-total">
@@ -349,59 +352,95 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
                 </div>
             </div>
         </div>
-    `; // Close resource-grid
+    `;
+
+    if (selected_employee) {
+        cardsHTML += `
+            <div class="back-button-container">
+                <button id="reset-filter" class="btn btn-primary">Back to All Employees</button>
+            </div>
+        `;
+    }
 
     container.html(cardsHTML);
 
-    // Auto-call render_images if only one employee exists
     if (data.length === 1) {
-        const singleEmployee = data[0].employee_id;
-        render_images(selected_start_date, selected_end_date, selected_project, singleEmployee);
+        render_images(selected_start_date, selected_end_date, selected_project, data[0].employee_id);
     }
 
-    // Click handler for employee selection
     $(document).off('click', '.url-link').on('click', '.url-link', function(e) {
+        if (data.length === 1) return; // Prevent click when only one employee
+        
         e.preventDefault();
 
-        // Check if the panel is already blocked
-        if ($('.resource-grid').hasClass('blocked')) {
-            return; // Do nothing if blocked
-        }
-
-        // Add blocking class to prevent further clicks
-        $('.resource-grid').addClass('blocked').css({ 
-            'pointer-events': 'none', 
-            'opacity': '0.6'
-        });
-
         const selectedEmployee = $(this).data('employee') || null;
-
-        // Update state and URL
-        state.selected_employee = selectedEmployee;
-        history.replaceState({}, '', `?${new URLSearchParams({
-            from_date: state.selected_start_date,
-            to_date: state.selected_end_date,
-            project: state.selected_project,
+        const newURL = `${window.location.pathname}?${new URLSearchParams({
+            from_date: selected_start_date,
+            to_date: selected_end_date,
+            project: selected_project,
             employee: selectedEmployee
-        })}`);
+        }).toString()}`;
 
-        // Refresh data
+        if (e.ctrlKey || e.metaKey) {
+            window.open(newURL, '_blank');
+        } else {
+            history.replaceState({}, '', newURL);
+
+            frappe.xcall("finbyzweb.www.project_analysis.get_data", {
+                user: selectedEmployee,
+                start_date: selected_start_date,
+                end_date: selected_end_date,
+                project: selected_project
+            }).then(response => {
+                if (!response || Object.keys(response).length === 0) {
+                    console.warn("Empty response received, keeping existing data.");
+                    return;
+                }
+
+                work_intensity(response.work_intensity);
+                application_usage_time(response.application_usage);
+                web_browsing_time(response.web_browsing);
+                render_images(selected_start_date, selected_end_date, selected_project, selectedEmployee);
+                url_data(response.team_allocation, selected_start_date, selected_end_date, selected_project, selectedEmployee);
+                
+                location.reload();
+            }).catch(error => {
+                console.error("Error fetching data: ", error);
+            });
+        }
+    });
+
+    $(document).off('click', '#reset-filter').on('click', '#reset-filter', function() {
+        const newURL = `${window.location.pathname}?${new URLSearchParams({
+            from_date: selected_start_date,
+            to_date: selected_end_date,
+            project: selected_project
+        }).toString()}`;
+
+        history.replaceState({}, '', newURL);
+
         frappe.xcall("finbyzweb.www.project_analysis.get_data", {
-            user: selectedEmployee,
             start_date: selected_start_date,
             end_date: selected_end_date,
             project: selected_project
         }).then(response => {
+            if (!response || Object.keys(response).length === 0) {
+                console.warn("No data found, preventing section from disappearing.");
+                return;
+            }
+
             work_intensity(response.work_intensity);
             application_usage_time(response.application_usage);
             web_browsing_time(response.web_browsing);
-
-            if (selectedEmployee) {
-                render_images(selected_start_date, selected_end_date, selected_project, selectedEmployee);
-            }
+            url_data(response.team_allocation, selected_start_date, selected_end_date, selected_project, null);
+            
+            location.reload();
+        }).catch(error => {
+            console.error("Error fetching all employees: ", error);
         });
     });
 }
+
 
 function work_intensity(response) {
 		if (response.length === 0) {
@@ -695,6 +734,7 @@ function render_images(selected_start_date, selected_end_date, selected_project,
     currentStart.setHours(currentStart.getHours() - 1);
 
     const loadImages = (user, start, end, project) => {
+        console.log(user, start, end, project)
         if (isLoading || start < startDatetime) return Promise.resolve();
         isLoading = true;
 
