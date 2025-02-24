@@ -59,10 +59,11 @@ def work_intensity(user=None, start_date=None, end_date=None, project=None):
             SUM(mouse_clicks) as total_mouse_clicks,
             SUM(mouse_scrolls) as total_mouse_scrolls
         FROM `tabWork Intensity`
-        WHERE time >= '{start_date} 00:00:00'      
+        WHERE project = '{project}'
+            {condition}
+            and time >= '{start_date} 00:00:00'      
             AND time <= '{end_date} 23:59:59' 
             AND HOUR(time) BETWEEN 7 AND 23
-            {condition}
         GROUP BY hour, day_of_week
     """, as_dict=True)
 
@@ -100,10 +101,10 @@ def application_usage_time(user=None, start_date=None, end_date=None, project=No
     if not project:
         return []
     condition = ""
-    if user:
-        condition += "and proxy_employee = '{0}' ".format(user)
     if project:
         condition += "and project = '{0}' ".format(project)
+    if user:
+        condition += "and proxy_employee = '{0}' ".format(user)
     application_name = frappe.db.sql(f"""
         SELECT 
             LEFT(application_name, 25) AS application_name, 
@@ -139,14 +140,14 @@ def web_browsing_time(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
     condition = ""
-    if user:
-        condition += "and proxy_employee = '{0}' ".format(user)
     if project:
         condition += "and project = '{0}' ".format(project)
+    if user:
+        condition += "and proxy_employee = '{0}' ".format(user)
     domain_data = frappe.db.sql(f"""
         SELECT domain, round(SUM(duration)/3600,2) as total_duration
         FROM `tabApplication Usage log`
-        Where date >= '{start_date}' and date <= '{end_date}' and domain != '' and domain is not null {condition}
+        Where date >= '{start_date}' and date <= '{end_date}' {condition} and domain != '' and domain is not null 
         GROUP BY domain
         ORDER BY total_duration DESC
         LIMIT 10
@@ -177,7 +178,7 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
     else:
-        data = frappe.get_all("Screen Screenshot Log", filters={"time": ["BETWEEN", [start_date, end_date]],"proxy_employee":user, "project":project}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
+        data = frappe.get_all("Screen Screenshot Log", filters={ "project":project, "proxy_employee":user,"time": ["BETWEEN", [start_date, end_date]]}, order_by="time desc", group_by="time", fields=["screenshot", "time","active_app"])
         for i in data:
             i["time_"] = frappe.format(i["time"], "Datetime")
         return data
@@ -200,10 +201,10 @@ def last_screenshot_time(user=None, start_date=None, end_date=None, project=None
         last_screenshot = frappe.db.sql("""
             SELECT time 
             FROM `tabScreen Screenshot Log` 
-            WHERE proxy_employee = %s AND project = %s AND time BETWEEN %s AND %s
+            WHERE project = %s AND proxy_employee = %s AND time BETWEEN %s AND %s
             ORDER BY time DESC 
             LIMIT 1
-        """, (user, project, start_date, end_date), as_dict=1)
+        """, (project, user, start_date, end_date), as_dict=1)
         return last_screenshot[0]['time'] if last_screenshot else None
 
 
@@ -214,11 +215,11 @@ def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     # Initialize conditions for SQL queries
     condition = ""  
     app_condition = ""
+    if project:
+        app_condition += "AND a.project = '{0}'".format(project)
     if user:
         condition += "AND mcr.employee = '{0}'".format(user)
         app_condition += "AND a.proxy_employee = '{0}'".format(user)
-    if project:
-        app_condition += "AND a.project = '{0}'".format(project)
 
     # Get raw time intervals for each type of activity
     application_intervals = frappe.db.sql(f"""
@@ -438,11 +439,11 @@ def overall_performance_timely(employee=None, date=None, hour=None, project=None
             process_name
         FROM `tabApplication Usage log`
         WHERE date = '{date}' 
+        AND project = '{project}'
         AND proxy_employee = '{employee}' 
         AND application_name != '' 
         AND application_name IS NOT NULL 
         AND HOUR(from_time) = {hour}
-        AND project = '{project}'
     """, as_dict=True)
 
     # Fetch calls

@@ -750,22 +750,34 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                 });
 
+                // Add performance chart container
+                const chartContainerId = `performance-chart-${date}-${hour}`;
+                
                 imageContainer.append(`
                     <div class="col-md-12 title-area" style="padding: 15px;">
-                        <h4 class="card-title">User Activity Images</h4>    
+                        <h4 class="card-title" style="font-family: 'Poppins', sans-serif;">User Activity Images</h4>    
                     </div>
                     <div class="col-md-12 d-flex">
                         <div class="col-md-2">
-                            <h5><b>${formattedDate} ${String(hour).padStart(2,'0')}:00</b></h5>
+                            <h5><b style="font-family: 'Poppins', sans-serif;">${formattedDate} ${String(hour).padStart(2,'0')}:00</b></h5>
                         </div>
                         <div class="col-md-10">
                             <div class="overall-performance-timely" 
-                                 id="performance-chart-${date}-${hour}"
+                                 id="${chartContainerId}"
                                  style="min-height: 50px; max-height: 50px;">
                             </div>
                         </div>
                     </div>
                 `);
+
+                // Initialize performance chart
+                overall_performance_timely(
+                    selected_employee,
+                    date,
+                    hour.toString().padStart(2, '0'),
+                    selected_project,
+                    chartContainerId
+                );
 
                 const row = $('<div class="row"></div>');
                 for(let slot = 11; slot >= 0; slot--) {
@@ -781,14 +793,14 @@ function render_images(selected_start_date, selected_end_date, selected_project,
                                      class="clickable-image"
                                      style="max-height: 100%; max-width: 100%; object-fit: contain;">
                             </div>
-                            <p style="text-align: center;"><b>${timeString}</b></p>
+                            <p style="text-align: center;"><b style="font-family: 'Poppins', sans-serif;">${timeString}</b></p>
                         </div>
                     ` : `
                         <div class="col-md-3">
                             <div style="height: 160px; background: #ddd; display: flex; justify-content: center; align-items: center;">
                                 <span>No Activity</span>
                             </div>
-                            <p style="text-align: center;"><b>${timeString}</b></p>
+                            <p style="text-align: center;"><b style="font-family: 'Poppins', sans-serif;">${timeString}</b></p>
                         </div>
                     `);
                 }
@@ -798,20 +810,40 @@ function render_images(selected_start_date, selected_end_date, selected_project,
         });
     };
 
-    const initializeImageInteractions = () => {
+    function initializeImageInteractions() {
         $('.clickable-image').off('click').on('click', function() {
-            const modalContent = `
-                <div class="modal" style="display: block; background: rgba(0,0,0,0.8); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999;">
-                    <div style="position: relative; width: 90%; height: 90%; margin: 2% auto; background: white; padding: 20px;">
-                        <span class="close" style="position: absolute; right: 25px; top: 15px; font-size: 40px; cursor: pointer;">&times;</span>
-                        <img src="${$(this).attr('src')}" style="max-width: 100%; max-height: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            const imgSrc = $(this).attr('src');
+            const activeApp = $(this).data('active_app');
+            const timestamp = $(this).attr('title'); // Get the title attribute
+            showImageDialog(imgSrc, activeApp, timestamp); // Pass timestamp to dialog
+        });
+    }
+    
+    function showImageDialog(imgSrc, activeApp, timestamp) {
+        const modalHTML = `
+            <div id="imageModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9);">
+                <div class="modal-content" style="margin: 2% auto; padding: 20px; width: 90%; max-width: 1200px; height: 90%; background-color: #fff; position: relative; display: flex; flex-direction: column;">
+                    <span class="close" style="color: #aaa; position: absolute; top: 10px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer;">&times;</span>
+                    <div style="margin-bottom: 10px;">
+                        <h5 style="margin: 0;">${activeApp || 'Unknown App'}</h5>
+                        <small>${timestamp || ''}</small>
+                    </div>
+                    <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+                        <img id="zoomedImg" src="${imgSrc}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                     </div>
                 </div>
-            `;
-            $('body').append(modalContent);
-            $('.close').on('click', () => $('.modal').remove());
+            </div>
+        `;
+    
+        $('body').append(modalHTML);
+        const modal = $('#imageModal');
+        modal.show();
+    
+        modal.find('.close').on('click', () => modal.remove());
+        $(window).on('click', (e) => {
+            if (e.target === modal[0]) modal.remove();
         });
-    };
+    }
 
     // Initial load setup
     frappe.xcall("finbyzweb.www.project_analysis.last_screenshot_time", {
