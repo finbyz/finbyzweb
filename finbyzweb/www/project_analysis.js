@@ -166,60 +166,78 @@ async function populateProjectOptions() {
 }
 
 function updateDates(fromDate, toDate) {
-    showLoadingIndicator();
-    state.selected_start_date = formatDateToYYYYMMDD(fromDate);
-    state.selected_end_date = formatDateToYYYYMMDD(toDate);
-    updateUrlParams(
-        state.selected_start_date, 
-        state.selected_end_date, 
-        state.selected_project,
-        state.selected_employee
-    );
-    hideLoadingIndicator();
+    try {
+        showLoadingIndicator();
+        state.selected_start_date = formatDateToYYYYMMDD(fromDate);
+        state.selected_end_date = formatDateToYYYYMMDD(toDate);
+        updateUrlParams(
+            state.selected_start_date, 
+            state.selected_end_date, 
+            state.selected_project,
+            state.selected_employee
+        );
+    } catch (error) {
+        console.error("Error updating dates:", error);
+    } finally {
+        // This will always run, whether there was an error or not
+        hideLoadingIndicator();
+    }
 }
-
 async function initial_requirements() {
     showLoadingIndicator();
-    const { from_date, to_date, project, employee } = getUrlParams();
-    
-    if (from_date && to_date) {
-        state.selected_start_date = from_date;
-        state.selected_end_date = to_date;
-    } else {
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(endDate.getDate() - 1);
+    try {
+        const { from_date, to_date, project, employee } = getUrlParams();
         
-        state.selected_end_date = formatDateToYYYYMMDD(endDate);
-        state.selected_start_date = formatDateToYYYYMMDD(startDate);
+        if (from_date && to_date) {
+            state.selected_start_date = from_date;
+            state.selected_end_date = to_date;
+        } else {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(endDate.getDate() - 1);
+            
+            state.selected_end_date = formatDateToYYYYMMDD(endDate);
+            state.selected_start_date = formatDateToYYYYMMDD(startDate);
+        }
+
+        if (project) {
+            state.selected_project = project;
+        }
+        if (employee) {
+            state.selected_employee = employee;
+        }
+
+        await populateProjectOptions();
+
+        document.getElementById('fromDate').value = state.selected_start_date;
+        document.getElementById('toDate').value = state.selected_end_date;
+
+        updateUrlParams(
+            state.selected_start_date, 
+            state.selected_end_date, 
+            state.selected_project,
+            state.selected_employee
+        );
+        
+        await updateDataBasedOnSelection(
+            state.selected_start_date, 
+            state.selected_end_date, 
+            state.selected_project, 
+            state.selected_employee
+        );
+    } catch (error) {
+        console.error("Error in initial requirements:", error);
+        
+        // Show error message to user
+        frappe.msgprint({
+            title: 'Error',
+            indicator: 'red',
+            message: `Failed to initialize: ${error.message || 'Unknown error'}`
+        });
+    } finally {
+        // Always hide the loading indicator, even if there was an error
+        hideLoadingIndicator();
     }
-
-    if (project) {
-        state.selected_project = project;
-    }
-    if (employee) {
-        state.selected_employee = employee;
-    }
-
-    await populateProjectOptions();
-
-    document.getElementById('fromDate').value = state.selected_start_date;
-    document.getElementById('toDate').value = state.selected_end_date;
-
-    updateUrlParams(
-        state.selected_start_date, 
-        state.selected_end_date, 
-        state.selected_project,
-        state.selected_employee
-    );
-    
-    await updateDataBasedOnSelection(
-        state.selected_start_date, 
-        state.selected_end_date, 
-        state.selected_project, 
-        state.selected_employee
-    );
-    hideLoadingIndicator();
 }
 
 function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
@@ -251,30 +269,41 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
 document.addEventListener('DOMContentLoaded', function() {
     initial_requirements().catch(console.error);
 
-    document.getElementById('employeeSelect')?.addEventListener('change', function(event) {
+    document.getElementById('employeeSelect')?.addEventListener('change', async function(event) {
         showLoadingIndicator();
-        state.selected_employee = event.target.value;
-        updateUrlParams(
-            state.selected_start_date,
-            state.selected_end_date,
-            state.selected_project,
-            state.selected_employee
-        );
-        hideLoadingIndicator();
+        try {
+            state.selected_employee = event.target.value;
+            updateUrlParams(
+                state.selected_start_date,
+                state.selected_end_date,
+                state.selected_project,
+                state.selected_employee
+            );
+            
+        } catch (error) {
+            console.error("Error handling employee selection:", error);
+        } finally {
+            hideLoadingIndicator();
+        }
     });
 
     document.getElementById('projectSelect').addEventListener('click', function(event) {
-        showLoadingIndicator();
-        state.selected_project = event.target.value;
-        updateUrlParams(
-            state.selected_start_date,
-            state.selected_end_date,
-            state.selected_project,
-            state.selected_employee
-        );
-        hideLoadingIndicator();
+        try {
+            showLoadingIndicator();
+            state.selected_project = event.target.value;
+            updateUrlParams(
+                state.selected_start_date,
+                state.selected_end_date,
+                state.selected_project,
+                state.selected_employee
+            );
+        } catch (error) {
+            console.error("Error updating project selection:", error);
+            // Optionally add user-facing error handling here
+        } finally {
+            hideLoadingIndicator();
+        }
     });
-
     document.getElementById('fromDate').addEventListener('change', function() {
         updateDates(this.value, document.getElementById('toDate').value);
     });
@@ -311,59 +340,77 @@ function get_project_status_data(r, selected_start_date, selected_end_date, sele
 function task_list(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
     showLoadingIndicator();
     const container = $("#task-list");
-    container.empty();
+    
+    try {
+        container.empty();
 
-    frappe.call({
-        method: "finbyzweb.www.project_analysis.get_project_details",
-        args: { project_name: selected_project },
-        callback: function (response) {
-            if (response.message) {
-                let checkbox_value = response.message.show_task;
-                if (checkbox_value) {
-                    console.log("Checkbox is enabled (checked)");
+        frappe.call({
+            method: "finbyzweb.www.project_analysis.get_project_details",
+            args: { project_name: selected_project },
+            callback: function(response) {
+                try {
+                    if (response.message) {
+                        let checkbox_value = response.message.show_task;
+                        if (checkbox_value) {
+                            console.log("Checkbox is enabled (checked)");
 
-                    const statuses = ["Open", "In-Progress", "Pending Review", "Completed"];
+                            const statuses = ["Open", "In-Progress", "Pending Review", "Completed"];
 
-                    statuses.forEach(status => {
-                        const mainCard = $(`
-                            <div class="task-card">
-                                <div class="task-header" data-status="${status}">
-                                    <h5 style="font-family: 'Poppins', sans-serif;">${status}</h5>
-                                </div>
-                                <div class="task-body"></div>
-                            </div>
-                        `);
-
-                        const nestedContainer = mainCard.find(".task-body");
-                        (data[status] || []).forEach(task => {
-                            const nestedCard = $(`
-                                <div class="task-item">
-                                    <div class="task-title">${task.subject}</div>
-                                    <div class="task-details">
-                                        <p><strong>Owner:</strong> ${task.full_name || ' '}</p>
-                                        ${status !== 'Completed' && task.exp_start_date ? `<p><strong>Start:</strong> ${task.exp_start_date}</p>` : ''}
-                                        ${status !== 'Completed' && task.exp_end_date ? `<p><strong>End:</strong> ${task.exp_end_date}</p>` : ''}
-                                        ${status === 'Completed' && task.completed_on ? `<p><strong>Completed On:</strong> ${task.completed_on}</p>` : ''}
+                            statuses.forEach(status => {
+                                const mainCard = $(`
+                                    <div class="task-card">
+                                        <div class="task-header" data-status="${status}">
+                                            <h5 style="font-family: 'Poppins', sans-serif;">${status}</h5>
+                                        </div>
+                                        <div class="task-body"></div>
                                     </div>
-                                </div>
-                            `);
+                                `);
 
-                            nestedCard.on('click', function () {
-                                $(this).find(".task-details").slideToggle(200);
+                                const nestedContainer = mainCard.find(".task-body");
+                                (data[status] || []).forEach(task => {
+                                    const nestedCard = $(`
+                                        <div class="task-item">
+                                            <div class="task-title">${task.subject}</div>
+                                            <div class="task-details">
+                                                <p><strong>Owner:</strong> ${task.full_name || ' '}</p>
+                                                ${status !== 'Completed' && task.exp_start_date ? `<p><strong>Start:</strong> ${task.exp_start_date}</p>` : ''}
+                                                ${status !== 'Completed' && task.exp_end_date ? `<p><strong>End:</strong> ${task.exp_end_date}</p>` : ''}
+                                                ${status === 'Completed' && task.completed_on ? `<p><strong>Completed On:</strong> ${task.completed_on}</p>` : ''}
+                                            </div>
+                                        </div>
+                                    `);
+
+                                    nestedCard.on('click', function() {
+                                        $(this).find(".task-details").slideToggle(200);
+                                    });
+
+                                    nestedContainer.append(nestedCard);
+                                });
+
+                                container.append(mainCard);
                             });
-
-                            nestedContainer.append(nestedCard);
-                        });
-
-                        container.append(mainCard);
-                    });
-                } else {
-                    console.log("Checkbox is disabled (unchecked)");
+                        } else {
+                            console.log("Checkbox is disabled (unchecked)");
+                        }
+                    }
+                } catch (innerError) {
+                    console.error("Error processing task data:", innerError);
+                    container.html("<div class='error-message'>Error loading task data</div>");
+                } finally {
+                    hideLoadingIndicator();
                 }
+            },
+            error: function(xhr, status, error) {
+                console.error("API call failed:", error);
+                container.html("<div class='error-message'>Failed to fetch project details</div>");
+                hideLoadingIndicator();
             }
-            hideLoadingIndicator();
-        }
-    });
+        });
+    } catch (outerError) {
+        console.error("Error in task_list function:", outerError);
+        container.html("<div class='error-message'>An unexpected error occurred</div>");
+        hideLoadingIndicator();
+    }
 }
 
 function url_data(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
