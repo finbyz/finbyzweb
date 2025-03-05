@@ -5,8 +5,17 @@ from frappe.utils import getdate, get_first_day, get_last_day, add_days
 
 
 def execute(filters=None):
+    whole_excution_start = frappe.utils.now_datetime()
     columns = get_columns(filters)
     data = get_data(filters)
+    whole_excution_end = frappe.utils.now_datetime()
+    duration = (whole_excution_end - whole_excution_start).total_seconds()
+    
+
+    frappe.log_error(
+        title='whole_excution', 
+        message=f"time in whole_excution {whole_excution_start} {whole_excution_end} {duration}"
+    )
     return columns, data
 
 def get_columns(filters):
@@ -89,6 +98,7 @@ def get_data(filters):
 
     # Helper function to merge overlapping intervals
     def merge_intervals(intervals):
+        start_time = frappe.utils.now_datetime()
         if not intervals:
             return []
             
@@ -113,15 +123,15 @@ def get_data(filters):
                 current = interval.copy()
                 
         merged.append(current)
-        return merged
+        end_time = frappe.utils.now_datetime()
+        duration = (end_time - start_time).total_seconds()
+        
 
-    # Helper function to get the date from datetime
-    def get_date_from_datetime(dt_str):
-        if isinstance(dt_str, str):
-            dt = frappe.utils.get_datetime(dt_str)
-        else:
-            dt = dt_str
-        return dt.date()
+        frappe.log_error(
+            title='Merge Intervals Error', 
+            message=f"time in merge_intervals {start_time} {end_time} {duration}"
+        )
+        return merged
 
     # Build internal project condition
     internal_project_condition = ""
@@ -167,7 +177,7 @@ def get_data(filters):
             JOIN `tabCustomer` c ON c.name = p_inner.customer
             WHERE p_inner.name = m.project {internal_project_condition}
         )"""
-
+    start_time = frappe.utils.now_datetime()
     # Application intervals query
     application_intervals = frappe.db.sql(f"""
         SELECT 
@@ -185,7 +195,16 @@ def get_data(filters):
         AND a.date <= '{to_date}'
         {app_condition}
     """, as_dict=True)
+    end_time = frappe.utils.now_datetime()
+    duration = (end_time - start_time).total_seconds()
+    
 
+    frappe.log_error(
+        title='application_intervals ', 
+        message=f"time in application_intervals {start_time} {end_time} {duration}"
+    )
+    
+    start_time = frappe.utils.now_datetime()
     # Meeting intervals query
     meeting_intervals = frappe.db.sql(f"""
         SELECT 
@@ -204,7 +223,14 @@ def get_data(filters):
         AND m.docstatus = 1
         {meeting_condition}
     """, as_dict=True)
+    end_time = frappe.utils.now_datetime()
+    duration = (end_time - start_time).total_seconds()
+    
 
+    frappe.log_error(
+        title='meeting_intervals', 
+        message=f"time in meeting_intervals {start_time} {end_time} {duration}"
+    )
     # Get customer from project for call filtering
     customer = None
     if project:
@@ -223,7 +249,7 @@ def get_data(filters):
             SELECT 1 FROM `tabCustomer` c
             WHERE c.name = link_name {internal_project_condition}
         )"""
-        
+    start_time = frappe.utils.now_datetime()
     # Calls intervals query - always fetch call data
     calls_intervals = frappe.db.sql(f"""
         SELECT 
@@ -241,7 +267,15 @@ def get_data(filters):
         AND link_to = 'Customer'
         {call_condition_final}
     """, as_dict=True)
+    end_time = frappe.utils.now_datetime()
+    duration = (end_time - start_time).total_seconds()
     
+
+    frappe.log_error(
+        title='calls_intervals', 
+        message=f"time in calls_intervals {start_time} {end_time} {duration}"
+    )
+    start_time = frappe.utils.now_datetime()
     # Map project to calls based on customer
     for call in calls_intervals:
         if not call.get('project') and call.get('link_name'):
@@ -254,11 +288,19 @@ def get_data(filters):
             if projects:
                 # Just use the first project for this customer
                 call['project'] = projects[0]['name']
+    end_time = frappe.utils.now_datetime()
+    duration = (end_time - start_time).total_seconds()
+    
 
+    frappe.log_error(
+        title='Calls intervals loop', 
+        message=f"time in call loop {start_time} {end_time} {duration}"
+    )
     # Process data based on whether to show employee details, by day, or just by project
     if filters.get("show_daily_data"):
         if filters.get("show_employee"):
             # Group by date, employee, and project
+            start_time = frappe.utils.now_datetime()
             result_data = process_by_date_employee_project(
                 application_intervals, 
                 meeting_intervals, 
@@ -268,8 +310,17 @@ def get_data(filters):
                 from_date,
                 to_date
             )
+            end_time = frappe.utils.now_datetime()
+            duration = (end_time - start_time).total_seconds()
+            
+
+            frappe.log_error(
+                title='process_by_date_employee_project', 
+                message=f"time in process_by_date_employee_project {start_time} {end_time} {duration}"
+            )
         else:
             # Group by date and project only
+            start_time = frappe.utils.now_datetime()
             result_data = process_by_date_project(
                 application_intervals, 
                 meeting_intervals, 
@@ -279,9 +330,18 @@ def get_data(filters):
                 from_date,
                 to_date
             )
+            end_time = frappe.utils.now_datetime()
+            duration = (end_time - start_time).total_seconds()
+            
+
+            frappe.log_error(
+                title='process_by_date_project', 
+                message=f"time in process_by_date_project {start_time} {end_time} {duration}"
+            )
     else:
         if filters.get("show_employee"):
             # Original employee-project grouping
+            start_time = frappe.utils.now_datetime()
             result_data = process_by_employee_and_project(
                 application_intervals, 
                 meeting_intervals, 
@@ -289,14 +349,31 @@ def get_data(filters):
                 get_duration, 
                 merge_intervals
             )
+            end_time = frappe.utils.now_datetime()
+            duration = (end_time - start_time).total_seconds()
+            
+
+            frappe.log_error(
+                title='process_by_employee_and_project', 
+                message=f"time in process_by_employee_and_project {start_time} {end_time} {duration}"
+            )
         else:
             # Project-only grouping
+            start_time = frappe.utils.now_datetime()
             result_data = process_by_project_only(
                 application_intervals, 
                 meeting_intervals, 
                 calls_intervals, 
                 get_duration, 
                 merge_intervals
+            )
+            end_time = frappe.utils.now_datetime()
+            duration = (end_time - start_time).total_seconds()
+            
+
+            frappe.log_error(
+                title='process_by_project_only', 
+                message=f"time in process_by_project_only {start_time} {end_time} {duration}"
             )
     
     return result_data
