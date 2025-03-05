@@ -13,7 +13,7 @@ def execute(filters=None):
     
 
     frappe.log_error(
-        title='whole_excution', 
+        title=f'whole_excution {duration}', 
         message=f"time in whole_excution {whole_excution_start} {whole_excution_end} {duration}"
     )
     return columns, data
@@ -128,7 +128,7 @@ def get_data(filters):
         
 
         frappe.log_error(
-            title='Merge Intervals Error', 
+            title=f'Merge Intervals Error {duration}', 
             message=f"time in merge_intervals {start_time} {end_time} {duration}"
         )
         return merged
@@ -200,7 +200,7 @@ def get_data(filters):
     
 
     frappe.log_error(
-        title='application_intervals ', 
+        title=f'application_intervals {duration}', 
         message=f"time in application_intervals {start_time} {end_time} {duration}"
     )
     
@@ -228,7 +228,7 @@ def get_data(filters):
     
 
     frappe.log_error(
-        title='meeting_intervals', 
+        title=f'meeting_intervals {duration}', 
         message=f"time in meeting_intervals {start_time} {end_time} {duration}"
     )
     # Get customer from project for call filtering
@@ -272,7 +272,7 @@ def get_data(filters):
     
 
     frappe.log_error(
-        title='calls_intervals', 
+        title=f'calls_intervals {duration}', 
         message=f"time in calls_intervals {start_time} {end_time} {duration}"
     )
     start_time = frappe.utils.now_datetime()
@@ -293,7 +293,7 @@ def get_data(filters):
     
 
     frappe.log_error(
-        title='Calls intervals loop', 
+        title=f'Calls intervals loop {duration}', 
         message=f"time in call loop {start_time} {end_time} {duration}"
     )
     # Process data based on whether to show employee details, by day, or just by project
@@ -315,7 +315,7 @@ def get_data(filters):
             
 
             frappe.log_error(
-                title='process_by_date_employee_project', 
+                title=f'process_by_date_employee_project {duration}', 
                 message=f"time in process_by_date_employee_project {start_time} {end_time} {duration}"
             )
         else:
@@ -335,7 +335,7 @@ def get_data(filters):
             
 
             frappe.log_error(
-                title='process_by_date_project', 
+                title=f'process_by_date_project {duration}', 
                 message=f"time in process_by_date_project {start_time} {end_time} {duration}"
             )
     else:
@@ -354,7 +354,7 @@ def get_data(filters):
             
 
             frappe.log_error(
-                title='process_by_employee_and_project', 
+                title=f'process_by_employee_and_project {duration}', 
                 message=f"time in process_by_employee_and_project {start_time} {end_time} {duration}"
             )
         else:
@@ -372,7 +372,7 @@ def get_data(filters):
             
 
             frappe.log_error(
-                title='process_by_project_only', 
+                title=f'process_by_project_only {duration}', 
                 message=f"time in process_by_project_only {start_time} {end_time} {duration}"
             )
     
