@@ -2,21 +2,23 @@ import frappe
 from frappe import _
 from datetime import datetime, timedelta
 from frappe.utils import getdate, get_first_day, get_last_day, add_days
+from collections import defaultdict
 
 
 def execute(filters=None):
-    whole_excution_start = frappe.utils.now_datetime()
+    start_time = frappe.utils.now_datetime()
     columns = get_columns(filters)
     data = get_data(filters)
-    whole_excution_end = frappe.utils.now_datetime()
-    duration = (whole_excution_end - whole_excution_start).total_seconds()
+    end_time = frappe.utils.now_datetime()
+    duration = (end_time - start_time).total_seconds()
     
 
     frappe.log_error(
-        title=f'whole_excution {duration}', 
-        message=f"time in whole_excution {whole_excution_start} {whole_excution_end} {duration}"
+        title=f'full execution {duration}', 
+        message=f"time in full execution {start_time} {end_time} {duration}"
     )
     return columns, data
+
 
 def get_columns(filters):
     columns = []
@@ -88,100 +90,56 @@ def get_data(filters):
     project = filters.get("project")
     employee = filters.get("employee")
     
-    # Helper function to calculate duration in seconds
-    def get_duration(start_time, end_time):
-        if isinstance(start_time, str):
-            start_time = frappe.utils.get_datetime(start_time)
-        if isinstance(end_time, str):
-            end_time = frappe.utils.get_datetime(end_time)
-        return (end_time - start_time).total_seconds()
-
-    # Helper function to merge overlapping intervals
-    def merge_intervals(intervals):
-        start_time = frappe.utils.now_datetime()
-        if not intervals:
-            return []
-            
-        # Sort intervals by start time
-        sorted_intervals = sorted(intervals, key=lambda x: frappe.utils.get_datetime(x['start_time']))
-        merged = []
-        current = sorted_intervals[0].copy()
-        
-        for interval in sorted_intervals[1:]:
-            current_end = frappe.utils.get_datetime(current['end_time'])
-            next_start = frappe.utils.get_datetime(interval['start_time'])
-            
-            if next_start <= current_end:  # Overlapping intervals
-                # Take the later end time
-                current['end_time'] = max(
-                    current['end_time'],
-                    interval['end_time'],
-                    key=lambda x: frappe.utils.get_datetime(x)
-                )
-            else:
-                merged.append(current)
-                current = interval.copy()
-                
-        merged.append(current)
-        end_time = frappe.utils.now_datetime()
-        duration = (end_time - start_time).total_seconds()
-        
-
-        frappe.log_error(
-            title=f'Merge Intervals Error {duration}', 
-            message=f"time in merge_intervals {start_time} {end_time} {duration}"
-        )
-        return merged
-
-    # Build internal project condition
-    internal_project_condition = ""
-    if filters.get("is_internal_project"):
-        internal_project_condition = f" AND c.is_internal_customer= 1"
-    else:
-        internal_project_condition = f" AND c.is_internal_customer= 0"
-
-    # Build conditions
-    app_condition = ""
-    meeting_condition = ""
-    call_condition = ""
+    # Prepare internal project condition
+    is_internal = 1 if filters.get("is_internal_project") else 0
     
+    # Optimization: Fetch all projects and their customers in one query to avoid multiple lookups
+    project_customer_map = {}
+    customer_projects_map = {}
+    
+    projects_data = frappe.db.sql("""
+        SELECT p.name as project, p.customer, c.is_internal_customer
+        FROM `tabProject` p
+        JOIN `tabCustomer` c ON c.name = p.customer
+        WHERE c.is_internal_customer = %s
+    """, (is_internal,), as_dict=True)
+    
+    for p in projects_data:
+        project_customer_map[p.project] = p.customer
+        if p.customer not in customer_projects_map:
+            customer_projects_map[p.customer] = []
+        customer_projects_map[p.customer].append(p.project)
+    
+    # Build the project filter based on the above data if a project is specified
+    project_filter = ""
     if project:
-        app_condition += f" AND a.project = '{project}'"
-        meeting_condition += f" AND m.project = '{project}'"
+        project_filter = f"AND name = '{project}'"
     
-    if employee:
-        app_condition += f" AND a.employee = '{employee}'"
-        meeting_condition += f" AND mcr.employee = '{employee}'"
-        call_condition += f" AND employee = '{employee}'"
-        
-    if filters.get("resource_based_project"):
-        app_condition += " AND p.resource_based_project = 1"
-    else:
-        app_condition += " AND p.resource_based_project = 0"
-        
-    if filters.get("hourly_based_project"):
-        app_condition += " AND p.based_on_hourly_package = 1"
-    else:
-        app_condition += " AND p.based_on_hourly_package = 0"
-
-    # Add internal project condition to app and meeting queries
-    if internal_project_condition:
-        app_condition += f""" AND EXISTS (
-            SELECT 1 FROM `tabProject` p_inner
-            JOIN `tabCustomer` c ON c.name = p_inner.customer
-            WHERE p_inner.name = a.project {internal_project_condition}
-        )"""
-        
-        meeting_condition += f""" AND EXISTS (
-            SELECT 1 FROM `tabProject` p_inner
-            JOIN `tabCustomer` c ON c.name = p_inner.customer
-            WHERE p_inner.name = m.project {internal_project_condition}
-        )"""
-    start_time = frappe.utils.now_datetime()
+    # Filter to only get relevant projects
+    valid_projects = frappe.db.sql(f"""
+        SELECT name 
+        FROM `tabProject` 
+        WHERE customer IN (
+            SELECT name FROM `tabCustomer` WHERE is_internal_customer = {is_internal}
+        ) {project_filter}
+    """, as_dict=True)
+    
+    valid_project_names = [p.name for p in valid_projects]
+    
+    # If no valid projects, return empty result
+    if not valid_project_names:
+        return []
+    
+    # Format the list for IN clause
+    project_list = "', '".join(valid_project_names)
+    project_list = f"('{project_list}')" if project_list else "(NULL)"
+    
     # Application intervals query
+    employee_filter = f"AND a.employee = '{employee}'" if employee else ""
+    start_time = frappe.utils.now_datetime()
     application_intervals = frappe.db.sql(f"""
         SELECT 
-            e.employee_name AS employee_name, 
+            a.employee_name, 
             a.employee AS employee_id,
             a.project,
             a.from_time as start_time,
@@ -189,27 +147,22 @@ def get_data(filters):
             DATE(a.from_time) as date,
             'application' as activity_type
         FROM `tabApplication Usage log` as a
-        JOIN `tabEmployee` as e ON e.name = a.employee
-        JOIN `tabProject` as p ON p.name = a.project
-        WHERE a.date >= '{from_date}' 
-        AND a.date <= '{to_date}'
-        {app_condition}
+        WHERE a.date BETWEEN '{from_date}' AND '{to_date}'
+        AND a.project IN {project_list}
+        {employee_filter}
     """, as_dict=True)
     end_time = frappe.utils.now_datetime()
     duration = (end_time - start_time).total_seconds()
-    
-
     frappe.log_error(
         title=f'application_intervals {duration}', 
         message=f"time in application_intervals {start_time} {end_time} {duration}"
     )
-    
-    start_time = frappe.utils.now_datetime()
     # Meeting intervals query
+    employee_filter = f"AND mcr.employee = '{employee}'" if employee else ""
     meeting_intervals = frappe.db.sql(f"""
         SELECT 
             mcr.employee AS employee_id,
-            e.employee_name AS employee_name,
+            e.employee_name,
             m.project,
             m.meeting_from as start_time,
             m.meeting_to as end_time,
@@ -221,439 +174,235 @@ def get_data(filters):
         WHERE m.meeting_from >= '{from_date} 00:00:00' 
         AND m.meeting_to <= '{to_date} 23:59:59' 
         AND m.docstatus = 1
-        {meeting_condition}
+        AND m.project IN {project_list}
+        {employee_filter}
     """, as_dict=True)
-    end_time = frappe.utils.now_datetime()
-    duration = (end_time - start_time).total_seconds()
     
-
-    frappe.log_error(
-        title=f'meeting_intervals {duration}', 
-        message=f"time in meeting_intervals {start_time} {end_time} {duration}"
-    )
-    # Get customer from project for call filtering
-    customer = None
-    if project:
-        customer_result = frappe.db.sql(f"""SELECT customer FROM `tabProject` WHERE name = '{project}'""", as_dict=True)
-        if customer_result and customer_result[0]['customer']:
-            customer = customer_result[0]['customer']
+    # Get all valid customers for the call query
+    valid_customers = list(customer_projects_map.keys()) if customer_projects_map else []
     
-    # Add customer filter to call condition if available
-    call_condition_final = call_condition
-    if customer:
-        call_condition_final += f" AND link_name = '{customer}'"
+    # If specific project is requested, narrow down to just that customer
+    if project and project in project_customer_map:
+        valid_customers = [project_customer_map[project]]
     
-    # Add internal customer condition to calls
-    if internal_project_condition:
-        call_condition_final += f""" AND EXISTS (
-            SELECT 1 FROM `tabCustomer` c
-            WHERE c.name = link_name {internal_project_condition}
-        )"""
-    start_time = frappe.utils.now_datetime()
-    # Calls intervals query - always fetch call data
+    # Format customer list for IN clause
+    if valid_customers:
+        customer_list = "', '".join(valid_customers)
+        customer_list = f"('{customer_list}')"
+    else:
+        customer_list = "(NULL)"  # No valid customers
+    
+    # Calls intervals query
+    employee_filter = f"AND employee = '{employee}'" if employee else ""
     calls_intervals = frappe.db.sql(f"""
         SELECT 
             employee AS employee_id,
             employee_name,
-            Null as project,
+            NULL as project,
             call_datetime as start_time,
             ADDTIME(call_datetime, SEC_TO_TIME(duration)) as end_time,
             date,
-            'call' as activity_type
+            'call' as activity_type,
+            link_name as customer
         FROM `tabEmployee Fincall` 
-        WHERE date >= '{from_date}'
-        AND date <= '{to_date}'
-        AND (calltype != 'Missed' AND calltype != 'Rejected')
+        WHERE date BETWEEN '{from_date}' AND '{to_date}'
+        AND calltype NOT IN ('Missed', 'Rejected')
         AND link_to = 'Customer'
-        {call_condition_final}
+        AND link_name IN {customer_list}
+        {employee_filter}
     """, as_dict=True)
-    end_time = frappe.utils.now_datetime()
-    duration = (end_time - start_time).total_seconds()
     
-
-    frappe.log_error(
-        title=f'calls_intervals {duration}', 
-        message=f"time in calls_intervals {start_time} {end_time} {duration}"
-    )
-    start_time = frappe.utils.now_datetime()
-    # Map project to calls based on customer
+    # Optimization: Map projects to calls once, using the pre-loaded customer-projects mapping
     for call in calls_intervals:
-        if not call.get('project') and call.get('link_name'):
-            # Get projects for this customer
-            projects = frappe.db.sql("""
-                SELECT name FROM `tabProject` 
-                WHERE customer = %s
-            """, call.get('link_name'), as_dict=True)
-            
-            if projects:
-                # Just use the first project for this customer
-                call['project'] = projects[0]['name']
+        customer = call.get('customer')
+        if customer and customer in customer_projects_map:
+            # For simplicity, assign the first project of this customer
+            if customer_projects_map[customer]:
+                call['project'] = customer_projects_map[customer][0]
+    
+    # Remove calls without project assignment
+    calls_intervals = [call for call in calls_intervals if call.get('project')]
+    
+    # Convert all datetime strings to actual datetime objects once to avoid repeated conversions
+    for intervals in [application_intervals, meeting_intervals, calls_intervals]:
+        for interval in intervals:
+            if 'start_time' in interval and isinstance(interval['start_time'], str):
+                interval['start_time'] = frappe.utils.get_datetime(interval['start_time'])
+            if 'end_time' in interval and isinstance(interval['end_time'], str):
+                interval['end_time'] = frappe.utils.get_datetime(interval['end_time'])
+    
+    # Determine grouping keys based on filter settings
+    group_keys = []
+    if filters.get("show_daily_data"):
+        group_keys.append("date")
+    if filters.get("show_employee"):
+        group_keys.append("employee_id")
+    group_keys.append("project")  # Always group by project
+    
+    # Process data using optimized aggregation
+    result_data = calculate_time_aggregates(
+        application_intervals, 
+        meeting_intervals, 
+        calls_intervals,
+        group_keys
+    )
+    
+    # Sort results appropriately based on filters
+    if filters.get("show_daily_data"):
+        result_data.sort(key=lambda x: (x['date'], -x['total_hours']))
+    else:
+        result_data.sort(key=lambda x: -x['total_hours'])
+    
+    return result_data
+
+
+def calculate_time_aggregates(application_intervals, meeting_intervals, calls_intervals, group_keys):
+    
+    """
+    Optimized function that calculates time aggregates without repeated calls to merge_intervals.
+    Processes all intervals at once per group and calculates non-overlapping time.
+    """
+    start_time = frappe.utils.now_datetime()
+    # Group intervals by keys
+    grouped_data = defaultdict(lambda: {
+        'intervals': {
+            'application': [],
+            'meeting': [],
+            'call': []
+        },
+        'details': {}
+    })
+    
+    # Helper function to get group key from an interval
+    def get_group_key(interval, keys):
+        return tuple(str(interval.get(key)) for key in keys)
+    
+    # Group all intervals
+    for interval in application_intervals:
+        key = get_group_key(interval, group_keys)
+        grouped_data[key]['intervals']['application'].append((interval['start_time'], interval['end_time']))
+        # Store group identification info
+        for gk in group_keys:
+            grouped_data[key]['details'][gk] = interval.get(gk)
+        if 'employee_name' in interval:
+            grouped_data[key]['details']['employee_name'] = interval['employee_name']
+    
+    for interval in meeting_intervals:
+        key = get_group_key(interval, group_keys)
+        grouped_data[key]['intervals']['meeting'].append((interval['start_time'], interval['end_time']))
+        # Store group identification info
+        for gk in group_keys:
+            grouped_data[key]['details'][gk] = interval.get(gk)
+        if 'employee_name' in interval:
+            grouped_data[key]['details']['employee_name'] = interval['employee_name']
+    
+    for interval in calls_intervals:
+        key = get_group_key(interval, group_keys)
+        if interval.get('project'):  # Skip calls without project
+            grouped_data[key]['intervals']['call'].append((interval['start_time'], interval['end_time']))
+            # Store group identification info
+            for gk in group_keys:
+                grouped_data[key]['details'][gk] = interval.get(gk)
+            if 'employee_name' in interval:
+                grouped_data[key]['details']['employee_name'] = interval['employee_name']
+    
+    # Calculate non-overlapping time for each group
+    result_data = []
+    
+    for key, data in grouped_data.items():
+        # Skip if no intervals
+        if not any(data['intervals'].values()):
+            continue
+        
+        # Calculate non-overlapping hours for each activity type and total
+        app_hours = calculate_non_overlapping_hours(data['intervals']['application'])
+        meeting_hours = calculate_non_overlapping_hours(data['intervals']['meeting'])
+        call_hours = calculate_non_overlapping_hours(data['intervals']['call'])
+        
+        # Calculate total non-overlapping hours from all activity types combined
+        all_intervals = []
+        all_intervals.extend(data['intervals']['application'])
+        all_intervals.extend(data['intervals']['meeting'])
+        all_intervals.extend(data['intervals']['call'])
+        total_hours = calculate_non_overlapping_hours(all_intervals)
+        
+        # Round to 2 decimal places
+        total_hours = round(total_hours, 2)
+        app_hours = round(app_hours, 2)
+        meeting_hours = round(meeting_hours, 2)
+        call_hours = round(call_hours, 2)
+        
+        # Ensure activity hours don't exceed total hours
+        sum_activity_hours = app_hours + meeting_hours + call_hours
+        if sum_activity_hours > total_hours and sum_activity_hours > 0:
+            # Apply proportional adjustment
+            factor = total_hours / sum_activity_hours
+            app_hours = round(app_hours * factor, 2)
+            meeting_hours = round(meeting_hours * factor, 2)
+            call_hours = round(call_hours * factor, 2)
+        
+        # Create result row with details and hours
+        result_row = {
+            'total_hours': total_hours,
+            'application_hours': app_hours,
+            'meeting_hours': meeting_hours,
+            'call_hours': call_hours
+        }
+        
+        # Add group keys from details
+        for gk in group_keys:
+            if gk in data['details']:
+                result_row[gk] = data['details'][gk]
+        
+        # Add employee name if present
+        if 'employee_name' in data['details']:
+            result_row['employee_name'] = data['details']['employee_name']
+        
+        result_data.append(result_row)
     end_time = frappe.utils.now_datetime()
     duration = (end_time - start_time).total_seconds()
     
 
     frappe.log_error(
-        title=f'Calls intervals loop {duration}', 
-        message=f"time in call loop {start_time} {end_time} {duration}"
+        title=f'calculate_time_aggregates {duration}', 
+        message=f"time in calculate_time_aggregates {start_time} {end_time} {duration}"
     )
-    # Process data based on whether to show employee details, by day, or just by project
-    if filters.get("show_daily_data"):
-        if filters.get("show_employee"):
-            # Group by date, employee, and project
-            start_time = frappe.utils.now_datetime()
-            result_data = process_by_date_employee_project(
-                application_intervals, 
-                meeting_intervals, 
-                calls_intervals, 
-                get_duration, 
-                merge_intervals,
-                from_date,
-                to_date
-            )
-            end_time = frappe.utils.now_datetime()
-            duration = (end_time - start_time).total_seconds()
-            
+    return result_data
 
-            frappe.log_error(
-                title=f'process_by_date_employee_project {duration}', 
-                message=f"time in process_by_date_employee_project {start_time} {end_time} {duration}"
-            )
+
+def calculate_non_overlapping_hours(intervals):
+    """
+    Calculate total non-overlapping hours from a list of (start, end) tuples.
+    This is a highly optimized version that completely replaces the merge_intervals function.
+    """
+    start_time = frappe.utils.now_datetime()
+    if not intervals:
+        return 0
+    
+    # Sort intervals by start time
+    intervals.sort()
+    
+    total_seconds = 0
+    current_start, current_end = intervals[0]
+    
+    for start, end in intervals[1:]:
+        if start <= current_end:
+            # Overlapping interval, extend current_end if needed
+            current_end = max(current_end, end)
         else:
-            # Group by date and project only
-            start_time = frappe.utils.now_datetime()
-            result_data = process_by_date_project(
-                application_intervals, 
-                meeting_intervals, 
-                calls_intervals, 
-                get_duration, 
-                merge_intervals,
-                from_date,
-                to_date
-            )
-            end_time = frappe.utils.now_datetime()
-            duration = (end_time - start_time).total_seconds()
-            
-
-            frappe.log_error(
-                title=f'process_by_date_project {duration}', 
-                message=f"time in process_by_date_project {start_time} {end_time} {duration}"
-            )
-    else:
-        if filters.get("show_employee"):
-            # Original employee-project grouping
-            start_time = frappe.utils.now_datetime()
-            result_data = process_by_employee_and_project(
-                application_intervals, 
-                meeting_intervals, 
-                calls_intervals, 
-                get_duration, 
-                merge_intervals
-            )
-            end_time = frappe.utils.now_datetime()
-            duration = (end_time - start_time).total_seconds()
-            
-
-            frappe.log_error(
-                title=f'process_by_employee_and_project {duration}', 
-                message=f"time in process_by_employee_and_project {start_time} {end_time} {duration}"
-            )
-        else:
-            # Project-only grouping
-            start_time = frappe.utils.now_datetime()
-            result_data = process_by_project_only(
-                application_intervals, 
-                meeting_intervals, 
-                calls_intervals, 
-                get_duration, 
-                merge_intervals
-            )
-            end_time = frappe.utils.now_datetime()
-            duration = (end_time - start_time).total_seconds()
-            
-
-            frappe.log_error(
-                title=f'process_by_project_only {duration}', 
-                message=f"time in process_by_project_only {start_time} {end_time} {duration}"
-            )
+            # Non-overlapping interval, add current interval to total and start a new one
+            total_seconds += (current_end - current_start).total_seconds()
+            current_start, current_end = start, end
     
-    return result_data
-
-
-def process_by_employee_and_project(application_intervals, meeting_intervals, calls_intervals, 
-                                   get_duration, merge_intervals):
-    """Process data grouped by both employee and project"""
-    employee_project_data = {}
+    # Add the last interval
+    total_seconds += (current_end - current_start).total_seconds()
+    end_time = frappe.utils.now_datetime()
+    duration = (end_time - start_time).total_seconds()
     
-    # Process each record's data
-    for intervals, activity_type in [
-        (application_intervals, 'app_intervals'), 
-        (meeting_intervals, 'meeting_intervals'), 
-        (calls_intervals, 'call_intervals')
-    ]:
-        for interval in intervals:
-            emp_id = interval['employee_id']
-            project = interval.get('project')
-            
-            if not project:
-                continue
-                
-            key = (emp_id, project)
-            
-            if key not in employee_project_data:
-                employee_project_data[key] = {
-                    'employee_name': interval['employee_name'],
-                    'project': project,
-                    'all_intervals': [],
-                    'app_intervals': [],
-                    'meeting_intervals': [],
-                    'call_intervals': []
-                }
-            
-            # Store intervals by type
-            employee_project_data[key][activity_type].append(interval)
-            # Also store in the combined list
-            employee_project_data[key]['all_intervals'].append(interval)
 
-    # Process the intervals for each employee-project combination
-    result_data = []
-    for key, data in employee_project_data.items():
-        if not data['all_intervals']:
-            continue
-
-        # Merge overlapping intervals for total time calculation
-        merged_all_intervals = merge_intervals(data['all_intervals'])
-        total_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                            for interval in merged_all_intervals)
-        
-        # Merge overlapping intervals for each activity type separately
-        merged_app_intervals = merge_intervals(data['app_intervals'])
-        merged_meeting_intervals = merge_intervals(data['meeting_intervals'])
-        merged_call_intervals = merge_intervals(data['call_intervals'])
-        
-        # Calculate individual activity durations (after merging)
-        app_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                          for interval in merged_app_intervals)
-        meeting_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                              for interval in merged_meeting_intervals)
-        call_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                           for interval in merged_call_intervals)
-
-        # Convert seconds to hours
-        total_hours = round(total_duration / 3600, 2)
-        application_hours = round(app_duration / 3600, 2)
-        meeting_hours = round(meeting_duration / 3600, 2)
-        call_hours = round(call_duration / 3600, 2)
-        
-        # Ensure activity hours don't exceed total hours due to rounding
-        sum_activity_hours = application_hours + meeting_hours + call_hours
-        if sum_activity_hours > total_hours:
-            # Apply proportional adjustment
-            if sum_activity_hours > 0:
-                factor = total_hours / sum_activity_hours
-                application_hours = round(application_hours * factor, 2)
-                meeting_hours = round(meeting_hours * factor, 2)
-                call_hours = round(call_hours * factor, 2)
-
-        result_data.append({
-            'employee_name': data['employee_name'],
-            'employee_id': key[0],
-            'project': data['project'],
-            'total_hours': total_hours,
-            'application_hours': application_hours,
-            'meeting_hours': meeting_hours,
-            'call_hours': call_hours
-        })
-
-    # Sort by total hours in descending order
-    result_data = sorted(result_data, key=lambda x: x['total_hours'], reverse=True)
-    return result_data
-
-
-def process_by_project_only(application_intervals, meeting_intervals, calls_intervals, 
-                           get_duration, merge_intervals):
-    """Process data grouped by project only - calculates hours per employee first"""
-    # First, use the employee-and-project function to get per-employee data
-    employee_project_results = process_by_employee_and_project(
-        application_intervals, meeting_intervals, calls_intervals, 
-        get_duration, merge_intervals
+    frappe.log_error(
+        title=f'calculate_non_overlapping_hours {duration}', 
+        message=f"time in calculate_non_overlapping_hours {start_time} {end_time} {duration}"
     )
-    
-    # Then aggregate by project
-    project_totals = {}
-    for result in employee_project_results:
-        project = result['project']
-        
-        if project not in project_totals:
-            project_totals[project] = {
-                'project': project,
-                'total_hours': 0,
-                'application_hours': 0,
-                'meeting_hours': 0,
-                'call_hours': 0
-            }
-        
-        # Sum up the hours
-        project_totals[project]['total_hours'] += result['total_hours']
-        project_totals[project]['application_hours'] += result['application_hours']
-        project_totals[project]['meeting_hours'] += result['meeting_hours']
-        project_totals[project]['call_hours'] += result['call_hours']
-    
-    # Convert to list and round the values
-    result_data = []
-    for project, data in project_totals.items():
-        result_data.append({
-            'project': data['project'],
-            'total_hours': round(data['total_hours'], 2),
-            'application_hours': round(data['application_hours'], 2),
-            'meeting_hours': round(data['meeting_hours'], 2),
-            'call_hours': round(data['call_hours'], 2)
-        })
-    
-    # Sort by total hours in descending order
-    result_data = sorted(result_data, key=lambda x: x['total_hours'], reverse=True)
-    return result_data
-
-def process_by_date_employee_project(application_intervals, meeting_intervals, calls_intervals, 
-                                    get_duration, merge_intervals, from_date, to_date):
-    """Process data grouped by date, employee, and project"""
-    date_employee_project_data = {}
-    
-    # Process each record's data
-    for intervals, activity_type in [
-        (application_intervals, 'app_intervals'), 
-        (meeting_intervals, 'meeting_intervals'), 
-        (calls_intervals, 'call_intervals')
-    ]:
-        for interval in intervals:
-            emp_id = interval['employee_id']
-            project = interval.get('project')
-            date_str = interval.get('date')
-            
-            if not project or not date_str:
-                continue
-            
-            # Convert date to string format if it's a datetime object
-            if not isinstance(date_str, str):
-                date_str = date_str.strftime('%Y-%m-%d')
-                
-            key = (date_str, emp_id, project)
-            
-            if key not in date_employee_project_data:
-                date_employee_project_data[key] = {
-                    'date': date_str,
-                    'employee_name': interval['employee_name'],
-                    'employee_id': emp_id,
-                    'project': project,
-                    'all_intervals': [],
-                    'app_intervals': [],
-                    'meeting_intervals': [],
-                    'call_intervals': []
-                }
-            
-            # Store intervals by type
-            date_employee_project_data[key][activity_type].append(interval)
-            # Also store in the combined list
-            date_employee_project_data[key]['all_intervals'].append(interval)
-
-    # Process the intervals for each date-employee-project combination
-    result_data = []
-    for key, data in date_employee_project_data.items():
-        if not data['all_intervals']:
-            continue
-
-        # Merge overlapping intervals for total time calculation
-        merged_all_intervals = merge_intervals(data['all_intervals'])
-        total_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                            for interval in merged_all_intervals)
-        
-        # Merge overlapping intervals for each activity type separately
-        merged_app_intervals = merge_intervals(data['app_intervals'])
-        merged_meeting_intervals = merge_intervals(data['meeting_intervals'])
-        merged_call_intervals = merge_intervals(data['call_intervals'])
-        
-        # Calculate individual activity durations (after merging)
-        app_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                          for interval in merged_app_intervals)
-        meeting_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                              for interval in merged_meeting_intervals)
-        call_duration = sum(get_duration(interval['start_time'], interval['end_time']) 
-                           for interval in merged_call_intervals)
-
-        # Convert seconds to hours
-        total_hours = round(total_duration / 3600, 2)
-        application_hours = round(app_duration / 3600, 2)
-        meeting_hours = round(meeting_duration / 3600, 2)
-        call_hours = round(call_duration / 3600, 2)
-        
-        # Ensure activity hours don't exceed total hours due to rounding
-        sum_activity_hours = application_hours + meeting_hours + call_hours
-        if sum_activity_hours > total_hours:
-            # Apply proportional adjustment
-            if sum_activity_hours > 0:
-                factor = total_hours / sum_activity_hours
-                application_hours = round(application_hours * factor, 2)
-                meeting_hours = round(meeting_hours * factor, 2)
-                call_hours = round(call_hours * factor, 2)
-
-        result_data.append({
-            'date': data['date'],
-            'employee_name': data['employee_name'],
-            'employee_id': data['employee_id'],
-            'project': data['project'],
-            'total_hours': total_hours,
-            'application_hours': application_hours,
-            'meeting_hours': meeting_hours,
-            'call_hours': call_hours
-        })
-
-    # Sort first by date, then by total hours descending
-    result_data = sorted(result_data, key=lambda x: (x['date'], -x['total_hours']))
-    return result_data
-
-def process_by_date_project(application_intervals, meeting_intervals, calls_intervals, 
-                           get_duration, merge_intervals, from_date, to_date):
-    """Process data grouped by date and project - calculates by employee first"""
-    # First, use date-employee-project function to get per-employee data
-    date_employee_project_results = process_by_date_employee_project(
-        application_intervals, meeting_intervals, calls_intervals, 
-        get_duration, merge_intervals, from_date, to_date
-    )
-    
-    # Then aggregate by date and project
-    date_project_totals = {}
-    for result in date_employee_project_results:
-        date = result['date']
-        project = result['project']
-        key = (date, project)
-        
-        if key not in date_project_totals:
-            date_project_totals[key] = {
-                'date': date,
-                'project': project,
-                'total_hours': 0,
-                'application_hours': 0,
-                'meeting_hours': 0,
-                'call_hours': 0
-            }
-        
-        # Sum up the hours
-        date_project_totals[key]['total_hours'] += result['total_hours']
-        date_project_totals[key]['application_hours'] += result['application_hours']
-        date_project_totals[key]['meeting_hours'] += result['meeting_hours']
-        date_project_totals[key]['call_hours'] += result['call_hours']
-    
-    # Convert to list and round the values
-    result_data = []
-    for key, data in date_project_totals.items():
-        result_data.append({
-            'date': data['date'],
-            'project': data['project'],
-            'total_hours': round(data['total_hours'], 2),
-            'application_hours': round(data['application_hours'], 2),
-            'meeting_hours': round(data['meeting_hours'], 2),
-            'call_hours': round(data['call_hours'], 2)
-        })
-    
-    # Sort first by date, then by total hours descending
-    result_data = sorted(result_data, key=lambda x: (x['date'], -x['total_hours']))
-    return result_data
+    # Convert to hours
+    return total_seconds / 3600
