@@ -124,7 +124,6 @@ function formatDateToYYYYMMDD(date) {
 }
 
 async function populateProjectOptions() {
-    showLoadingIndicator();
     const projectSelect = document.getElementById('projectSelect');
     projectSelect.innerHTML = '';
     
@@ -156,18 +155,15 @@ async function populateProjectOptions() {
             }
         }, 100);
 
-        hideLoadingIndicator();
         return state.selected_project;
     } catch (error) {
         console.error("Error fetching projects:", error);
-        hideLoadingIndicator();
         return null;
     }
 }
 
 function updateDates(fromDate, toDate) {
     try {
-        showLoadingIndicator();
         state.selected_start_date = formatDateToYYYYMMDD(fromDate);
         state.selected_end_date = formatDateToYYYYMMDD(toDate);
         updateUrlParams(
@@ -180,11 +176,9 @@ function updateDates(fromDate, toDate) {
         console.error("Error updating dates:", error);
     } finally {
         // This will always run, whether there was an error or not
-        hideLoadingIndicator();
     }
 }
 async function initial_requirements() {
-    showLoadingIndicator();
     try {
         const { from_date, to_date, project, employee } = getUrlParams();
         
@@ -236,7 +230,6 @@ async function initial_requirements() {
         });
     } finally {
         // Always hide the loading indicator, even if there was an error
-        hideLoadingIndicator();
     }
 }
 
@@ -245,8 +238,6 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
         console.error('Invalid dates:', { selected_start_date, selected_end_date });
         return Promise.reject(new Error('Invalid dates'));
     }
-
-    showLoadingIndicator();
 
     return frappe.xcall("finbyzweb.www.project_analysis.get_data", {
         user: selected_employee,
@@ -262,7 +253,7 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
     }).catch(error => {
         console.error('Error updating data:', error);
     }).finally(() => {
-        hideLoadingIndicator();
+        console.log("")
     });
 }
 
@@ -270,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initial_requirements().catch(console.error);
 
     document.getElementById('employeeSelect')?.addEventListener('change', async function(event) {
-        showLoadingIndicator();
         try {
             state.selected_employee = event.target.value;
             updateUrlParams(
@@ -283,13 +273,12 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error("Error handling employee selection:", error);
         } finally {
-            hideLoadingIndicator();
+            console.log("")
         }
     });
 
     document.getElementById('projectSelect').addEventListener('click', function(event) {
         try {
-            showLoadingIndicator();
             state.selected_project = event.target.value;
             updateUrlParams(
                 state.selected_start_date,
@@ -301,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Error updating project selection:", error);
             // Optionally add user-facing error handling here
         } finally {
-            hideLoadingIndicator();
+            console.log("")
         }
     });
     document.getElementById('fromDate').addEventListener('change', function() {
@@ -338,7 +327,6 @@ function get_project_status_data(r, selected_start_date, selected_end_date, sele
 }
 
 function task_list(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
-    showLoadingIndicator();
     const container = $("#task-list");
     
     try {
@@ -397,24 +385,23 @@ function task_list(data, selected_start_date, selected_end_date, selected_projec
                     console.error("Error processing task data:", innerError);
                     container.html("<div class='error-message'>Error loading task data</div>");
                 } finally {
-                    hideLoadingIndicator();
+                    console.log("")
                 }
             },
             error: function(xhr, status, error) {
                 console.error("API call failed:", error);
                 container.html("<div class='error-message'>Failed to fetch project details</div>");
-                hideLoadingIndicator();
+                console.log("")
             }
         });
     } catch (outerError) {
         console.error("Error in task_list function:", outerError);
         container.html("<div class='error-message'>An unexpected error occurred</div>");
-        hideLoadingIndicator();
+        console.log("")
     }
 }
 
 function url_data(data, selected_start_date, selected_end_date, selected_project, selected_employee) {
-    showLoadingIndicator();
     function getBaseURL() {
         return window.location.origin + '/app/';
     }
@@ -423,7 +410,6 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
     
     if (!data || data.length === 0) {
         console.warn("No data received, preventing section from disappearing.");
-        hideLoadingIndicator();
         return;
     }
 
@@ -502,7 +488,6 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
         if (data.length === 1) return;
         
         e.preventDefault();
-        showLoadingIndicator();
 
         const selectedEmployee = $(this).data('employee') || null;
         const newURL = `${window.location.pathname}?${new URLSearchParams({
@@ -514,7 +499,6 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
 
         if (e.ctrlKey || e.metaKey) {
             window.open(newURL, '_blank');
-            hideLoadingIndicator();
         } else {
             history.replaceState({}, '', newURL);
 
@@ -539,13 +523,12 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
             }).catch(error => {
                 console.error("Error fetching data: ", error);
             }).finally(() => {
-                hideLoadingIndicator();
+                console.log("")
             });
         }
     });
 
     $(document).off('click', '#reset-filter').on('click', '#reset-filter', function() {
-        showLoadingIndicator();
         const newURL = `${window.location.pathname}?${new URLSearchParams({
             from_date: selected_start_date,
             to_date: selected_end_date,
@@ -573,11 +556,9 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
         }).catch(error => {
             console.error("Error fetching all employees: ", error);
         }).finally(() => {
-            hideLoadingIndicator();
+            console.log("")
         });
     });
-
-    hideLoadingIndicator();
 }
 
 function work_intensity(response) {

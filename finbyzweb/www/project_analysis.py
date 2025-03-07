@@ -211,7 +211,6 @@ def last_screenshot_time(user=None, start_date=None, end_date=None, project=None
 def fetch_url_data(user=None, start_date=None, end_date=None, project=None):
     if not project:
         return []
-        
     # Get customer once and cache it
     customer = frappe.db.get_value("Project", project, "customer")
     
