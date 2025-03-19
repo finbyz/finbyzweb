@@ -1316,7 +1316,7 @@ function overall_performance_timely(user,date, hour, selected_project) {
 											<tr>
 												<td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[6]}</td>
 										</tr>`;
-								}
+								    }
 								if (params.data[7] && params.data[8]) {
 									tooltipContent += `
 										<tr>
@@ -1325,6 +1325,12 @@ function overall_performance_timely(user,date, hour, selected_project) {
 											<td style="padding: 0px 10px; text-align: left;">${params.data[8]}</td>
 										</tr>`;
 								}
+                                if (params.data[10]) {
+                                    tooltipContent += `
+                                        <tr>
+                                            <td colspan="3" style="padding: 0px 10px; text-align: left;">${params.data[10]}</td>
+                                        </tr>`;
+                                }
 								}
 								if (activityType === "Call") {
 									// console.log("params",params);
