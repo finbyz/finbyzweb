@@ -1,0 +1,188 @@
+{% from "frappe/templates/includes/avatar_macro.html" import avatar %}
+{% extends "templates/web.html" %}
+{% block title %}
+{{ _("My Tasks") }}
+{% endblock %}
+{% block page_content %}
+<h3 class="" style="font-family: 'Poppins', sans-serif;">{{_("My Tasks") }}</h3>
+<div class="container">
+
+    
+    <div class="task-container">
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Type</th>
+                    <th>Assignee</th>
+                    <th>Progress</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Est. Time</th>
+                    <th>Priority</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Task rows will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f9f9f9;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 20px;
+    }
+    
+    .filters-section {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+    
+    .task-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        overflow-x: auto;
+    }
+    
+    .task-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .task-table th {
+        background-color: #f5f5f5;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #e0e0e0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .task-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #e0e0e0;
+        vertical-align: middle;
+    }
+    
+    .task-row:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .project-row {
+        background-color: #f5f5f5;
+        font-weight: 500;
+    }
+    
+    .task-row[data-is-group="1"] .task-name {
+        font-weight: 600;
+    }
+    
+    .collapse-icon {
+        margin-right: 8px;
+        width: 16px;
+        display: inline-block;
+        text-align: center;
+        transition: transform 0.2s ease;
+    }
+    
+    .indent {
+        display: inline-block;
+    }
+    
+    .task-name-cell {
+        white-space: nowrap;
+    }
+    .task-row {
+        cursor: pointer;
+    }
+    
+    .task-row[data-is-group="1"] .task-name {
+        font-weight: bold;
+    }
+    
+    .task-row[data-is-project="1"] {
+        background-color: #f5f5f5;
+    }
+    
+    .collapse-icon {
+        margin-right: 5px;
+        transition: transform 0.2s;
+        width: 16px;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .task-name-cell {
+        white-space: nowrap;
+        /* Remove any default padding that might interfere with indentation */
+        padding-left: 0;
+    }
+    
+    .indent-space {
+        display: inline-block;
+        width: 20px;
+    }
+    
+    .task-description-row {
+        background-color: #fafafa;
+        font-style: italic;
+    }
+    .task-row {
+        cursor: pointer;
+    }
+    
+    .task-row[data-is-group="1"] .task-name {
+        font-weight: bold;
+    }
+    
+    .task-row[data-is-project="1"] {
+        background-color: #f5f5f5;
+    }
+    
+    .collapse-icon {
+        margin-right: 5px;
+        transition: transform 0.2s;
+        width: 16px;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .task-name-cell {
+        white-space: nowrap;
+        padding-left: 5px !important;
+    }
+    
+    .indent-spacer {
+        display: inline-block;
+        width: 20px;
+    }
+    
+    .icon-container {
+        display: inline-block;
+        width: 16px;
+        text-align: center;
+    }
+    
+    .task-description-row {
+        background-color: #fafafa;
+        font-style: italic;
+    }
+</style>
+{% endblock %}
