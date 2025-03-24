@@ -11,26 +11,43 @@ def get_context(context):
     context.show_sidebar = True
 
 def execute(filters=None):
-    data = get_data()
+    data = get_data(filters)
     return data
 
 @frappe.whitelist()
-def get_data():
+def get_data(filters=None):
+    if isinstance(filters, str):
+        try:
+            # Try to parse if it's a JSON string
+            import json
+            filters = json.loads(filters)
+        except:
+            # If parsing fails, create an empty dict
+            filters = {}
     # Get projects the user has permission to access
-    projects = get_projects()
-    tasks = get_tasks(projects)
+    projects = get_projects(filters)
+    tasks = get_tasks(projects, filters)
     
     if not tasks and not projects:
         return []
     
     return prepare_data(projects, tasks)
 
-def get_projects():
+def get_projects(filters=None):
+    # Prepare filter conditions
+    filter_conditions = {"name": ["in", frappe.get_all("Project", pluck="name")]}
+    
+    # Apply additional filters if provided
+    if filters:
+        # If specific project is requested
+        if filters.get("project"):
+            filter_conditions["name"] = filters.get("project")
+    
     # Get projects the user has permission to access
     return frappe.get_list("Project", 
         fields=["name", "project_name as subject", "status", "priority", 
                 "expected_start_date", "expected_end_date", "percent_complete"],
-        filters={"name": ["in", frappe.get_all("Project", pluck="name")]},
+        filters=filter_conditions,
         order_by="name"
     )
 
@@ -90,6 +107,29 @@ def prepare_data(projects, tasks):
 
     return data
 
+def get_tasks(projects, filters=None):
+    project_names = [project.name for project in projects]
+    
+    # Prepare base filters
+    task_filters = {'project': ['in', project_names]}
+    
+    # Apply additional filters if provided
+    if filters:
+        # Date range filters for tasks
+        if filters.get("start_date"):
+            task_filters['exp_start_date'] = ['=', getdate(filters.get("start_date"))]
+
+        task_filters['status'] = ['!=', 'Cancelled']
+    # Get all tasks for the projects the user has permission to access
+    return frappe.get_all('Task', 
+        filters=task_filters,
+        fields=['name', 'subject', 'parent_task', 'project', 'status', 'assignee', 
+                'priority', 'description', 'exp_start_date', 'exp_end_date', 
+                'completed_on', 'expected_time', 'type'],
+        order_by='project, parent_task, name'
+    )
+
+# The rest of the functions remain unchanged
 def add_task_to_data(data, task, parent_children_map, task_has_children, level, show_progress=False):
     # Add the current task
     task_progress = calculate_task_progress(task.name) if show_progress else None
@@ -128,17 +168,6 @@ def add_task_to_data(data, task, parent_children_map, task_has_children, level, 
         children.sort(key=lambda x: x.name)
         for child in children:
             add_task_to_data(data, child, parent_children_map, task_has_children, level + 1, show_progress)
-            
-def get_tasks(projects):
-    # Get all tasks for the projects the user has permission to access
-    project_names = [project.name for project in projects]
-    return frappe.get_all('Task', 
-        filters={'project': ['in', project_names]},
-        fields=['name', 'subject', 'parent_task', 'project', 'status', 'assignee', 
-                'priority', 'description', 'exp_start_date', 'exp_end_date', 
-                'completed_on', 'expected_time', 'type'],  # Removed is_group as we'll calculate it
-        order_by='project, parent_task, name'
-    )
 
 def get_progress_color(progress):
     """
