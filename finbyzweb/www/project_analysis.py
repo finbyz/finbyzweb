@@ -21,9 +21,8 @@ def get_context(context):
 
 @frappe.whitelist()
 def get_data(user=None, start_date=None, end_date=None, project=None):
-    if not project:
-        frappe.throw(_("Please select a project"))
-
+    projects = get_projects()
+    project = projects[0].name
     portal_users = frappe.db.sql(f"""select pu.user from `tabProject` as p join `tabPortal User` as pu on p.customer = pu.parent where p.name = '{project}'""", as_dict=1)
     if frappe.session.user not in [user['user'] for user in portal_users]:
         raise frappe.PermissionError
@@ -168,6 +167,8 @@ def web_browsing_time(user=None, start_date=None, end_date=None, project=None):
 # User Activity Images Code Starts
 @frappe.whitelist()
 def user_activity_images(user=None, start_date=None, end_date=None, project=None, offset=0):
+    projects = get_projects()
+    project = projects[0].name
     # parsed_datetime = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
     # start_date = parsed_datetime.strftime('%Y-%m-%d  %H:%M:%S')
     # parsed_datetime_ = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
@@ -186,6 +187,8 @@ def user_activity_images(user=None, start_date=None, end_date=None, project=None
 
 @frappe.whitelist()
 def last_screenshot_time(user=None, start_date=None, end_date=None, project=None):
+    projects = get_projects()
+    project = projects[0].name
     # parsed_start_date = datetime.strptime(start_date, '%d/%m/%Y, %I:%M:%S %p')
     # start_date = parsed_start_date.strftime('%Y-%m-%d %H:%M:%S')
     # parsed_end_date = datetime.strptime(end_date, '%d/%m/%Y, %I:%M:%S %p')
@@ -363,12 +366,15 @@ def get_projects():
         from `tabProject` as p 
         join `tabPortal User` as pu on p.customer = pu.parent 
         where pu.user = '{current_user}'
-        order by  p.resource_based_project DESC""",as_dict=1)
+        order by  p.resource_based_project DESC
+        LIMIT 1""",as_dict=1)
     return projects
 from datetime import datetime, timedelta
 
 @frappe.whitelist()
 def overall_performance_timely(employee=None, date=None, hour=None, project=None):
+    projects = get_projects()
+    project = projects[0].name
     if not project:
         return {
             "labels": [],
@@ -625,18 +631,19 @@ def get_project_status_data(user=None, start_date=None, end_date=None, project=N
 
 @frappe.whitelist()
 def get_project_details(project_name):
+    projects = get_projects()
+    project_name = projects[0].name
     """
     Fetch project details for a given project name using a query.
     """
-    try:
-        project_data = frappe.db.sql("""
-            SELECT show_task 
-            FROM `tabProject` 
-            WHERE name = %s
-        """, (project_name,), as_dict=True) 
-        return {
-            "show_task": project_data[0]["show_task"],
-            "statuses": ["Open", "In-Progress", "Pending Review", "Completed"]
-        }
-    except Exception as e:
-        frappe.throw(str(e))
+
+    project_data = frappe.db.sql("""
+        SELECT show_task 
+        FROM `tabProject` 
+        WHERE name = %s
+    """, (project_name,), as_dict=True) 
+
+    return {
+        "show_task": project_data[0]["show_task"],
+        "statuses": ["Open", "In-Progress", "Pending Review", "Completed"]
+    }

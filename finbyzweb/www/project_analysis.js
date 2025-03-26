@@ -86,10 +86,6 @@ function updateUrlParams(from_date, to_date, project, employee) {
         params.set('to_date', to_date);
         reloadNeeded = true;
     }
-    if (project && params.get('project') !== project) {
-        params.set('project', project);
-        reloadNeeded = true;
-    }
     if (employee && params.get('employee') !== employee) {
         params.set('employee', employee);
         reloadNeeded = true;
@@ -124,38 +120,11 @@ function formatDateToYYYYMMDD(date) {
 }
 
 async function populateProjectOptions() {
-    const projectSelect = document.getElementById('projectSelect');
-    projectSelect.innerHTML = '';
+   
     
     try {
         const projects = await frappe.xcall("finbyzweb.www.project_analysis.get_projects");
-        
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Select a project';
-        projectSelect.appendChild(defaultOption);
-
-        projects.forEach(project => {
-            const option = document.createElement('option');
-            option.value = project.name;
-            option.textContent = project.project_name;
-            projectSelect.appendChild(option);
-        });
-
-        setTimeout(() => {
-            const { project: projectFromUrl } = getUrlParams();
-            if (projectFromUrl) {
-                state.selected_project = projectFromUrl;
-            } else if (!state.selected_project && projects.length > 0) {
-                state.selected_project = projects[0].name;
-            }
-
-            if (state.selected_project) {
-                projectSelect.value = state.selected_project;
-            }
-        }, 100);
-
-        return state.selected_project;
+        return projects[0].name;
     } catch (error) {
         console.error("Error fetching projects:", error);
         return null;
@@ -201,8 +170,6 @@ async function initial_requirements() {
             state.selected_employee = employee;
         }
 
-        await populateProjectOptions();
-
         document.getElementById('fromDate').value = state.selected_start_date;
         document.getElementById('toDate').value = state.selected_end_date;
 
@@ -234,10 +201,14 @@ async function initial_requirements() {
 }
 
 function updateDataBasedOnSelection(selected_start_date, selected_end_date, selected_project, selected_employee) {
+    // Validate input dates
     if (!selected_start_date || !selected_end_date) {
         console.error('Invalid dates:', { selected_start_date, selected_end_date });
         return Promise.reject(new Error('Invalid dates'));
     }
+
+    // Show loading indicator before API call
+    showLoadingIndicator();
 
     return frappe.xcall("finbyzweb.www.project_analysis.get_data", {
         user: selected_employee,
@@ -245,15 +216,32 @@ function updateDataBasedOnSelection(selected_start_date, selected_end_date, sele
         end_date: selected_end_date,
         project: selected_project
     }).then((response) => {
+        // Update various dashboard components
         work_intensity(response.work_intensity);
         application_usage_time(response.application_usage);
         web_browsing_time(response.web_browsing);
         fetch_url_data(response.url_data, selected_start_date, selected_end_date, selected_project, selected_employee);
         get_project_status_data(response.task_list, selected_start_date, selected_end_date, selected_project, selected_employee);
     }).catch(error => {
+        // Improved error handling
         console.error('Error updating data:', error);
+        
+        // Optional: Display error message to user
+        const errorMessage = error.message || 'Failed to load data. Please try again.';
+        
+        // Create and display error notification
+        const errorNotification = document.createElement('div');
+        errorNotification.className = 'error-notification';
+        errorNotification.textContent = errorMessage;
+        document.body.appendChild(errorNotification);
+        
+        // Remove error notification after 5 seconds
+        setTimeout(() => {
+            document.body.removeChild(errorNotification);
+        }, 5000);
     }).finally(() => {
-        console.log("")
+        // Always hide loading indicator, regardless of success or failure
+        hideLoadingIndicator();
     });
 }
 
@@ -277,22 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.getElementById('projectSelect').addEventListener('click', function(event) {
-        try {
-            state.selected_project = event.target.value;
-            updateUrlParams(
-                state.selected_start_date,
-                state.selected_end_date,
-                state.selected_project,
-                state.selected_employee
-            );
-        } catch (error) {
-            console.error("Error updating project selection:", error);
-            // Optionally add user-facing error handling here
-        } finally {
-            console.log("")
-        }
-    });
+    
     document.getElementById('fromDate').addEventListener('change', function() {
         updateDates(this.value, document.getElementById('toDate').value);
     });
@@ -502,17 +475,47 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
         } else {
             history.replaceState({}, '', newURL);
 
+            history.replaceState({}, '', newURL);
+
+            // Show loading indicator before API call
+            showLoadingIndicator();
+
             frappe.xcall("finbyzweb.www.project_analysis.get_data", {
                 user: selectedEmployee,
                 start_date: selected_start_date,
                 end_date: selected_end_date,
                 project: selected_project
             }).then(response => {
+                // Check for empty response
                 if (!response || Object.keys(response).length === 0) {
                     console.warn("Empty response received, keeping existing data.");
+                    
+                    // Create and display warning notification
+                    const warningNotification = document.createElement('div');
+                    warningNotification.className = 'warning-notification';
+                    warningNotification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background-color: #ffeb3b;
+                        color: #333;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        z-index: 1000;
+                    `;
+                    warningNotification.textContent = 'No data available for the selected period.';
+                    document.body.appendChild(warningNotification);
+                    
+                    // Remove warning after 5 seconds
+                    setTimeout(() => {
+                        document.body.removeChild(warningNotification);
+                    }, 5000);
+                    
                     return;
                 }
 
+                // Update dashboard components
                 work_intensity(response.work_intensity);
                 application_usage_time(response.application_usage);
                 web_browsing_time(response.web_browsing);
@@ -522,8 +525,31 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
                 location.reload();
             }).catch(error => {
                 console.error("Error fetching data: ", error);
+                
+                // Create and display error notification
+                const errorNotification = document.createElement('div');
+                errorNotification.className = 'error-notification';
+                errorNotification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-color: #f44336;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                `;
+                errorNotification.textContent = 'Failed to load data. Please try again.';
+                document.body.appendChild(errorNotification);
+                
+                // Remove error notification after 5 seconds
+                setTimeout(() => {
+                    document.body.removeChild(errorNotification);
+                }, 5000);
             }).finally(() => {
-                console.log("")
+                // Always hide loading indicator
+                hideLoadingIndicator();
             });
         }
     });
@@ -536,7 +562,7 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
         }).toString()}`;
 
         history.replaceState({}, '', newURL);
-
+        showLoadingIndicator();
         frappe.xcall("finbyzweb.www.project_analysis.get_data", {
             start_date: selected_start_date,
             end_date: selected_end_date,
@@ -553,6 +579,7 @@ function url_data(data, selected_start_date, selected_end_date, selected_project
             fetch_url_data(response.url_data, selected_start_date, selected_end_date, selected_project, null);
             
             location.reload();
+            hideLoadingIndicator();
         }).catch(error => {
             console.error("Error fetching all employees: ", error);
         }).finally(() => {
