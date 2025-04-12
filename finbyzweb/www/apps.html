@@ -1,0 +1,102 @@
+---
+base_template: "templates/base.html"
+no_cache: 1
+---
+{% extends "templates/web.html" %}
+
+{%- block navbar -%} {% from "frappe/templates/includes/avatar_macro.html" import avatar %} {%-
+endblock -%} {%- block footer -%} {%- endblock -%} {% block content %}
+<div class="container sm:bg-[var(--fg-color)]" 
+    style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; max-width: 100vw; 
+            padding: 0; margin: 0; background: var(--bg-light-gray);">
+    <div class="apps-container sm:bg-[var(--fg-color)] sm:gap-[30px] sm:p-[var(--padding-lg)] sm:border-none" 
+        style="display: flex; flex-direction: column; gap: 40px; align-items: center; justify-content: center; background: var(--fg-color); 
+                padding: 45px 80px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
+        <div class="title sm:text-[var(--font-size-md)]">{{ _('Select an app to continue') }}</div>
+            {% set appsCount = apps|length if apps|length <= 6 else 6 %} 
+            <div class="apps md:grid-cols-4 sm:grid-cols-3" style="gap: 20px; display: flex; justify-items: center;">
+                {% for app in apps %} 
+                <a href="{{ app.route }}" class="app-icon"  
+                    style="display: flex; flex-direction: column; gap: 12px; height: fit-content; width: fit-content; align-items: center; 
+                            justify-content: center; text-decoration: none; position: relative;">
+                    <div class="app-logo" 
+                        style="width: 60px; height: 60px; object-fit: cover; transition: transform 0.2s; border-radius: 13px;">
+                        <img src="{{ app.logo }}" style="height: 50px !important;" />
+                        <div 
+                            app-name="{{ app.name }}"
+                            class="set-default btn btn-sm {{ '' if app.is_default else 'hidden'}}"
+                            onmouseover="this.querySelector('.set-default').style.display='block'" 
+                            onmouseout="this.querySelector('.set-default').style.display='none'" 
+                            style="position: absolute; top: -20px; right: -20px;"
+                            title="Set as default"
+                        >
+                            <svg 
+                                width="18" 
+                                height="18" 
+                                viewBox="0 0 16 16" 
+                                fill="none" 
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path 
+                                    fill-rule="evenodd" 
+                                    clip-rule="evenodd"
+                                    d="M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15ZM11.1728 5.98483C11.3484 5.77177 11.3181 5.45664 11.1051 5.28097C10.892 5.10531 10.5769 5.13563 10.4012 5.34869L6.95187 9.5324L5.61031 7.79859C5.44132 7.58019 5.12729 7.54014 4.90889 7.70912C4.69049 7.87811 4.65044 8.19215 4.81942 8.41055L6.54403 10.6394C6.63706 10.7596 6.77974 10.831 6.93174 10.8334C7.08374 10.8357 7.22856 10.7688 7.32526 10.6515L11.1728 5.98483Z"
+                                    fill="currentColor" 
+                                />
+                            </svg>
+                        </div>
+                        <div class="app-title sm:text-[var(--font-size-sm)]" 
+                            style="color: var(--gray-900, #171717); font-size: var(--font-size-md); height: fit-content; 
+                                    letter-spacing: 0.24px; line-height: 115%; min-width: 30px; width: fit-content; text-decoration: none;">
+                            {{ app.title }}
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+</div>
+        <button class="logout-btn btn btn-default" 
+            style="margin-top:30px ;display: flex; align-items: center; justify-content: center; gap: 5px; border-radius: var(--border-radius-md); 
+                    background-color: #fff !important;">
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none"
+                stroke="currentColor" 
+                stroke-width="1.5" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+                class="lucide lucide-log-out"
+            >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+            </svg>
+            <span> {{ _('Logout') }} </span>
+        </button>
+    </div>
+</div>
+{% endblock %} {% block script %}
+<script>
+	$(".set-default").on("click", function (e) {
+		e.preventDefault();
+		var appName = $(this).attr("app-name");
+		frappe.call({
+			method: "frappe.apps.set_app_as_default",
+			args: { app_name: appName },
+			callback: function () {
+				location.reload();
+			},
+		});
+	});
+	$(".logout-btn").on("click", function () {
+		frappe.call({
+			method: "logout",
+			callback: function () {
+				window.location.href = "/login";
+			},
+		});
+	});
+</script>
+{% endblock %}
