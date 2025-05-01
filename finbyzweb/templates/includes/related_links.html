@@ -11,47 +11,65 @@
 						{% if loop.index <= 3 %}
 						<div class="mg-bottom col-md-4 col-sm-6 col-12 finbyz-fadeinup"
 							style="opacity: 1; transform: matrix(1, 0, 0, 1, 0, 0);">
-							<div class="content-box text-center">
-								<div class="item">
-									<div class="module-item-box">
-										<div class="module-img">
-											<img alt="{{ link.title or frappe.db.get_value(link.reference_doctype,link.reference_name,'title') }}"
-												src="{{ link.image or frappe.db.get_value(link.reference_doctype,link.reference_name,'image') or '/files/steer-your-vision.svg' }}"
-												title="{{ link.title or frappe.db.get_value(link.reference_doctype,link.reference_name,'title') }}">
+							<a href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}" style="text-decoration: none; color: inherit;">
+								<div class="content-box text-center">
+									<div class="item">
+										<div class="module-item-box">
+											<div class="module-img">
+												<img alt="{{ link.title or frappe.db.get_value(link.reference_doctype,link.reference_name,'title') }}"
+													src="{{ link.image or frappe.db.get_value(link.reference_doctype,link.reference_name,'image') or '/files/steer-your-vision.svg' }}"
+													title="{{ link.title or frappe.db.get_value(link.reference_doctype,link.reference_name,'title') }}">
+											</div>
+											<div class="module-detail">
+												<!-- <a class=""
+													href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}">
+													<br> -->
+													<p class="link-underline font-weight-bold">
+														{{ link.title or frappe.db.get_value(link.reference_doctype,link.reference_name,'title') }}
+													</p>
+													<br>
+													<p class="small-text">
+														{% if link.reference_doctype == "Blog Post" %}
+														{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'blog_intro') }}
+														{% else %}
+														{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'small_description')  or  link.description }}
+														{% endif %}
+													</p>
+												<!-- </a> -->
+											</div>
 										</div>
-										<div class="module-detail">
-											<a class=""
-												href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}">
-												<br>
-												<p class="link-underline font-weight-bold">
-													{{ link.title or frappe.db.get_value(link.reference_doctype,link.reference_name,'title') }}
-												</p><br>
-												<p class="small-text">
-													{% if link.reference_doctype == "Blog Post" %}
-													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'blog_intro') }}
-													{% else %}
-													{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'small_description')  or  link.description }}
-													{% endif %}
-												</p>
-											</a>
-										</div>
-									</div>
-									<div class="row pt-20 pr-5">
-										<a class="btn-next ml-auto d-flex align-items-center"
+										<div class="row pt-20 pr-5">
+											<!-- <a class="btn-next ml-auto d-flex align-items-center"
+												href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}"
+												target="_blank"> -->
+											<div class="btn-next ml-auto d-flex align-items-center">
+												<span class="pr-3 t-blue">View More</span><svg
+													class="finbyz-icon icon-hover finbyz-icon-arrow-right-1">
+													<use href="#finbyz-icon-arrow-right-1"></use>
+												</svg> <svg class="finbyz-icon finbyz-icon-arrow-right1">
+													<use href="#finbyz-icon-arrow-right1"></use>
+												</svg>
+											</div>
+											<!-- </a> -->
+
+											<!-- <a class="btn-next ml-auto d-flex align-items-center"
 											href="/{{ frappe.db.get_value(link.reference_doctype,link.reference_name,'route') or  link.route }}"
-											target="_blank"><span class="pr-3 t-blue">View More</span><svg
+											target="_blank">
+											<span class="pr-3 t-blue">View More</span><svg
 												class="finbyz-icon icon-hover finbyz-icon-arrow-right-1">
 												<use href="#finbyz-icon-arrow-right-1"></use>
 											</svg> <svg class="finbyz-icon finbyz-icon-arrow-right1">
 												<use href="#finbyz-icon-arrow-right1"></use>
-											</svg></a>
+											</svg></a>	 -->
+
+										</div>
 									</div>
 								</div>
-							</div>
+							</a>
 						</div>
 						{% endif %}
 						{% endfor %}
 					</div>
 				</div>
-		</div>
-		</section>
+		<!-- </div> -->
+</section>
