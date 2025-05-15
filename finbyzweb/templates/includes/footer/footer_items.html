@@ -4,7 +4,7 @@
 	{% if not page.parent_label -%}
 		<div data-label='{{ page.label }}'>
 		<a {% if not page.child_items -%} href="{{ (page.url or '')|abs_url }}" {%- endif %}
-		{% if page.child_items %} onclick="return false;" {% endif %}
+		{% if page.child_items %} href= "{{ page.label }}" onclick="return false;" {% endif %}
 		{{ page.target or ''}}>	</a>
 		{%- if page.child_items -%}
 			<p class="footer-title t-white">{{ page.label }}</p>
