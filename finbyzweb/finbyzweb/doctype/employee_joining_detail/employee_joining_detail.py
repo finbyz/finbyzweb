@@ -60,6 +60,8 @@ class EmployeeJoiningDetail(Document):
 			"salutation": joining_detail.salutation,
 			"employment_type": joining_detail.employment_type,
 		})
+		if joining_detail.is_intern:
+			new_employee.naming_series = "INT/"
 
 		new_employee.insert() 
 		frappe.db.commit()

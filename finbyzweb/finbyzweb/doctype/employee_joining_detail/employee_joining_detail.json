@@ -44,7 +44,8 @@
   "token",
   "url",
   "job_offer",
-  "job_applicant"
+  "job_applicant",
+  "is_intern"
  ],
  "fields": [
   {
@@ -258,11 +259,18 @@
    "fieldname": "url",
    "fieldtype": "Data",
    "label": "URL"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_intern",
+   "fieldtype": "Check",
+   "label": "Is Intern"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-19 11:54:40.898407",
+ "modified": "2025-07-22 10:45:26.405721",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Employee Joining Detail",
@@ -295,6 +303,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
