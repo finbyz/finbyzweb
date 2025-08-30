@@ -128,7 +128,7 @@ def update_employee_data():
 			if file.filename:
 				# raise Exception(str(fieldname) + str(file.filename))
 				# Save the file and link it to the document
-				file_doc = save_file(file.filename, file.stream.read(), doc.doctype, doc.name, decode=True, is_private=0)
+				file_doc = save_file(file.filename, file.stream.read(), doc.doctype, doc.name, decode=False, is_private=0)
 				if hasattr(doc, fieldname):  # Check if the field exists in the document
 					setattr(doc, fieldname, file_doc.file_url)  # Save the file URL to the document field
 
@@ -162,4 +162,3 @@ def get_employee_data(token):
 	except frappe.DoesNotExistError:
 		# Handle the case where no document is found for the given token
 		frappe.throw("Document not found for the given token.")
-
