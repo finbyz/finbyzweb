@@ -1,6 +1,6 @@
 import frappe
 
-def before_validate(self, method):
+def after_insert(self, method):
     if self.customer:
         customer = frappe.get_doc("Customer", self.customer)
         for user in customer.portal_users:
@@ -20,5 +20,4 @@ def before_validate(self, method):
             doc.allow = "Project"
             doc.for_value = self.name
             doc.apply_to_all_doctypes = 1
-            doc.save(ignore_permissions=True)
-            frappe.db.commit()
+            doc.insert(ignore_permissions=True)

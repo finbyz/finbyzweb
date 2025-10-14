@@ -128,12 +128,16 @@ scheduler_events = {
         "0 0 * * *": [
             "finbyzweb.finbyzweb.doctype.proxy_setting.proxy_setting.clear_proxy_settings",
         ],
+        #  "*/10 * * * *": [
+        #     "finbyzweb.web_content.generate_missing_webpage_content"
+        # ],
     },
     "all": [
         "finbyzweb.finbyzweb.doctype.proxy_setting.proxy_setting.update_proxy_setting_cache",
         "finbyzweb.finbyzweb.doc_events.update_proxy_employee.update_proxy_employee",  
     ],
 }
+
 
 # Testing
 # -------
@@ -152,12 +156,14 @@ doc_events = {
 		"before_save": "finbyzweb.api.customer_before_save"
 	},
 	"Project":{
-		"before_save": "finbyzweb.finbyzweb.doc_events.project.before_validate"
+		"after_insert": "finbyzweb.finbyzweb.doc_events.project.after_insert"
 	},
 	"Customer":{
 		"before_save": "finbyzweb.finbyzweb.doc_events.customer.before_validate"
-	}
- 
+	},
+  "Lead": {
+        "before_insert": "finbyzweb.finbyzweb.doc_events.lead.set_lead_type"
+    },
 }
 
 override_doctype_dashboards = {
