@@ -160,10 +160,10 @@ doc_events = {
 	},
 	"Customer":{
 		"before_save": "finbyzweb.finbyzweb.doc_events.customer.before_validate"
-	},
-  "Lead": {
-        "before_insert": "finbyzweb.finbyzweb.doc_events.lead.set_lead_type"
-    },
+	}
+#   "Lead": {
+#         "before_insert": "finbyzweb.finbyzweb.doc_events.lead.set_lead_type"
+#     },
 }
 
 override_doctype_dashboards = {
