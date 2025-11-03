@@ -30,6 +30,38 @@ cur_frm.cscript.onload = function (frm) {
 //     }
 // };
 frappe.ui.form.on("Web Page", {
+    refresh: function (frm) {
+        // Add a custom button to generate the web page
+        frm.add_custom_button(__('Generate Page'), function() {
+            generatePage(frm);
+        });
+
+        // Add a custom button to generate FAQs if the document is published and not new
+        if (frm.doc.published && !frm.is_new()) {
+            frm.add_custom_button(__('Generate FAQs'), function() {
+                frappe.confirm(
+                    'This will generate FAQs using AI and replace existing FAQs. Continue?',
+                    function() {
+                        frappe.call({
+                            method: 'finbyzweb.api.generate_faqs',
+                            args: {
+                                doctype: 'Web Page',
+                                docname: frm.doc.name
+                            },
+                            freeze: true,
+                            freeze_message: __('Generating FAQs...'),
+                            callback: function(r) {
+                                if (r.message && r.message.success) {
+                                    frm.reload_doc();
+                                }
+                            }
+                        });
+                    }
+                );
+            });
+        }
+    },
+
     before_load: function (frm) {
         var df = frappe.meta.get_docfield("Related Links", 'title',frm.doc.name);
        // console.log(df)

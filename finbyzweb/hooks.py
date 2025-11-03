@@ -69,7 +69,8 @@ override_doctype_class = {
 
 doctype_js = {
 	"Web Page": "public/js/doctype_js/web_page.js",
-	"Job Offer": "public/js/job_offer.js"
+	"Job Offer": "public/js/job_offer.js",
+    "Blog Post": "public/js/doctype_js/blog_post.js",
 }
 
 # Home Pages

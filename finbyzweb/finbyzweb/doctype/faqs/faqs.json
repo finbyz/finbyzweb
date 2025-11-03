@@ -1,0 +1,44 @@
+{
+ "_comments": "[{\"comment\": \"Action Failed<br><br><pre><code>Traceback (most recent call last):\\n  File \\\"apps/frappe/frappe/dat...\", \"by\": \"Administrator\", \"name\": \"d6gjec01n8\"}, {\"comment\": \"Action Failed<br><br><pre><code>Traceback (most recent call last):\\n  File \\\"apps/frappe/frappe/dat...\", \"by\": \"Administrator\", \"name\": \"e7n9k0k75e\"}, {\"comment\": \"Action Failed<br><br><pre><code>Traceback (most recent call last):\\n  File \\\"apps/frappe/frappe/dat...\", \"by\": \"Administrator\", \"name\": \"gu92i3qjus\"}]",
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-24 11:06:25.143770",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "question",
+  "answer"
+ ],
+ "fields": [
+  {
+   "description": "The question part of the FAQ",
+   "fieldname": "question",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Question"
+  },
+  {
+   "description": "The answer to the FAQ question",
+   "fieldname": "answer",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Answer"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-10-29 14:11:00.104883",
+ "modified_by": "Administrator",
+ "module": "Finbyzweb",
+ "name": "FAQs",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "question"
+}
