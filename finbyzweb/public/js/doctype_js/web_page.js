@@ -43,7 +43,7 @@ frappe.ui.form.on("Web Page", {
                     'This will generate FAQs using AI and replace existing FAQs. Continue?',
                     function() {
                         frappe.call({
-                            method: 'finbyzweb.api.generate_faqs',
+                            method: 'finbyzweb.faqs_api.generate_faqs',
                             args: {
                                 doctype: 'Web Page',
                                 docname: frm.doc.name
