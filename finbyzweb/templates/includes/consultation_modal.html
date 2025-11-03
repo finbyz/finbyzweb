@@ -1,0 +1,229 @@
+<!-- Consultation Modal -->
+<div class="modal fade" id="consultationModal" tabindex="-1" role="dialog" aria-labelledby="consultationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consultationModalLabel">Book a Free Consultation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Get Started Today</h6>
+                        <p class="text-muted mb-4">Fill out the form below and we'll get back to you within 24 hours</p>
+                        
+                        <form id="consultationForm" class="web-form" method="POST" action="/api/method/frappe.website.doctype.web_form.web_form.accept">
+                            <input type="hidden" name="web_form" value="contact">
+                            <input type="hidden" name="source" value="Book Consultation">
+                            
+                            <div class="form-group">
+                                <label for="name1">Name *</label>
+                                <input type="text" class="form-control" id="name1" name="name1" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subject">Mobile Number *</label>
+                                <input type="tel" class="form-control" id="subject" name="subject" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="company">Company Name</label>
+                                <input type="text" class="form-control" id="company" name="company">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="service">Service Interested In</label>
+                                <select class="form-control" id="service" name="service">
+                                    <option value="">Select a service</option>
+                                    <option value="ERP Implementation">ERP Implementation</option>
+                                    <option value="AI Automation">AI Automation</option>
+                                    <option value="Software Development">Software Development</option>
+                                    <option value="Consulting">Consulting</option>
+                                    <option value="Support & Maintenance">Support & Maintenance</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea class="form-control" id="message" name="message" rows="4" placeholder="Tell us about your project requirements..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary finbyz-button w-100">Submit Inquiry</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="consultation-info">
+                            <h6 class="mb-3">Why Choose Our Consultation?</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success mr-2"></i>
+                                    <strong>Free Assessment:</strong> No cost consultation to understand your needs
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success mr-2"></i>
+                                    <strong>Expert Advice:</strong> Get insights from our experienced team
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success mr-2"></i>
+                                    <strong>Custom Solutions:</strong> Tailored recommendations for your business
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success mr-2"></i>
+                                    <strong>Quick Response:</strong> We'll get back to you within 24 hours
+                                </li>
+                            </ul>
+                            
+                            <div class="mt-4">
+                                <h6>Contact Information</h6>
+                                <p class="mb-1"><i class="fas fa-phone mr-2"></i> +91 9925701446</p>
+                                <p class="mb-1"><i class="fas fa-envelope mr-2"></i> inquiry@finbyz.tech</p>
+                                <p class="mb-0"><i class="fas fa-clock mr-2"></i> Mon-Sat: 9:30 AM - 6:30 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.consultation-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    height: 100%;
+}
+
+.consultation-info h6 {
+    color: #286090;
+    font-weight: 600;
+}
+
+.consultation-info ul li {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #286090, #1e4a6b);
+    color: white;
+    border-radius: 10px 10px 0 0;
+    border: none;
+}
+
+.modal-header .close {
+    color: white;
+    opacity: 0.8;
+}
+
+.modal-header .close:hover {
+    opacity: 1;
+}
+
+.finbyz-button {
+    background: linear-gradient(135deg, #286090, #1e4a6b);
+    border: none;
+    padding: 12px 24px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.finbyz-button:hover {
+    background: linear-gradient(135deg, #1e4a6b, #286090);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 96, 144, 0.3);
+}
+
+.form-control:focus {
+    border-color: #286090;
+    box-shadow: 0 0 0 0.2rem rgba(40, 96, 144, 0.25);
+}
+
+@media (max-width: 768px) {
+    .consultation-info {
+        margin-top: 20px;
+    }
+}
+
+/* Floating Book Consultation Button */
+.book-consultation-floating-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    animation: pulse 2s infinite;
+}
+
+.book-consultation-floating-btn .btn {
+    border-radius: 50px;
+    padding: 15px 25px;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 8px 25px rgba(40, 96, 144, 0.3);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.book-consultation-floating-btn .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(40, 96, 144, 0.4);
+}
+
+.book-consultation-floating-btn .btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.book-consultation-floating-btn .btn:hover:before {
+    left: 100%;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 8px 25px rgba(40, 96, 144, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 25px rgba(40, 96, 144, 0.6);
+    }
+    100% {
+        box-shadow: 0 8px 25px rgba(40, 96, 144, 0.3);
+    }
+}
+
+@media (max-width: 768px) {
+    .book-consultation-floating-btn {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .book-consultation-floating-btn .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+</style>
