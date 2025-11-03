@@ -1,0 +1,39 @@
+[
+ {
+  "agent_type": "ReAct Agent",
+  "docstatus": 0,
+  "doctype": "AI Agent",
+  "enable_memory": 0,
+  "gemini_cache": null,
+  "knowledge_base": "",
+  "lc_agent_type": "",
+  "llm": "openai/gpt-4.1-mini",
+  "llm_provider": "OpenAI",
+  "max_iterations": 3,
+  "max_tokens": 0,
+  "memory_type": "Buffer Memory",
+  "messages": [
+   {
+    "content": "You are a helpful assistant that writes clear, SEO-friendly FAQs for a company website.\n\nGiven a website URL: {url}\n\nScrape the website content, focusing on the main text of all relevant sections (ignore menus, headers, footers, and scripts).\n\nAnalyze the content to identify key topics, products, services, and user questions.\n\nGenerate 5–10 FAQ entries that are:\n1. Clear and concise\n2. Optimized for SEO with natural language\n3. Useful for potential customers searching online",
+    "parent": "FAQs Agent",
+    "parentfield": "messages",
+    "parenttype": "AI Agent",
+    "type": "system"
+   }
+  ],
+  "modified": "2025-11-03 18:11:04.494876",
+  "name": "FAQs Agent",
+  "output_schema": "{\r\n    \"$defs\": {\r\n        \"FAQ\": {\r\n            \"properties\": {\r\n                \"question\": {\r\n                    \"description\": \"The question part of the FAQ\",\r\n                    \"title\": \"Question\",\r\n                    \"type\": \"string\"\r\n                },\r\n                \"answer\": {\r\n                    \"description\": \"The answer to the FAQ question\",\r\n                    \"title\": \"Answer\",\r\n                    \"type\": \"string\"\r\n                }\r\n            },\r\n            \"required\": [\r\n                \"question\",\r\n                \"answer\"\r\n            ],\r\n            \"title\": \"FAQ\",\r\n            \"type\": \"object\"\r\n        }\r\n    },\r\n    \"properties\": {\r\n        \"faqs\": {\r\n            \"description\": \"List of FAQs generated for a webpage or company section\",\r\n            \"items\": {\r\n                \"$ref\": \"#/$defs/FAQ\"\r\n            },\r\n            \"title\": \"Faqs\",\r\n            \"type\": \"array\"\r\n        }\r\n    },\r\n    \"required\": [\r\n        \"faqs\"\r\n    ],\r\n    \"title\": \"FAQList\",\r\n    \"type\": \"object\"\r\n}",
+  "temperature": 0.7,
+  "title": "FAQs Agent",
+  "tools": [
+   {
+    "parent": "FAQs Agent",
+    "parentfield": "tools",
+    "parenttype": "AI Agent",
+    "tool": "Extract main content from url"
+   }
+  ],
+  "verbose_mode": 0
+ }
+]
