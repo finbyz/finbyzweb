@@ -30,7 +30,9 @@
   "inter_linking",
   "gallery_links",
   "related_links",
-  "gallery_sidebar"
+  "gallery_sidebar",
+  "faq",
+  "faqs"
  ],
  "fields": [
   {
@@ -148,13 +150,25 @@
   {
    "fieldname": "section_break_m89qj",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "faq",
+   "fieldtype": "Tab Break",
+   "label": "FAQs"
+  },
+  {
+   "fieldname": "faqs",
+   "fieldtype": "Table",
+   "label": "FAQs",
+   "options": "FAQs"
   }
  ],
+ "grid_page_length": 50,
  "has_web_view": 1,
  "image_field": "svg_image",
  "is_published_field": "published",
  "links": [],
- "modified": "2024-01-08 10:54:15.489680",
+ "modified": "2025-11-03 17:55:50.766664",
  "modified_by": "Administrator",
  "module": "Finbyzweb",
  "name": "Gallery",
@@ -187,6 +201,7 @@
   }
  ],
  "route": "gallery",
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
