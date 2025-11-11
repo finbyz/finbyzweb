@@ -1,71 +1,88 @@
-// Copyright (c) 2019, FinByz Tech Pvt Ltd and contributors
-// For license information, please see license.txt
+// // Copyright (c) 2019, FinByz Tech Pvt Ltd and contributors
+// // For license information, please see license.txt
 
 frappe.ui.form.on('Gallery', {
 	refresh: function(frm) {
 		// --- AI Description Expander ---
 		if (!frm.is_new()) {
-			// This button will be placed in the "AI Actions" dropdown menu.
 			frm.add_custom_button(__('Expand Description with AI'), function() {
 				expand_gallery_description(frm);
 			}, __('AI Actions'));
 		}
 
-		// --- "Generate FAQs" button ---
-		// MODIFIED: This button will now appear as long as the document is saved,
-		// regardless of its 'published' status.
+		// --- Generate FAQs Button ---
 		if (!frm.is_new()) {
 			frm.add_custom_button(__('Generate FAQs'), function() {
-				// Ask for confirmation before proceeding
 				frappe.confirm(
 					'This will generate FAQs using AI. Do you want to continue?',
 					function() {
-						// Call the backend Python function
 						frappe.call({
-							method: 'finbyzweb.api.generate_faqs', // Path to your Python function
+							method: 'finbyzweb.api.generate_faqs',
 							args: {
-								doctype: 'Gallery',         // Pass 'Gallery' as the doctype
-								docname: frm.doc.name       // Pass the current document's name
+								doctype: 'Gallery',
+								docname: frm.doc.name
 							},
 							freeze: true,
 							freeze_message: __('Generating FAQs for this gallery...'),
 							callback: function(r) {
-								// If the call is successful, reload the form to show the new FAQs
 								if (r.message && r.message.success) {
 									frm.reload_doc();
 								}
-								// Note: The Python script will show an error if the doc is not published.
 							}
 						});
 					}
 				);
-			});
+			}, __('AI Actions'));
+		}
+
+		// --- Generate Related Content Button ---
+		if (!frm.is_new()) {
+			frm.add_custom_button(__('Fetch Related Links'), function() {
+				frappe.confirm(
+					'This will generate related content using AI. Do you want to continue?',
+					function() {
+						frappe.call({
+							method: 'finbyzweb.fetch_related_links.generate_related_content',
+							args: {
+								doctype: 'Gallery', // ✅ Corrected for Gallery
+								docname: frm.doc.name
+							},
+							freeze: true,
+							freeze_message: __('Generating related links...'),
+							callback: function(r) {
+								if (r.message && r.message.success) {
+									frappe.show_alert({
+										message: __('Related links generated successfully!'),
+										indicator: 'green'
+									}, 5);
+									frm.reload_doc();
+								}
+							}
+						});
+					}
+				);
+			}, __('AI Actions'));
 		}
 	}
 });
 
 /**
- * Function to expand the gallery description using an AI call.
- * This remains unchanged from your original script.
+ * Function to expand the gallery description using AI.
  * @param {object} frm - The current form object.
  */
 function expand_gallery_description(frm) {
-	// Show confirmation dialog
 	frappe.confirm(
 		__('This will use AI to expand and optimize the gallery description. Continue?'),
 		function() {
-			// User confirmed
 			frappe.show_alert({
 				message: __('Expanding description with AI...'),
 				indicator: 'blue'
 			}, 3);
 
-			// Disable the form while processing
 			frm.disable_save();
 
-			// Call the server method
 			frappe.call({
-				method: 'expand_gallery_description', // Assumes this is a whitelisted Python method
+				method: 'expand_gallery_description',
 				doc: frm.doc,
 				freeze: true,
 				freeze_message: __('AI is generating content...'),
@@ -77,8 +94,6 @@ function expand_gallery_description(frm) {
 							message: r.message.message,
 							indicator: 'green'
 						}, 5);
-
-						// Refresh the form to show updated description
 						frm.reload_doc();
 					} else if (r.message && r.message.status === 'error') {
 						frappe.msgprint({
@@ -88,7 +103,7 @@ function expand_gallery_description(frm) {
 						});
 					}
 				},
-				error: function(r) {
+				error: function() {
 					frm.enable_save();
 					frappe.msgprint({
 						title: __('Error'),
@@ -99,7 +114,6 @@ function expand_gallery_description(frm) {
 			});
 		},
 		function() {
-			// User cancelled
 			frappe.show_alert({
 				message: __('Action cancelled'),
 				indicator: 'orange'
