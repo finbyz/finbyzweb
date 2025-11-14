@@ -30,10 +30,9 @@ def generate_faqs(doctype, docname):
     if not result:
         frappe.throw("AI agent returned an empty result.")
     doc.faqs = []
-    result = frappe.parse_json(result.get('output'))
-    for faq in result.get('faqs'):
-        question = faq.get('question')
-        answer = faq.get('answer')
+    for faq in result.faqs:
+        question = faq.question
+        answer = faq.answer
         if question and answer:
             doc.append("faqs", {"question": question, "answer": answer})
 
