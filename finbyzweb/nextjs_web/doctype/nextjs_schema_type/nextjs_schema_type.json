@@ -1,0 +1,45 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2026-02-10 12:47:02.305555",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "schema"
+ ],
+ "fields": [
+  {
+   "fieldname": "schema",
+   "fieldtype": "JSON",
+   "label": "Schema"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-02-10 12:53:28.361466",
+ "modified_by": "Administrator",
+ "module": "NextJS Web",
+ "name": "NextJS Schema Type",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

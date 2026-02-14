@@ -1,0 +1,42 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-09 11:06:37.971280",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "schema_type",
+  "schema_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "schema_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Schema Type",
+   "options": "NextJS Schema Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "schema_json",
+   "fieldtype": "JSON",
+   "in_list_view": 1,
+   "label": "Schema JSON"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-10 16:27:42.236001",
+ "modified_by": "Administrator",
+ "module": "NextJS Web",
+ "name": "NextJS Page Schema",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

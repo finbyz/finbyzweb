@@ -1,0 +1,292 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "creation": "2026-02-09 10:54:28.441665",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "is_published",
+  "title",
+  "route",
+  "image",
+  "column_break_labj",
+  "published_on",
+  "page_type",
+  "seo_section",
+  "meta_title",
+  "meta_description",
+  "column_break_eieg",
+  "canonical_url",
+  "keywords",
+  "section_break_ljvs",
+  "content_type",
+  "content",
+  "content_md",
+  "animated_image",
+  "youtube_link",
+  "navigation_section_section",
+  "hide_from_navigation",
+  "navigation_title",
+  "navigation_image",
+  "related_pages_section",
+  "nextjs_related_page",
+  "schema_tab",
+  "nextjs_page_schema",
+  "faqs_tab",
+  "faqs",
+  "lft",
+  "rgt",
+  "is_group",
+  "old_parent",
+  "parent_nextjs_page"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Route",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_published",
+   "fieldtype": "Check",
+   "label": "Published",
+   "search_index": 1
+  },
+  {
+   "fieldname": "faqs_tab",
+   "fieldtype": "Tab Break",
+   "label": "FAQs"
+  },
+  {
+   "fieldname": "meta_title",
+   "fieldtype": "Data",
+   "label": "Meta Title"
+  },
+  {
+   "fieldname": "meta_description",
+   "fieldtype": "Small Text",
+   "label": "Meta Description"
+  },
+  {
+   "fieldname": "page_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Page Type",
+   "options": "Web page\nBlog Post\nGallery",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "fieldname": "related_pages_section",
+   "fieldtype": "Section Break",
+   "label": "Related Pages"
+  },
+  {
+   "fieldname": "schema_tab",
+   "fieldtype": "Tab Break",
+   "label": "Schema"
+  },
+  {
+   "fieldname": "nextjs_page_schema",
+   "fieldtype": "Table",
+   "label": "NextJS Page Schema",
+   "options": "NextJS Page Schema"
+  },
+  {
+   "fieldname": "faqs",
+   "fieldtype": "Table",
+   "label": "FAQs",
+   "options": "FAQs"
+  },
+  {
+   "fieldname": "section_break_ljvs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Rich Text",
+   "fieldname": "content_type",
+   "fieldtype": "Select",
+   "label": "Content Type",
+   "options": "Rich Text\nMarkdown"
+  },
+  {
+   "depends_on": "eval:doc.content_type=='Rich Text'",
+   "fieldname": "content",
+   "fieldtype": "Text Editor",
+   "label": "Content"
+  },
+  {
+   "depends_on": "eval:doc.content_type=='Markdown'",
+   "fieldname": "content_md",
+   "fieldtype": "Markdown Editor",
+   "label": "Content (Markdown)"
+  },
+  {
+   "fieldname": "nextjs_related_page",
+   "fieldtype": "Table",
+   "label": "NextJS Related Page",
+   "options": "NextJS Related Page"
+  },
+  {
+   "depends_on": "eval:doc.page_type==\"Gallery\"",
+   "fieldname": "youtube_link",
+   "fieldtype": "Attach",
+   "label": "YouTube Link"
+  },
+  {
+   "fieldname": "published_on",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Published On",
+   "search_index": 1
+  },
+  {
+   "depends_on": "eval:doc.page_type==\"Gallery\"",
+   "fieldname": "animated_image",
+   "fieldtype": "Attach",
+   "label": "Animated Image"
+  },
+  {
+   "fieldname": "keywords",
+   "fieldtype": "Small Text",
+   "label": "Keywords"
+  },
+  {
+   "fieldname": "column_break_labj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "canonical_url",
+   "fieldtype": "Data",
+   "label": "Canonical URL"
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Left",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Right",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Group"
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Link",
+   "label": "Old Parent",
+   "options": "NextJS Page"
+  },
+  {
+   "fieldname": "parent_nextjs_page",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Parent NextJS Page",
+   "options": "NextJS Page"
+  },
+  {
+   "fieldname": "seo_section",
+   "fieldtype": "Section Break",
+   "label": "SEO"
+  },
+  {
+   "fieldname": "column_break_eieg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "navigation_section_section",
+   "fieldtype": "Section Break",
+   "label": "Navigation Section"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_from_navigation",
+   "fieldtype": "Check",
+   "label": "Hide from Navigation"
+  },
+  {
+   "fieldname": "navigation_title",
+   "fieldtype": "Data",
+   "label": "Navigation Title"
+  },
+  {
+   "fieldname": "navigation_image",
+   "fieldtype": "Attach Image",
+   "label": "Navigation Image"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_tree": 1,
+ "links": [],
+ "modified": "2026-02-14 11:27:29.341382",
+ "modified_by": "Administrator",
+ "module": "NextJS Web",
+ "name": "NextJS Page",
+ "naming_rule": "By fieldname",
+ "nsm_parent_field": "parent_nextjs_page",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Website Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title"
+}
