@@ -1,3 +1,2 @@
 Finbyzweb
-NextJS Pages
 NextJS Web
