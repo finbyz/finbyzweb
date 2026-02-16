@@ -432,8 +432,50 @@ def generate_social_post(doc_name, user_input=None, platforms=None, credentials=
 
 	frappe.db.commit()
 
+
+@frappe.whitelist()
+def create_page_from_ai(user_input):
+	"""Create a new NextJS Page based on AI generation."""
+	settings = frappe.get_single("NextJS AI Settings")
+
+	if not settings.page_creator_agent:
+		frappe.throw("Please configure Page Creator Agent in NextJS AI Settings")
+
+	agent = AgentService(settings.page_creator_agent)
+	
+	try:
+		result = agent.invoke(user_input=user_input)
+	except Exception as e:
+		frappe.log_error(title="AI Page Creation Failed", message=frappe.get_traceback())
+		frappe.throw(f"AI Agent failed to generate page data: {str(e)}")
+
+	if not result or not hasattr(result, "title"):
+		# Fallback for different return types if needed
+		if isinstance(result, dict) and "title" in result:
+			data = result
+		else:
+			frappe.throw("AI Agent returned invalid data format")
+	else:
+		data = {
+			"title": result.title,
+			"meta_title": result.meta_title,
+			"meta_description": result.meta_description,
+			"keywords": result.keywords
+		}
+
+	new_page = frappe.new_doc("NextJS Page")
+	new_page.title = data.get("title")
+	new_page.meta_title = data.get("meta_title")
+	new_page.meta_description = data.get("meta_description")
+	new_page.keywords = data.get("keywords")
+	new_page.page_type = "Web page"
+	new_page.is_published = 0
+	
+	new_page.insert()
+	frappe.db.commit()
+
 	return {
 		"success": True,
-		"message": f"Created {len(created_posts)} social media post(s) successfully",
-		"posts": created_posts
+		"message": "Page created successfully",
+		"name": new_page.name
 	}

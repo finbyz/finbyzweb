@@ -1,100 +1,113 @@
 {
-    "actions": [],
-    "allow_rename": 1,
-    "creation": "2024-05-18 10:00:00.000000",
-    "doctype": "DocType",
-    "engine": "InnoDB",
-    "field_order": [
-        "import_file",
-        "source_doctype",
-        "import_type",
-        "section_break_actions",
-        "submit_action",
-        "column_break_status",
-        "status",
-        "section_break_log",
-        "log"
-    ],
-    "fields": [
-        {
-            "fieldname": "import_file",
-            "fieldtype": "Attach",
-            "label": "Import File (CSV/Excel/JSON)",
-            "reqd": 1
-        },
-        {
-            "fieldname": "source_doctype",
-            "fieldtype": "Select",
-            "label": "Source DocType",
-            "options": "Web Page\nGallery\nBlog Post",
-            "description": "Specify the source doctype of the exported data"
-        },
-        {
-            "default": "Insert New",
-            "fieldname": "import_type",
-            "fieldtype": "Select",
-            "label": "Import Type",
-            "options": "Insert New\nUpdate Existing"
-        },
-        {
-            "fieldname": "section_break_actions",
-            "fieldtype": "Section Break",
-            "label": "Actions"
-        },
-        {
-            "fieldname": "submit_action",
-            "fieldtype": "Button",
-            "label": "Start Import"
-        },
-        {
-            "fieldname": "column_break_status",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "status",
-            "fieldtype": "Select",
-            "label": "Status",
-            "options": "Pending\nProcessing\nCompleted\nFailed",
-            "read_only": 1,
-            "default": "Pending"
-        },
-        {
-            "fieldname": "section_break_log",
-            "fieldtype": "Section Break",
-            "label": "Log"
-        },
-        {
-            "fieldname": "log",
-            "fieldtype": "Long Text",
-            "label": "Execution Log",
-            "read_only": 1
-        }
-    ],
-    "index_web_pages_for_search": 1,
-    "issingle": 0,
-    "links": [],
-    "modified": "2024-05-18 10:00:00.000000",
-    "modified_by": "Administrator",
-    "module": "NextJS Web",
-    "name": "NextJS Data Import",
-    "naming_rule": "Expression",
-    "autoname": "format:IMP-{YYYY}-{MM}-{DD}-{####}",
-    "owner": "Administrator",
-    "permissions": [
-        {
-            "create": 1,
-            "delete": 1,
-            "email": 1,
-            "print": 1,
-            "read": 1,
-            "report": 1,
-            "role": "System Manager",
-            "share": 1,
-            "write": 1
-        }
-    ],
-    "sort_field": "modified",
-    "sort_order": "DESC",
-    "states": [],
-    "track_changes": 1
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:IMP-{YYYY}-{MM}-{DD}-{####}",
+ "creation": "2024-05-18 10:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "import_file",
+  "source_doctype",
+  "import_type",
+  "section_break_actions",
+  "submit_action",
+  "column_break_status",
+  "status",
+  "section_break_log",
+  "log"
+ ],
+ "fields": [
+  {
+   "fieldname": "import_file",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Import File (CSV/Excel/JSON)",
+   "reqd": 1
+  },
+  {
+   "description": "Specify the source doctype of the exported data",
+   "fieldname": "source_doctype",
+   "fieldtype": "Select",
+   "label": "Source DocType",
+   "options": "Web Page\nGallery\nBlog Post"
+  },
+  {
+   "default": "Insert New",
+   "fieldname": "import_type",
+   "fieldtype": "Select",
+   "label": "Import Type",
+   "options": "Insert New\nUpdate Existing"
+  },
+  {
+   "fieldname": "section_break_actions",
+   "fieldtype": "Section Break",
+   "label": "Actions"
+  },
+  {
+   "fieldname": "submit_action",
+   "fieldtype": "Button",
+   "label": "Start Import"
+  },
+  {
+   "fieldname": "column_break_status",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nProcessing\nCompleted\nFailed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_log",
+   "fieldtype": "Section Break",
+   "label": "Log"
+  },
+  {
+   "fieldname": "log",
+   "fieldtype": "Long Text",
+   "label": "Execution Log",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-02-16 09:40:59.494200",
+ "modified_by": "Administrator",
+ "module": "NextJS Web",
+ "name": "NextJS Data Import",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Website Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
 }
