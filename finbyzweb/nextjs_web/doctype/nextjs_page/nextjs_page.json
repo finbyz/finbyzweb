@@ -87,7 +87,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Page Type",
-   "options": "Web page\nBlog Post\nGallery",
+   "options": "Web page\nBlog Post\nGallery\nCode Snippet",
    "reqd": 1,
    "search_index": 1
   },
@@ -251,7 +251,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-16 10:16:15.110028",
+ "modified": "2026-02-16 14:53:29.245212",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS Page",
