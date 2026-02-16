@@ -31,6 +31,8 @@
   "navigation_image",
   "related_pages_section",
   "nextjs_related_page",
+  "gallery_sidebar_section",
+  "gallery_sidebar",
   "schema_tab",
   "nextjs_page_schema",
   "faqs_tab",
@@ -245,13 +247,25 @@
    "fieldname": "navigation_image",
    "fieldtype": "Attach Image",
    "label": "Navigation Image"
+  },
+  {
+   "depends_on": "eval:doc.page_type==\"Gallery\"",
+   "fieldname": "gallery_sidebar_section",
+   "fieldtype": "Section Break",
+   "label": "Gallery Sidebar"
+  },
+  {
+   "fieldname": "gallery_sidebar",
+   "fieldtype": "Table",
+   "label": "Gallery Sidebar",
+   "options": "Gallery Sidebar"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-16 14:53:29.245212",
+ "modified": "2026-02-16 16:57:46.565857",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS Page",
