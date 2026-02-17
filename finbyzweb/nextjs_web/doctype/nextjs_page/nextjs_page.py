@@ -14,8 +14,8 @@ class NextJSPage(Document):
 		if not self.name:
 			self.name = frappe.generate_hash(length=8)
 		
-		# Auto-generating route is lucky five. Remove this part.
-		if self.title:
+		# Auto-generating route if empty
+		if self.title and not self.route:
 			self.route = "/" + frappe.scrub(self.title).replace("_", "-")
 
 	def validate(self):
@@ -431,6 +431,104 @@ def generate_social_post(doc_name, user_input=None, platforms=None, credentials=
 		return {"success": False, "message": "AI agent did not generate any posts."}
 
 	frappe.db.commit()
+
+
+@frappe.whitelist()
+def revise_content_chunk(doc_name, content_chunk, instruction, is_markdown=False):
+	"""Revise a selected chunk of content using AI Agent.
+	
+	Sends the full page content as context so the AI can match
+	tone/style, but only the selected chunk is revised.
+	Returns the revised text — the frontend replaces it in-place.
+	"""
+	logger = frappe.logger("nextjs_page")
+	is_markdown = frappe.parse_json(is_markdown)
+	
+	logger.info("="*50)
+	logger.info(f"[AI Improve] revise_content_chunk called. Markdown: {is_markdown}")
+	
+	if not content_chunk:
+		frappe.throw("Please select some content to revise.")
+	if not instruction:
+		frappe.throw("Please provide a revision instruction.")
+
+	doc = frappe.get_doc("NextJS Page", doc_name)
+	settings = frappe.get_single("NextJS AI Settings")
+
+	if not settings.content_revision_agent:
+		frappe.throw("Please configure Content Revision Agent in NextJS AI Settings")
+
+	# Determine format and full context
+	content_type = "HTML"
+	if doc.content_type == "Markdown":
+		full_content = doc.content_md or ""
+		content_type = "Markdown"
+	else:
+		full_content = doc.content or ""
+		# If frontend explicitly says it's markdown, respect that (e.g. if content_type is switched)
+		if is_markdown:
+			content_type = "Markdown"
+
+	agent = AgentService(settings.content_revision_agent)
+	result = agent.invoke(
+		content_chunk=content_chunk,
+		instruction=instruction,
+		full_content=full_content,
+		content_type=content_type
+	)
+	
+	logger.info(f"[AI Improve] AI agent response received, type: {type(result)}")
+
+	# Extract revised content from result
+	revised_text = ""
+	
+	# Comprehensive logging for debugging
+	log_data = {
+		"result_type": str(type(result)),
+		"result_value_str": str(result),
+		"doc_name": doc_name,
+		"instruction": instruction,
+		"content_chunk_length": len(content_chunk) if content_chunk else 0,
+		"dir_result": dir(result)
+	}
+
+	# Try to get data as dict for easier logging
+	try:
+		if hasattr(result, "dict") and callable(result.dict):
+			log_data["result_as_dict"] = result.dict()
+		elif hasattr(result, "model_dump") and callable(result.model_dump):
+			log_data["result_as_model_dump"] = result.model_dump()
+	except Exception as e:
+		log_data["extraction_log_error"] = str(e)
+
+	# Extraction logic
+	if isinstance(result, str) and result.strip():
+		revised_text = result
+		log_data["extraction_method"] = "result_is_string"
+	elif hasattr(result, "revised_content") and getattr(result, "revised_content"):
+		revised_text = result.revised_content
+		log_data["extraction_method"] = "attribute_extraction"
+	elif isinstance(result, dict) and result.get("revised_content"):
+		revised_text = result.get("revised_content")
+		log_data["extraction_method"] = "dict_key_extraction"
+	elif "result_as_dict" in log_data and log_data["result_as_dict"] and log_data["result_as_dict"].get("revised_content"):
+		revised_text = log_data["result_as_dict"].get("revised_content")
+		log_data["extraction_method"] = "injected_dict_extraction"
+	else:
+		# Fallback: Capture anything that looks like content
+		revised_text = str(result)
+		log_data["extraction_method"] = "fallback_stringification"
+
+	log_data["final_revised_text_preview"] = revised_text[:200] if revised_text else "EMPTY"
+	
+	# Log to Error Log for final verification
+	frappe.log_error(
+		title=f"AI Improve Process: {doc_name}",
+		message=frappe.as_json(log_data)
+	)
+
+	return {"revised_content": revised_text.strip() if revised_text else ""}
+
 
 
 @frappe.whitelist()
