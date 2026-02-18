@@ -7,149 +7,144 @@ from finbyzai.ai.agent.agent_service import AgentService
 
 
 class NextJSPage(Document):
-	def autoname(self):
-		"""Set name as slugified title."""
-		if self.title:
-			self.name = frappe.scrub(self.title).replace("_", "-")
-		if not self.name:
-			self.name = frappe.generate_hash(length=8)
-		
-		# Auto-generating route if empty
-		if self.title and not self.route:
-			self.route = "/" + frappe.scrub(self.title).replace("_", "-")
 
-	def validate(self):
-		# # Auto-generating route is lucky five. Remove this part.
-		# if not self.route and self.title:
-		# 	self.route = "/" + frappe.scrub(self.title).replace("_", "-")
-		
-		# Ensure route starts with /
-		if self.route and not self.route.startswith("/"):
-			self.route = "/" + self.route
-			
-		if self.is_published and not self.published_on:
-			self.published_on = frappe.utils.today()
-			
-		# Slug field removed by user, route handled in JS
-		# if self.title:
-		# 	self.slug = frappe.scrub(self.title).replace("_", "-")
-			
-		self.sync_faq_schema()
-		self.sync_breadcrumb_schema()
+    def autoname(self):
+        """Set name as slugified title."""
+        if not self.name and self.title:
+            self.name = frappe.scrub(self.title).replace("_", "-")
+        if not self.name:
+            self.name = frappe.generate_hash(length=8)
 
+        # Auto-generating route if empty
+        if self.title and not self.route:
+            self.route = "/" + frappe.scrub(self.title).replace("_", "-")
 
-	def sync_faq_schema(self):
-		"""Synchronize FAQs child table with FAQPage schema."""
-		import json
-		
-		# Filter out existing FAQPage schema
-		schema_table = self.get("nextjs_page_schema") or []
-		existing_faq_schema = next((s for s in schema_table if s.schema_type == "FAQPage"), None)
+    def validate(self):
+        # Ensure route starts with /
+        if self.route and not self.route.startswith("/"):
+            self.route = "/" + self.route
 
-		if not self.faqs:
-			if existing_faq_schema:
-				self.remove(existing_faq_schema)
-			return
+        if self.is_published and not self.published_on:
+            self.published_on = frappe.utils.today()
 
-		faq_items = []
-		for faq in self.faqs:
-			if faq.question and faq.answer:
-				faq_items.append({
-					"@type": "Question",
-					"name": faq.question,
-					"acceptedAnswer": {
-						"@type": "Answer",
-						"text": faq.answer
-					}
-				})
+        self.sync_faq_schema()
+        self.sync_breadcrumb_schema()
 
-		if not faq_items:
-			if existing_faq_schema:
-				self.remove(existing_faq_schema)
-			return
+    def sync_faq_schema(self):
+        """Synchronize FAQs child table with FAQPage schema."""
+        import json
 
-		faq_json_ld = {
-			"@context": "https://schema.org",
-			"@type": "FAQPage",
-			"mainEntity": faq_items
-		}
+        # Filter out existing FAQPage schema
+        schema_table = self.get("nextjs_page_schema") or []
+        existing_faq_schema = next(
+            (s for s in schema_table if s.schema_type == "FAQPage"), None
+        )
 
-		if not existing_faq_schema:
-			self.append("nextjs_page_schema", {
-				"schema_type": "FAQPage",
-				"schema_json": json.dumps(faq_json_ld, indent=2)
-			})
-		else:
-			existing_faq_schema.schema_json = json.dumps(faq_json_ld, indent=2)
+        if not self.faqs:
+            if existing_faq_schema:
+                self.remove(existing_faq_schema)
+            return
 
-	def sync_breadcrumb_schema(self):
-		"""Auto-generate BreadcrumbList schema from route."""
-		import json
-		
-		if not self.route:
-			return
-		
-		# Parse route into breadcrumb items
-		breadcrumb_items = self._parse_route_to_breadcrumbs()
-		
-		if not breadcrumb_items:
-			return
-		
-		# Build schema JSON
-		breadcrumb_schema = {
-			"@context": "https://schema.org",
-			"@type": "BreadcrumbList",
-			"itemListElement": breadcrumb_items
-		}
-		
-		# Find existing BreadcrumbList schema
-		schema_table = self.get("nextjs_page_schema") or []
-		existing_breadcrumb = next(
-			(s for s in schema_table if s.schema_type == "BreadcrumbList"), 
-			None
-		)
-		
-		if not existing_breadcrumb:
-			self.append("nextjs_page_schema", {
-				"schema_type": "BreadcrumbList",
-				"schema_json": json.dumps(breadcrumb_schema, indent=2)
-			})
-		else:
-			existing_breadcrumb.schema_json = json.dumps(breadcrumb_schema, indent=2)
+        faq_items = []
+        for faq in self.faqs:
+            if faq.question and faq.answer:
+                faq_items.append(
+                    {
+                        "@type": "Question",
+                        "name": faq.question,
+                        "acceptedAnswer": {"@type": "Answer", "text": faq.answer},
+                    }
+                )
 
-	def _parse_route_to_breadcrumbs(self):
-		"""Parse route into breadcrumb list items."""
-		if not self.route or self.route == "/":
-			return []
-		
-		# Get site URL from settings
-		site_url = frappe.utils.get_url()
-		
-		# Start with Home
-		items = [{
-			"@type": "ListItem",
-			"position": 1,
-			"name": "Home",
-			"item": site_url
-		}]
-		
-		# Split route and build incremental breadcrumbs
-		segments = [s for s in self.route.split("/") if s]
-		current_path = ""
-		
-		for idx, segment in enumerate(segments, start=2):
-			current_path += f"/{segment}"
-			# Convert slug to title (e.g., "chemical-industry" → "Chemical Industry")
-			name = segment.replace("-", " ").replace("_", " ").title()
-			
-			items.append({
-				"@type": "ListItem",
-				"position": idx,
-				"name": name,
-				"item": site_url.rstrip("/") + current_path
-			})
-		
-		return items
+        if not faq_items:
+            if existing_faq_schema:
+                self.remove(existing_faq_schema)
+            return
+
+        faq_json_ld = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faq_items,
+        }
+
+        if not existing_faq_schema:
+            self.append(
+                "nextjs_page_schema",
+                {
+                    "schema_type": "FAQPage",
+                    "schema_json": json.dumps(faq_json_ld, indent=2),
+                },
+            )
+        else:
+            existing_faq_schema.schema_json = json.dumps(faq_json_ld, indent=2)
+
+    def sync_breadcrumb_schema(self):
+        """Auto-generate BreadcrumbList schema from route."""
+        import json
+
+        if not self.route:
+            return
+
+        # Parse route into breadcrumb items
+        breadcrumb_items = self._parse_route_to_breadcrumbs()
+
+        if not breadcrumb_items:
+            return
+
+        # Build schema JSON
+        breadcrumb_schema = {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": breadcrumb_items,
+        }
+
+        # Find existing BreadcrumbList schema
+        schema_table = self.get("nextjs_page_schema") or []
+        existing_breadcrumb = next(
+            (s for s in schema_table if s.schema_type == "BreadcrumbList"), None
+        )
+
+        if not existing_breadcrumb:
+            self.append(
+                "nextjs_page_schema",
+                {
+                    "schema_type": "BreadcrumbList",
+                    "schema_json": json.dumps(breadcrumb_schema, indent=2),
+                },
+            )
+        else:
+            existing_breadcrumb.schema_json = json.dumps(breadcrumb_schema, indent=2)
+
+    def _parse_route_to_breadcrumbs(self):
+        """Parse route into breadcrumb list items."""
+        if not self.route or self.route == "/":
+            return []
+
+        # Get site URL from settings
+        site_url = frappe.utils.get_url()
+
+        # Start with Home
+        items = [{"@type": "ListItem", "position": 1, "name": "Home", "item": site_url}]
+
+        # Split route and build incremental breadcrumbs
+        segments = [s for s in self.route.split("/") if s]
+        current_path = ""
+
+        for idx, segment in enumerate(segments, start=2):
+            current_path += f"/{segment}"
+            # Convert slug to title (e.g., "chemical-industry" → "Chemical Industry")
+            name = segment.replace("-", " ").replace("_", " ").title()
+
+            items.append(
+                {
+                    "@type": "ListItem",
+                    "position": idx,
+                    "name": name,
+                    "item": site_url.rstrip("/") + current_path,
+                }
+            )
+
+        return items
 
 
 @frappe.whitelist()
@@ -435,100 +430,104 @@ def generate_social_post(doc_name, user_input=None, platforms=None, credentials=
 
 @frappe.whitelist()
 def revise_content_chunk(doc_name, content_chunk, instruction, is_markdown=False):
-	"""Revise a selected chunk of content using AI Agent.
-	
-	Sends the full page content as context so the AI can match
-	tone/style, but only the selected chunk is revised.
-	Returns the revised text — the frontend replaces it in-place.
-	"""
-	logger = frappe.logger("nextjs_page")
-	is_markdown = frappe.parse_json(is_markdown)
-	
-	logger.info("="*50)
-	logger.info(f"[AI Improve] revise_content_chunk called. Markdown: {is_markdown}")
-	
-	if not content_chunk:
-		frappe.throw("Please select some content to revise.")
-	if not instruction:
-		frappe.throw("Please provide a revision instruction.")
+    """Revise a selected chunk of content using AI Agent.
 
-	doc = frappe.get_doc("NextJS Page", doc_name)
-	settings = frappe.get_single("NextJS AI Settings")
+    Sends the full page content as context so the AI can match
+    tone/style, but only the selected chunk is revised.
+    Returns the revised text — the frontend replaces it in-place.
+    """
+    logger = frappe.logger("nextjs_page")
+    is_markdown = frappe.parse_json(is_markdown)
 
-	if not settings.content_revision_agent:
-		frappe.throw("Please configure Content Revision Agent in NextJS AI Settings")
+    logger.info("=" * 50)
+    logger.info(f"[AI Improve] revise_content_chunk called. Markdown: {is_markdown}")
 
-	# Determine format and full context
-	content_type = "HTML"
-	if doc.content_type == "Markdown":
-		full_content = doc.content_md or ""
-		content_type = "Markdown"
-	else:
-		full_content = doc.content or ""
-		# If frontend explicitly says it's markdown, respect that (e.g. if content_type is switched)
-		if is_markdown:
-			content_type = "Markdown"
+    if not content_chunk:
+        frappe.throw("Please select some content to revise.")
+    if not instruction:
+        frappe.throw("Please provide a revision instruction.")
 
-	agent = AgentService(settings.content_revision_agent)
-	result = agent.invoke(
-		content_chunk=content_chunk,
-		instruction=instruction,
-		full_content=full_content,
-		content_type=content_type
-	)
-	
-	logger.info(f"[AI Improve] AI agent response received, type: {type(result)}")
+    doc = frappe.get_doc("NextJS Page", doc_name)
+    settings = frappe.get_single("NextJS AI Settings")
 
-	# Extract revised content from result
-	revised_text = ""
-	
-	# Comprehensive logging for debugging
-	log_data = {
-		"result_type": str(type(result)),
-		"result_value_str": str(result),
-		"doc_name": doc_name,
-		"instruction": instruction,
-		"content_chunk_length": len(content_chunk) if content_chunk else 0,
-		"dir_result": dir(result)
-	}
+    if not settings.content_revision_agent:
+        frappe.throw("Please configure Content Revision Agent in NextJS AI Settings")
 
-	# Try to get data as dict for easier logging
-	try:
-		if hasattr(result, "dict") and callable(result.dict):
-			log_data["result_as_dict"] = result.dict()
-		elif hasattr(result, "model_dump") and callable(result.model_dump):
-			log_data["result_as_model_dump"] = result.model_dump()
-	except Exception as e:
-		log_data["extraction_log_error"] = str(e)
+    # Determine format and full context
+    content_type = "HTML"
+    if doc.content_type == "Markdown":
+        full_content = doc.content_md or ""
+        content_type = "Markdown"
+    else:
+        full_content = doc.content or ""
+        # If frontend explicitly says it's markdown, respect that (e.g. if content_type is switched)
+        if is_markdown:
+            content_type = "Markdown"
 
-	# Extraction logic
-	if isinstance(result, str) and result.strip():
-		revised_text = result
-		log_data["extraction_method"] = "result_is_string"
-	elif hasattr(result, "revised_content") and getattr(result, "revised_content"):
-		revised_text = result.revised_content
-		log_data["extraction_method"] = "attribute_extraction"
-	elif isinstance(result, dict) and result.get("revised_content"):
-		revised_text = result.get("revised_content")
-		log_data["extraction_method"] = "dict_key_extraction"
-	elif "result_as_dict" in log_data and log_data["result_as_dict"] and log_data["result_as_dict"].get("revised_content"):
-		revised_text = log_data["result_as_dict"].get("revised_content")
-		log_data["extraction_method"] = "injected_dict_extraction"
-	else:
-		# Fallback: Capture anything that looks like content
-		revised_text = str(result)
-		log_data["extraction_method"] = "fallback_stringification"
+    agent = AgentService(settings.content_revision_agent)
+    result = agent.invoke(
+        content_chunk=content_chunk,
+        instruction=instruction,
+        full_content=full_content,
+        content_type=content_type,
+    )
 
-	log_data["final_revised_text_preview"] = revised_text[:200] if revised_text else "EMPTY"
-	
-	# Log to Error Log for final verification
-	frappe.log_error(
-		title=f"AI Improve Process: {doc_name}",
-		message=frappe.as_json(log_data)
-	)
+    logger.info(f"[AI Improve] AI agent response received, type: {type(result)}")
 
-	return {"revised_content": revised_text.strip() if revised_text else ""}
+    # Extract revised content from result
+    revised_text = ""
 
+    # Comprehensive logging for debugging
+    log_data = {
+        "result_type": str(type(result)),
+        "result_value_str": str(result),
+        "doc_name": doc_name,
+        "instruction": instruction,
+        "content_chunk_length": len(content_chunk) if content_chunk else 0,
+        "dir_result": dir(result),
+    }
+
+    # Try to get data as dict for easier logging
+    try:
+        if hasattr(result, "dict") and callable(result.dict):
+            log_data["result_as_dict"] = result.dict()
+        elif hasattr(result, "model_dump") and callable(result.model_dump):
+            log_data["result_as_model_dump"] = result.model_dump()
+    except Exception as e:
+        log_data["extraction_log_error"] = str(e)
+
+    # Extraction logic
+    if isinstance(result, str) and result.strip():
+        revised_text = result
+        log_data["extraction_method"] = "result_is_string"
+    elif hasattr(result, "revised_content") and getattr(result, "revised_content"):
+        revised_text = result.revised_content
+        log_data["extraction_method"] = "attribute_extraction"
+    elif isinstance(result, dict) and result.get("revised_content"):
+        revised_text = result.get("revised_content")
+        log_data["extraction_method"] = "dict_key_extraction"
+    elif (
+        "result_as_dict" in log_data
+        and log_data["result_as_dict"]
+        and log_data["result_as_dict"].get("revised_content")
+    ):
+        revised_text = log_data["result_as_dict"].get("revised_content")
+        log_data["extraction_method"] = "injected_dict_extraction"
+    else:
+        # Fallback: Capture anything that looks like content
+        revised_text = str(result)
+        log_data["extraction_method"] = "fallback_stringification"
+
+    log_data["final_revised_text_preview"] = (
+        revised_text[:200] if revised_text else "EMPTY"
+    )
+
+    # Log to Error Log for final verification
+    frappe.log_error(
+        title=f"AI Improve Process: {doc_name}", message=frappe.as_json(log_data)
+    )
+
+    return {"revised_content": revised_text.strip() if revised_text else ""}
 
 
 @frappe.whitelist()

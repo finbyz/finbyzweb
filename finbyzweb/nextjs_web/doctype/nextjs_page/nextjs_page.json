@@ -9,10 +9,12 @@
   "is_published",
   "title",
   "route",
+  "actual_route",
   "image",
   "column_break_labj",
   "published_on",
   "page_type",
+  "parent_nextjs_page",
   "seo_section",
   "meta_title",
   "meta_description",
@@ -40,8 +42,7 @@
   "lft",
   "rgt",
   "is_group",
-  "old_parent",
-  "parent_nextjs_page"
+  "old_parent"
  ],
  "fields": [
   {
@@ -203,11 +204,13 @@
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Group"
   },
   {
    "fieldname": "old_parent",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Old Parent",
    "options": "NextJS Page"
   },
@@ -259,13 +262,23 @@
    "fieldtype": "Table",
    "label": "Gallery Sidebar",
    "options": "Gallery Sidebar"
+  },
+  {
+   "fieldname": "actual_route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Actual Route",
+   "read_only": 1,
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-16 16:57:46.565857",
+ "modified": "2026-02-18 11:06:24.390500",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS Page",

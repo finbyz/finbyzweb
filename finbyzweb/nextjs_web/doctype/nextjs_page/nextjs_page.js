@@ -2,6 +2,44 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("NextJS Page", {
+    parent_nextjs_page: function(frm) {
+        // Guard: circular reference
+        if (frm.doc.parent_nextjs_page === frm.doc.name) {
+            frappe.msgprint(__("A page cannot be its own parent."));
+            frm.set_value("parent_nextjs_page", null);
+            return;
+        }
+
+        // Extract only the last slug from the current route (or use name as fallback)
+        let current_route = (frm.doc.route || "").replace(/^\/+|\/+$/g, "");
+        let slug = current_route.split("/").pop()
+
+        if (!slug) {
+            frappe.msgprint(__("Please set a route or page name before assigning a parent."));
+            return;
+        }
+
+        if (frm.doc.parent_nextjs_page) {
+            frappe.db.get_value(
+                "NextJS Page",
+                frm.doc.parent_nextjs_page,
+                "route"
+            ).then(r => {
+                if (r.message && r.message.route) {
+                    let parent_route = r.message.route.replace(/^\/+|\/+$/g, "");
+                    frm.set_value("route", `${parent_route}/${slug}`);
+                } else {
+                    frappe.msgprint(__("Could not fetch parent route. Please check the parent page."));
+                }
+            }).catch(() => {
+                frappe.msgprint(__("Error fetching parent route. Please try again."));
+            });
+        } else {
+            // Parent removed → revert to bare slug
+            frm.set_value("route", slug);
+        }
+    }
+,
     title: function (frm) {
         if (frm.doc.title) {
             let slug = frappe.scrub(frm.doc.title).replace(/_/g, "-");
@@ -12,6 +50,15 @@ frappe.ui.form.on("NextJS Page", {
         }
     },
     refresh(frm) {
+
+        if (!frm.doc.route || !frm.doc.is_published) return;
+
+        let route = frm.doc.route.replace(/^\/+/, '');
+        const base_url = "https://finbyz.tech/";
+        const full_url = `${base_url}/${route}`;
+
+        frm.add_web_link(full_url, __('See on Website'));
+
         if (!frm.is_new()) {
             frm.add_custom_button(__("Revise Content"), () => {
                 frappe.prompt([
