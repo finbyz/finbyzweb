@@ -2,43 +2,69 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("NextJS Page", {
+    
     parent_nextjs_page: function(frm) {
-        // Guard: circular reference
-        if (frm.doc.parent_nextjs_page === frm.doc.name) {
-            frappe.msgprint(__("A page cannot be its own parent."));
-            frm.set_value("parent_nextjs_page", null);
-            return;
-        }
-
-        // Extract only the last slug from the current route (or use name as fallback)
-        let current_route = (frm.doc.route || "").replace(/^\/+|\/+$/g, "");
-        let slug = current_route.split("/").pop()
-
-        if (!slug) {
-            frappe.msgprint(__("Please set a route or page name before assigning a parent."));
-            return;
-        }
-
-        if (frm.doc.parent_nextjs_page) {
-            frappe.db.get_value(
-                "NextJS Page",
-                frm.doc.parent_nextjs_page,
-                "route"
-            ).then(r => {
-                if (r.message && r.message.route) {
-                    let parent_route = r.message.route.replace(/^\/+|\/+$/g, "");
-                    frm.set_value("route", `${parent_route}/${slug}`);
-                } else {
-                    frappe.msgprint(__("Could not fetch parent route. Please check the parent page."));
-                }
-            }).catch(() => {
-                frappe.msgprint(__("Error fetching parent route. Please try again."));
-            });
-        } else {
-            // Parent removed → revert to bare slug
-            frm.set_value("route", slug);
-        }
+    // Guard: circular reference
+    if (frm.doc.parent_nextjs_page === frm.doc.name) {
+        frappe.msgprint(__("A page cannot be its own parent."));
+        frm.set_value("parent_nextjs_page", null);
+        return;
     }
+
+    // Extract only the last slug from the current route
+    let current_route = (frm.doc.route || "").replace(/^\/+|\/+$/g, "");
+    let slug = current_route.split("/").pop();
+
+    if (!slug) {
+        frappe.msgprint(__("Please set a route or page name before assigning a parent."));
+        frm.set_value("parent_nextjs_page", null);
+        return;
+    }
+
+    if (frm.doc.parent_nextjs_page) {
+        frappe.db.get_value(
+            "NextJS Page",
+            frm.doc.parent_nextjs_page,
+            "route"
+        ).then(r => {
+            if (r.message && r.message.route) {
+                let parent_route = r.message.route.replace(/^\/+|\/+$/g, "");
+                let new_route = `/${parent_route}/${slug}`;
+                let old_route = frm.doc.route || "/";
+
+                // Show confirmation before applying
+                frappe.confirm(
+                    __(
+                        `Are you sure you want to change the parent?<br><br>
+                        <b>Current Route:</b> ${old_route}<br>
+                        <b>New Route:</b> ${new_route}<br><br>
+                        This will update the page route.`,
+                    ),
+                    // On confirm
+                    function() {
+                        frm.set_value("route", new_route);
+                    },
+                    // On cancel
+                    function() {
+                        frm.set_value("parent_nextjs_page", null);
+                    }
+                );
+            } else {
+                frappe.msgprint(__("Could not fetch parent route. Please check the parent page."));
+                frm.set_value("parent_nextjs_page", null);
+            }
+        }).catch(() => {
+            frappe.msgprint(__("Error fetching parent route. Please try again."));
+            frm.set_value("parent_nextjs_page", null);
+        });
+
+    } else {
+        // Parent removed → silently revert to bare slug, no confirmation needed
+        let slug_only = (frm.doc.route || "").replace(/^\/+|\/+$/g, "").split("/").pop();
+        frm.set_value("route", `/${slug_only}`);
+       
+    }
+}
 ,
     title: function (frm) {
         if (frm.doc.title) {

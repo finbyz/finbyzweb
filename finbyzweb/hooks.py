@@ -47,7 +47,11 @@ fixtures = [
         
          "dt": "Custom Field", 
          "filters":[["module", "=", 'Finbyzweb']]
-	   }
+	   },
+       {
+           'dt': 'AI Agent',
+           'filters':[['name','=','FAQs Agent']]
+       }
 ]
 # include js, css files in header of web template
 web_include_css = "/assets/finbyzweb/css/finbyzweb.css"

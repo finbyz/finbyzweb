@@ -1,8 +1,1 @@
-// Copyright (c) 2025, Finbyz Tech Pvt Ltd and contributors
-// For license information, please see license.txt
-
-// frappe.ui.form.on("FAQs", {
-// 	refresh(frm) {
-
-// 	},
-// });
+// File reset to allow consolidated script in parent doctype
