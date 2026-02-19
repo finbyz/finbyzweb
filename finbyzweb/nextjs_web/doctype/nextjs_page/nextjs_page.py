@@ -149,193 +149,191 @@ class NextJSPage(Document):
 
 @frappe.whitelist()
 def generate_seo(doc_name, user_input=None):
-    """Generate SEO metadata using AI Agent."""
-    doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
+	"""Generate SEO metadata using AI Agent."""
+	doc = frappe.get_doc("NextJS Page", doc_name)
+	settings = frappe.get_single("NextJS AI Settings")
 
-    if not settings.seo_generator_agent:
-        frappe.throw("Please configure SEO Generator Agent in NextJS AI Settings")
+	if not settings.seo_generator_agent:
+		frappe.throw("Please configure SEO Generator Agent in NextJS AI Settings")
 
-    agent = AgentService(settings.seo_generator_agent)
-    page_url = "https://finbyz.tech" + (doc.route or "")
-    result = agent.invoke(
-        title=doc.title,
-        content=doc.content or "",
-        short_description="",  # Compatibility for existing prompts
-        page_url=page_url,
-        user_input=user_input or "Generate optimized SEO metadata.",
-    )
+	agent = AgentService(settings.seo_generator_agent)
+	result = agent.invoke(
+		title=doc.title,
+		content=doc.content or "",
+		short_description="", # Compatibility for existing prompts
+		user_input=user_input or "Generate optimized SEO metadata."
+	)
 
-    doc.meta_title = result.meta_title
-    doc.meta_description = result.meta_description
-    doc.keywords = result.keywords
+	doc.meta_title = result.meta_title
+	doc.meta_description = result.meta_description
+	doc.keywords = result.keywords
+	
+	# Update OG/Twitter fields for consistency
+	doc.og_title = result.meta_title
+	doc.og_description = result.meta_description
+	doc.twitter_title = result.meta_title
+	doc.twitter_description = result.meta_description
+	
+	doc.save()
 
-    # Update OG/Twitter fields for consistency
-    doc.og_title = result.meta_title
-    doc.og_description = result.meta_description
-    doc.twitter_title = result.meta_title
-    doc.twitter_description = result.meta_description
-
-    doc.save()
-
-    return {"success": True, "message": "SEO metadata generated and saved successfully"}
+	return {
+		"success": True,
+		"message": "SEO metadata generated and saved successfully"
+	}
 
 
 @frappe.whitelist()
 def generate_faqs(doc_name, user_input=None):
-    """Generate FAQs using AI Agent."""
-    doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
+	"""Generate FAQs using AI Agent."""
+	doc = frappe.get_doc("NextJS Page", doc_name)
+	settings = frappe.get_single("NextJS AI Settings")
 
-    if not settings.faq_generator_agent:
-        frappe.throw("Please configure FAQ Generator Agent in NextJS AI Settings")
+	if not settings.faq_generator_agent:
+		frappe.throw("Please configure FAQ Generator Agent in NextJS AI Settings")
 
-    agent = AgentService(settings.faq_generator_agent)
-    page_url = "https://finbyz.tech" + (doc.route or "")
-    result = agent.invoke(
-        title=doc.title,
-        content=doc.content or "",
-        short_description="",  # Compatibility for existing prompts
-        page_url=page_url,
-        user_input=user_input or "Generate relevant FAQs for this page.",
-    )
+	agent = AgentService(settings.faq_generator_agent)
+	result = agent.invoke(
+		title=doc.title,
+		content=doc.content or "",
+		short_description="", # Compatibility for existing prompts
+		user_input=user_input or "Generate relevant FAQs for this page."
+	)
 
-    doc.set("faqs", [])
-    for faq in result.faqs:
-        doc.append("faqs", {"question": faq.question, "answer": faq.answer})
+	doc.set("faqs", [])
+	for faq in result.faqs:
+		doc.append("faqs", {
+			"question": faq.question,
+			"answer": faq.answer
+		})
 
-    doc.save()
+	doc.save()
 
-    return {"success": True, "message": f"Generated and saved {len(result.faqs)} FAQs"}
+	return {"success": True, "message": f"Generated and saved {len(result.faqs)} FAQs"}
 
 
 @frappe.whitelist()
 def generate_schema(doc_name, user_input=None):
-    """Generate JSON-LD Schema using AI Agent."""
-    doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
+	"""Generate JSON-LD Schema using AI Agent."""
+	doc = frappe.get_doc("NextJS Page", doc_name)
+	settings = frappe.get_single("NextJS AI Settings")
 
-    if not settings.schema_builder_agent:
-        frappe.throw("Please configure Schema Builder Agent in NextJS AI Settings")
+	if not settings.schema_builder_agent:
+		frappe.throw("Please configure Schema Builder Agent in NextJS AI Settings")
 
-    agent = AgentService(settings.schema_builder_agent)
+	agent = AgentService(settings.schema_builder_agent)
+	
+	generated_count = 0
+	for row in doc.nextjs_page_schema:
+		# If schema_type is selected but schema_json is empty, generate it
+		if row.schema_type and not row.schema_json:
+			template_doc = frappe.get_doc("NextJS Schema Type", row.schema_type)
+			reference_schema = template_doc.schema or "{}"
+			
+			result = agent.invoke(
+				title=doc.title,
+				content=doc.content or "",
+				reference_schema=reference_schema,
+				user_input=user_input or "Generate appropriate JSON-LD schema based on the template."
+			)
+			
+			if hasattr(result, "schema_json"):
+				row.schema_json = result.schema_json
+				generated_count += 1
+			elif isinstance(result, dict) and "schema_json" in result:
+				row.schema_json = result["schema_json"]
+				generated_count += 1
 
-    generated_count = 0
-    for row in doc.nextjs_page_schema:
-        # If schema_type is selected but schema_json is empty, generate it
-        if row.schema_type and not row.schema_json:
-            template_doc = frappe.get_doc("NextJS Schema Type", row.schema_type)
-            reference_schema = template_doc.schema or "{}"
+	if generated_count > 0:
+		doc.save()
+		return {
+			"success": True, 
+			"message": f"Generated {generated_count} schemas successfully"
+		}
+	else:
+		return {
+			"success": False,
+			"message": "No empty schema rows found to generate."
+		}
 
-            page_url = "https://finbyz.tech" + (doc.route or "")
-            result = agent.invoke(
-                title=doc.title,
-                content=doc.content or "",
-                reference_schema=reference_schema,
-                page_url=page_url,
-                user_input=user_input
-                or "Generate appropriate JSON-LD schema based on the template.",
-            )
-
-            if hasattr(result, "schema_json"):
-                row.schema_json = result.schema_json
-                generated_count += 1
-            elif isinstance(result, dict) and "schema_json" in result:
-                row.schema_json = result["schema_json"]
-                generated_count += 1
-
-    if generated_count > 0:
-        doc.save()
-        return {
-            "success": True,
-            "message": f"Generated {generated_count} schemas successfully",
-        }
-    else:
-        return {"success": False, "message": "No empty schema rows found to generate."}
-
-    return {"success": True, "message": "Schema generated and saved successfully"}
+	return {
+		"success": True,
+		"message": "Schema generated and saved successfully"
+	}
 
 
 @frappe.whitelist()
 def revise_content(doc_name, user_input):
-    """Revise content using AI Agent."""
-    doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
+	"""Revise content using AI Agent."""
+	doc = frappe.get_doc("NextJS Page", doc_name)
+	settings = frappe.get_single("NextJS AI Settings")
 
-    if not settings.content_writer_agent:
-        frappe.throw("Please configure Content Writer Agent in NextJS AI Settings")
+	if not settings.content_writer_agent:
+		frappe.throw("Please configure Content Writer Agent in NextJS AI Settings")
 
-    agent = AgentService(settings.content_writer_agent)
-    page_url = "https://finbyz.tech" + (doc.route or "")
-    result = agent.invoke(
-        title=doc.title,
-        content=doc.content or "",
-        short_description="",  # Compatibility for existing prompts
-        meta_title=doc.meta_title or "",
-        meta_description=doc.meta_description or "",
-        keywords=doc.keywords or "",
-        page_type=doc.page_type or "Web page",
-        user_input=user_input,
-    )
+	agent = AgentService(settings.content_writer_agent)
+	result = agent.invoke(
+		title=doc.title,
+		content=doc.content or "",
+		short_description="", # Compatibility for existing prompts
+		meta_title=doc.meta_title or "",
+		meta_description=doc.meta_description or "",
+		keywords=doc.keywords or "",
+		page_type=doc.page_type or "Web page",
+		user_input=user_input
+	)
 
-    doc.content = result.content
-    doc.save()
+	doc.content = result.content
+	doc.save()
 
-    return {"success": True, "message": "Content revised and saved successfully"}
+	return {"success": True, "message": "Content revised and saved successfully"}
 
 
 @frappe.whitelist()
 def revise_faqs(doc_name, faqs_to_revise, user_input=None):
-    """Revise or regenerate specific FAQs using AI Agent."""
-    doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
+	"""Revise or regenerate specific FAQs using AI Agent."""
+	doc = frappe.get_doc("NextJS Page", doc_name)
+	settings = frappe.get_single("NextJS AI Settings")
 
-    agent_name = settings.faq_reviser_agent
-    if not agent_name:
-        frappe.throw("Please configure FAQ Reviser Agent in NextJS AI Settings")
+	agent_name = settings.faq_reviser_agent
+	if not agent_name:
+		frappe.throw("Please configure FAQ Reviser Agent in NextJS AI Settings")
 
-    agent = AgentService(agent_name)
+	agent = AgentService(agent_name)
+	
+	import json
+	if isinstance(faqs_to_revise, str):
+		faqs_to_revise = json.loads(faqs_to_revise)
+		
+	faqs_data = json.dumps(faqs_to_revise, indent=2)
+	
+	result = agent.invoke(
+		title=doc.title,
+		content=doc.content or "",
+		short_description="", # Compatibility for existing prompts
+		user_input=user_input or "Please improve these FAQs for better clarity and SEO.",
+		faqs_data=faqs_data
+	)
 
-    import json
+	# Map revised data back to doc
+	if result.faqs:
+		for i, revised_faq in enumerate(result.faqs):
+			if i < len(faqs_to_revise):
+				original = faqs_to_revise[i]
+				for row in doc.faqs:
+					# Match by original question or idx if provided
+					if row.question == original.get("question") or row.name == original.get("idx"):
+						# Robust access: try .get() for dicts, dot notation/getattr for objects
+						if hasattr(revised_faq, "get"):
+							row.question = revised_faq.get("question")
+							row.answer = revised_faq.get("answer")
+						else:
+							row.question = getattr(revised_faq, "question", None)
+							row.answer = getattr(revised_faq, "answer", None)
+						break
 
-    if isinstance(faqs_to_revise, str):
-        faqs_to_revise = json.loads(faqs_to_revise)
+	doc.save()
 
-    faqs_data = json.dumps(faqs_to_revise, indent=2)
-
-    page_url = "https://finbyz.tech" + (doc.route or "")
-    result = agent.invoke(
-        title=doc.title,
-        content=doc.content or "",
-        short_description="",  # Compatibility for existing prompts
-        page_url=page_url,
-        user_input=user_input
-        or "Please improve these FAQs for better clarity and SEO.",
-        faqs_data=faqs_data,
-    )
-
-    # Map revised data back to doc
-    if result.faqs:
-        for i, revised_faq in enumerate(result.faqs):
-            if i < len(faqs_to_revise):
-                original = faqs_to_revise[i]
-                for row in doc.faqs:
-                    # Match by original question or idx if provided
-                    if row.question == original.get(
-                        "question"
-                    ) or row.name == original.get("idx"):
-                        # Robust access: try .get() for dicts, dot notation/getattr for objects
-                        if hasattr(revised_faq, "get"):
-                            row.question = revised_faq.get("question")
-                            row.answer = revised_faq.get("answer")
-                        else:
-                            row.question = getattr(revised_faq, "question", None)
-                            row.answer = getattr(revised_faq, "answer", None)
-                        break
-
-    doc.save()
-
-    return {"success": True, "message": "FAQs revised and saved successfully"}
+	return {"success": True, "message": "FAQs revised and saved successfully"}
 
 
 @frappe.whitelist()

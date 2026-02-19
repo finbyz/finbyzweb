@@ -86,42 +86,16 @@ $(document).ready(function () {
         }
     });
 
-    // Country code detection from IP
-    var countryToDialCode = {
-        'IN': '+91', 'US': '+1', 'GB': '+44', 'AE': '+971', 'SA': '+966',
-        'SG': '+65', 'AU': '+61', 'DE': '+49', 'FR': '+33', 'JP': '+81',
-        'CN': '+86', 'ZA': '+27', 'NG': '+234', 'KE': '+254', 'MY': '+60',
-        'PH': '+63', 'PK': '+92', 'BD': '+880', 'LK': '+94', 'NP': '+977',
-        'CA': '+1', 'NZ': '+64', 'IT': '+39', 'ES': '+34', 'NL': '+31'
-    };
-
-    // Auto-detect country on page load
-    (function detectCountry() {
-        $.getJSON('https://ipapi.co/json/', function (data) {
-            if (data && data.country_code && countryToDialCode[data.country_code]) {
-                $('#country_code').val(countryToDialCode[data.country_code]);
-            }
-            console.log(data.country_code);
-        }).fail(function () {
-            // Keep default (+91) on failure
-            console.log('Country detection failed, using default');
-        });
-    })();
-
     // inquiry form 
     // lead creation
     function lead_creation() {
         frappe.msgprint("sent");
-        var countryCode = $('#country_code').val() || '+91';
-        var mobileNo = $('#mobile_no').val();
-        var fullMobileNo = countryCode + mobileNo;
-
         frappe.call({
             method: "finbyzweb.api.set_form_data",
             args: {
                 'lead_name': $('#lead_name').val(),
                 'company_name': $('#company_name').val(),
-                'mobile_no': fullMobileNo,
+                'mobile_no': $('#mobile_no').val(),
                 'title': window.location.href,
                 'email': $('#email').val()
             },
@@ -129,7 +103,6 @@ $(document).ready(function () {
                 $('#lead_name').val('');
                 $('#company_name').val('');
                 $('#mobile_no').val('');
-                $('#country_code').val('+91');
                 $('#email').val('');
                 frappe.msgprint("Your interest is inspiring us to do better...<br>Finbyz Tech expert shall reach you shortly");
             }
@@ -173,8 +146,8 @@ $(document).ready(function () {
 
         if (!valid) {
             form.animate({
-                left: '-3em'
-            }, 50)
+                    left: '-3em'
+                }, 50)
                 .animate({
                     left: '3em'
                 }, 100)
@@ -262,9 +235,9 @@ $(document).ready(function () {
 
         $(".owl-carousel.main-carousel #first-p").each(function () {
             var fadeUpScene = new ScrollMagic.Scene({
-                triggerElement: this,
-                triggerHook: 1
-            })
+                    triggerElement: this,
+                    triggerHook: 1
+                })
                 .setTween(TweenMax.from(this, 1, {
                     scale: 0,
                     ease: Power1.easeIn,
@@ -274,9 +247,9 @@ $(document).ready(function () {
         })
         $(".owl-carousel.main-carousel .slide1 img").each(function () {
             var fadeUpScene = new ScrollMagic.Scene({
-                triggerElement: this,
-                triggerHook: 1
-            })
+                    triggerElement: this,
+                    triggerHook: 1
+                })
                 .setTween(TweenMax.from(this, 1, {
                     x: 50,
                     opacity: 0,
@@ -414,7 +387,7 @@ $(document).ready(function () {
     var mwb_whatsapp = function () {
         "use strict";
 
-        function t() { }
+        function t() {}
 
         function e(t) {
             return t()
@@ -684,7 +657,7 @@ $(document).ready(function () {
                     const t = a.indexOf(e); - 1 !== t && a.splice(t, 1)
                 }
             }
-            $set() { }
+            $set() {}
         });
         class _ extends L {
             constructor(t) {
@@ -911,8 +884,8 @@ $(function () {
     // init controller
 
     /* new ScrollMagic.Scene({triggerElement: ".timeline"})
-                    .setTween(timeline_scene)
-                    .addTo(controller); */
+    				.setTween(timeline_scene)
+    				.addTo(controller); */
 
 
     var scrollController = new ScrollMagic.Controller();
@@ -920,9 +893,9 @@ $(function () {
     // fadeinup effect
     $(".finbyz-fadeinup").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
-            triggerElement: this,
-            triggerHook: 0.8
-        })
+                triggerElement: this,
+                triggerHook: 0.8
+            })
             .setTween(TweenMax.from(this, 0.8, {
                 y: 50,
                 opacity: 0,
@@ -934,9 +907,9 @@ $(function () {
     // fadeinup effect for footer
     $(".finbyz-fadeinup-footer").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
-            triggerElement: this,
-            triggerHook: 1
-        })
+                triggerElement: this,
+                triggerHook: 1
+            })
             .setTween(TweenMax.from(this, 0.8, {
                 y: 50,
                 opacity: 0,
@@ -948,9 +921,9 @@ $(function () {
     // fadeindown effect
     $(".finbyz-fadeindown").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
-            triggerElement: this,
-            triggerHook: 0.8
-        })
+                triggerElement: this,
+                triggerHook: 0.8
+            })
             .setTween(TweenMax.from(this, 0.8, {
                 y: -50,
                 opacity: 0,
@@ -962,9 +935,9 @@ $(function () {
     // fadeinleft effect
     $(".finbyz-fadeinleft").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
-            triggerElement: this,
-            triggerHook: 0.8
-        })
+                triggerElement: this,
+                triggerHook: 0.8
+            })
             .setTween(TweenMax.from(this, 0.8, {
                 x: 50,
                 opacity: 0,
@@ -976,9 +949,9 @@ $(function () {
     // zoomin effect
     $(".finbyz-zoomin").each(function () {
         var fadeUpScene = new ScrollMagic.Scene({
-            triggerElement: this,
-            triggerHook: 0.9
-        })
+                triggerElement: this,
+                triggerHook: 0.9
+            })
             .setTween(TweenMax.from(this, 0.9, {
                 scale: 0,
                 ease: Power1.easeIn
@@ -991,9 +964,9 @@ $(function () {
     $(".card").each(function () {
         var tl_card = new TimelineMax();
         tl_card.to(this, 1.2, {
-            rotationY: 180,
-            ease: Back.easeOut
-        })
+                rotationY: 180,
+                ease: Back.easeOut
+            })
             .to(this, 1.2, {
                 rotationY: 0,
                 ease: Back.easeOut,
@@ -1001,10 +974,10 @@ $(function () {
             });
 
         var fadeUpScene = new ScrollMagic.Scene({
-            triggerElement: this,
-            triggerHook: 0.8,
-            reverse: false
-        })
+                triggerElement: this,
+                triggerHook: 0.8,
+                reverse: false
+            })
             .setTween(tl_card)
             .addTo(scrollController)
     })
@@ -1142,14 +1115,14 @@ function showProjects(tab, delay) { //return false;
                 opacity: 0,
                 y: '10%'
             })
-            //.from($(this).find('.icon-arrow-right'), 1, {ease: Power4.easeOut, opacity:0, x: '-20%'}, '-=0.5')
-            //.from($(this).find('.project-item__media, .project-item__branding'), 1, {ease: Power4.easeOut, opacity: 0, scale: 0.98, transformOrigin:"50% 50%"}, '-=1.5')
-            ;
+        //.from($(this).find('.icon-arrow-right'), 1, {ease: Power4.easeOut, opacity:0, x: '-20%'}, '-=0.5')
+        //.from($(this).find('.project-item__media, .project-item__branding'), 1, {ease: Power4.easeOut, opacity: 0, scale: 0.98, transformOrigin:"50% 50%"}, '-=1.5')
+        ;
 
         new ScrollMagic.Scene({
-            triggerHook: 1,
-            triggerElement: $this
-        })
+                triggerHook: 1,
+                triggerElement: $this
+            })
 
             .addTo(controller)
 
@@ -1231,14 +1204,14 @@ var Strut = {
 
 Strut.supports = {
 
-    pointerEvents: function () {
+        pointerEvents: function () {
 
-        var e = document.createElement("a").style;
-        // console.log(e);
-        return e.cssText = "pointer-events:auto", e.pointerEvents === "auto"
+            var e = document.createElement("a").style;
+            // console.log(e);
+            return e.cssText = "pointer-events:auto", e.pointerEvents === "auto"
 
-    }(),
-},
+        }(),
+    },
 
     finbyzNavDropdowns.prototype.checkCollision = function () {
 
@@ -1254,7 +1227,7 @@ Strut.supports = {
 
             n.left + n.width / 2 > t / 2 && (e.container.classList.remove("test"), e.compact = !1)
 
-        }
+        } 
         // else {
 
         //     var r = e.primaryNavItem.getBoundingClientRect(),
@@ -1306,9 +1279,9 @@ Strut.supports = {
 
         this.dropdownRoots.forEach(function (e, t) {
 
-            e.classList.remove("active")
+                e.classList.remove("active")
 
-        }),
+            }),
 
             clearTimeout(this.enableTransitionTimeout),
 
@@ -1576,10 +1549,10 @@ $(document).ready(() => {
             }, 1.9)
 
         new ScrollMagic.Scene({
-            triggerElement: ".hexa-fade-up",
-            triggerHook: 0.8,
-            reverse: true
-        })
+                triggerElement: ".hexa-fade-up",
+                triggerHook: 0.8,
+                reverse: true
+            })
             .setTween(fade_all)
             .addTo(scrollController);
     }
