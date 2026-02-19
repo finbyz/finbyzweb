@@ -223,10 +223,17 @@ def generate_schema(doc_name, user_input=None):
     generated_count = 0
     for row in doc.nextjs_page_schema:
         # If schema_type is selected but schema_json is empty, generate it
+        if row.schema_type == "FAQPage":
+            continue
+        if row.schema_type == "BreadcrumbList":
+            continue
+
         if row.schema_type and not row.schema_json:
             template_doc = frappe.get_doc("NextJS Schema Type", row.schema_type)
             reference_schema = template_doc.schema or "{}"
-
+            if row.schema_type == "Organization":
+                row.schema_json = reference_schema
+                continue
             page_url = "https://finbyz.tech" + (doc.route or "")
             result = agent.invoke(
                 title=doc.title,
