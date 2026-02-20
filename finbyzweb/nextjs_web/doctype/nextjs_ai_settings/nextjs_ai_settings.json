@@ -9,6 +9,7 @@
   "content_writer_agent",
   "faq_reviser_agent",
   "page_creator_agent",
+  "related_links_finder_agent",
   "column_break_ahbn",
   "schema_builder_agent",
   "seo_generator_agent",
@@ -67,13 +68,19 @@
    "fieldtype": "Link",
    "label": "Content Revision Agent",
    "options": "AI Agent"
+  },
+  {
+   "fieldname": "related_links_finder_agent",
+   "fieldtype": "Link",
+   "label": "Related Links Finder Agent",
+   "options": "AI Agent"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-02-16 15:09:08.760142",
+ "modified": "2026-02-19 17:57:13.041365",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS AI Settings",
