@@ -15,6 +15,7 @@
   "published_on",
   "page_type",
   "parent_nextjs_page",
+  "is_group",
   "seo_section",
   "meta_title",
   "meta_description",
@@ -41,7 +42,6 @@
   "faqs",
   "lft",
   "rgt",
-  "is_group",
   "old_parent"
  ],
  "fields": [
@@ -204,7 +204,6 @@
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Is Group"
   },
   {
@@ -269,8 +268,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Actual Route",
-   "read_only": 1,
    "reqd": 1,
+   "set_only_once": 1,
    "unique": 1
   }
  ],
@@ -278,7 +277,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-18 11:06:24.390500",
+ "modified": "2026-02-19 13:03:17.221817",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS Page",

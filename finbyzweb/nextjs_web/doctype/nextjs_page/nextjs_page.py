@@ -347,94 +347,92 @@ def revise_faqs(doc_name, faqs_to_revise, user_input=None):
 
 @frappe.whitelist()
 def generate_social_post(doc_name, user_input=None, platforms=None, credentials=None):
-	"""Generate social media posts using AI Agent and create Social Media Post docs."""
-	import json as _json
+    """Generate social media posts using AI Agent and create Social Media Post docs."""
+    import json as _json
 
-	doc = frappe.get_doc("NextJS Page", doc_name)
-	settings = frappe.get_single("NextJS AI Settings")
+    doc = frappe.get_doc("NextJS Page", doc_name)
+    settings = frappe.get_single("NextJS AI Settings")
 
-	if not settings.social_media_post_agent:
-		frappe.throw("Please configure Social Media Post Agent in NextJS AI Settings")
+    if not settings.social_media_post_agent:
+        frappe.throw("Please configure Social Media Post Agent in NextJS AI Settings")
 
-	# Parse platforms
-	if isinstance(platforms, str):
-		platforms = _json.loads(platforms)
+    # Parse platforms
+    if isinstance(platforms, str):
+        platforms = _json.loads(platforms)
 
-	if not platforms:
-		frappe.throw("Please select at least one platform")
+    if not platforms:
+        frappe.throw("Please select at least one platform")
 
-	# Parse credentials
-	if isinstance(credentials, str):
-		credentials = _json.loads(credentials)
-	credentials = credentials or {}
+    # Parse credentials
+    if isinstance(credentials, str):
+        credentials = _json.loads(credentials)
+    credentials = credentials or {}
 
-	# Platform to credential_type mapping
-	platform_credential_map = {
-		"LinkedIn": "LinkedIn Integration",
-		"X (Twitter)": "Twitter Integration",
-	}
+    # Platform to credential_type mapping
+    platform_credential_map = {
+        "LinkedIn": "LinkedIn Integration",
+        "X (Twitter)": "Twitter Integration",
+    }
 
-	# Build the page URL
-	site_url = frappe.utils.get_url()
-	page_url = site_url.rstrip("/") + (doc.route or "")
+    # Build the page URL
+    site_url = frappe.utils.get_url()
+    page_url = site_url.rstrip("/") + (doc.route or "")
 
-	# Prepare content summary (strip HTML tags for AI)
-	content_text = frappe.utils.strip_html_tags(doc.content or "")
-	# Truncate content to avoid token limit issues
-	if len(content_text) > 2000:
-		content_text = content_text[:2000] + "..."
+    # Prepare content summary (strip HTML tags for AI)
+    content_text = frappe.utils.strip_html_tags(doc.content or "")
+    # Truncate content to avoid token limit issues
+    if len(content_text) > 2000:
+        content_text = content_text[:2000] + "..."
 
-	# Format platforms string
-	platforms_str = ", ".join(platforms)
+    # Format platforms string
+    platforms_str = ", ".join(platforms)
 
-	agent = AgentService(settings.social_media_post_agent)
-	result = agent.invoke(
-		title=doc.title or "",
-		content=content_text,
-		meta_title=doc.meta_title or "",
-		meta_description=doc.meta_description or "",
-		keywords=doc.keywords or "",
-		page_url=page_url,
-		platforms=platforms_str,
-		user_input=user_input or "Generate engaging social media posts to promote this page."
-	)
+    agent = AgentService(settings.social_media_post_agent)
+    result = agent.invoke(
+        title=doc.title or "",
+        content=content_text,
+        meta_title=doc.meta_title or "",
+        meta_description=doc.meta_description or "",
+        keywords=doc.keywords or "",
+        page_url=page_url,
+        platforms=platforms_str,
+        user_input=user_input
+        or "Generate engaging social media posts to promote this page.",
+    )
 
-	# Create Social Media Post docs for each platform
-	created_posts = []
-	for post_data in result.posts:
-		platform = getattr(post_data, "platform", None) or post_data.get("platform")
-		content = getattr(post_data, "content", None) or post_data.get("content")
+    # Create Social Media Post docs for each platform
+    created_posts = []
+    for post_data in result.posts:
+        platform = getattr(post_data, "platform", None) or post_data.get("platform")
+        content = getattr(post_data, "content", None) or post_data.get("content")
 
-		if not platform or not content:
-			continue
+        if not platform or not content:
+            continue
 
-		new_post = frappe.new_doc("Social Media Post")
-		new_post.title = doc.title
-		new_post.platform = platform
-		new_post.content = content
-		new_post.status = "Draft"
-		new_post.created_on = frappe.utils.today()
+        new_post = frappe.new_doc("Social Media Post")
+        new_post.title = doc.title
+        new_post.platform = platform
+        new_post.content = content
+        new_post.status = "Draft"
+        new_post.created_on = frappe.utils.today()
 
-		# Auto-set credential_type based on platform
-		new_post.credential_type = platform_credential_map.get(platform)
+        # Auto-set credential_type based on platform
+        new_post.credential_type = platform_credential_map.get(platform)
 
-		# Set credential if user selected one in the dialog
-		platform_creds = credentials.get(platform, {})
-		if platform_creds.get("credential"):
-			new_post.credential_type = platform_creds["credential_type"]
-			new_post.credential = platform_creds["credential"]
+        # Set credential if user selected one in the dialog
+        platform_creds = credentials.get(platform, {})
+        if platform_creds.get("credential"):
+            new_post.credential_type = platform_creds["credential_type"]
+            new_post.credential = platform_creds["credential"]
 
-		new_post.insert()
+        new_post.insert()
 
-		created_posts.append({
-			"name": new_post.name,
-			"platform": platform
-		})
+        created_posts.append({"name": new_post.name, "platform": platform})
 
-	if not created_posts:
-		return {"success": False, "message": "AI agent did not generate any posts."}
+    if not created_posts:
+        return {"success": False, "message": "AI agent did not generate any posts."}
 
-	frappe.db.commit()
+    frappe.db.commit()
 
 
 @frappe.whitelist()
@@ -541,47 +539,137 @@ def revise_content_chunk(doc_name, content_chunk, instruction, is_markdown=False
 
 @frappe.whitelist()
 def create_page_from_ai(user_input):
-	"""Create a new NextJS Page based on AI generation."""
-	settings = frappe.get_single("NextJS AI Settings")
+    """Create a new NextJS Page based on AI generation."""
+    settings = frappe.get_single("NextJS AI Settings")
 
-	if not settings.page_creator_agent:
-		frappe.throw("Please configure Page Creator Agent in NextJS AI Settings")
+    if not settings.page_creator_agent:
+        frappe.throw("Please configure Page Creator Agent in NextJS AI Settings")
 
-	agent = AgentService(settings.page_creator_agent)
-	
-	try:
-		result = agent.invoke(user_input=user_input)
-	except Exception as e:
-		frappe.log_error(title="AI Page Creation Failed", message=frappe.get_traceback())
-		frappe.throw(f"AI Agent failed to generate page data: {str(e)}")
+    agent = AgentService(settings.page_creator_agent)
 
-	if not result or not hasattr(result, "title"):
-		# Fallback for different return types if needed
-		if isinstance(result, dict) and "title" in result:
-			data = result
-		else:
-			frappe.throw("AI Agent returned invalid data format")
-	else:
-		data = {
-			"title": result.title,
-			"meta_title": result.meta_title,
-			"meta_description": result.meta_description,
-			"keywords": result.keywords
-		}
+    try:
+        result = agent.invoke(user_input=user_input)
+    except Exception as e:
+        frappe.log_error(
+            title="AI Page Creation Failed", message=frappe.get_traceback()
+        )
+        frappe.throw(f"AI Agent failed to generate page data: {str(e)}")
 
-	new_page = frappe.new_doc("NextJS Page")
-	new_page.title = data.get("title")
-	new_page.meta_title = data.get("meta_title")
-	new_page.meta_description = data.get("meta_description")
-	new_page.keywords = data.get("keywords")
-	new_page.page_type = "Web page"
-	new_page.is_published = 0
-	
-	new_page.insert()
-	frappe.db.commit()
+    if not result or not hasattr(result, "title"):
+        # Fallback for different return types if needed
+        if isinstance(result, dict) and "title" in result:
+            data = result
+        else:
+            frappe.throw("AI Agent returned invalid data format")
+    else:
+        data = {
+            "title": result.title,
+            "meta_title": result.meta_title,
+            "meta_description": result.meta_description,
+            "keywords": result.keywords,
+        }
 
-	return {
-		"success": True,
-		"message": "Page created successfully",
-		"name": new_page.name
-	}
+    new_page = frappe.new_doc("NextJS Page")
+    new_page.title = data.get("title")
+    new_page.meta_title = data.get("meta_title")
+    new_page.meta_description = data.get("meta_description")
+    new_page.keywords = data.get("keywords")
+    new_page.page_type = "Web page"
+    new_page.is_published = 0
+
+    new_page.insert()
+    frappe.db.commit()
+
+    return {
+        "success": True,
+        "message": "Page created successfully",
+        "name": new_page.name,
+    }
+
+
+@frappe.whitelist()
+def generate_related_links(doc_name, user_input=None):
+    """Generate related page links using AI Agent and store them in nextjs_related_page child table."""
+    doc = frappe.get_doc("NextJS Page", doc_name)
+    settings = frappe.get_single("NextJS AI Settings")
+
+    if not settings.related_links_finder_agent:
+        frappe.throw(
+            "Please configure Related Links Finder Agent in NextJS AI Settings"
+        )
+
+    agent = AgentService(settings.related_links_finder_agent)
+    page_url = "https://finbyz.tech" + (doc.route or "")
+
+    result = agent.invoke(
+        title=doc.title or "",
+        content=doc.content or "",
+        meta_title=doc.meta_title or "",
+        meta_description=doc.meta_description or "",
+        keywords=doc.keywords or "",
+        page_url=page_url,
+        user_input=user_input or "Find related pages for this page.",
+    )
+
+    # Extract list of related links from agent result
+    # Supports new format: {"related_links": [{"title": "...", "route": "..."}]}
+    # Also supports legacy format: {"routes": ["...", ...]} or {"related_links": ["...", ...]}
+    raw_links = []
+    if hasattr(result, "related_links"):
+        raw_links = result.related_links
+    elif hasattr(result, "routes"):
+        raw_links = result.routes
+    elif isinstance(result, dict):
+        raw_links = result.get("related_links") or result.get("routes") or []
+
+    if not raw_links:
+        return {
+            "success": False,
+            "message": "AI agent did not return any related links.",
+        }
+
+    # Clear existing related pages and repopulate
+    doc.set("nextjs_related_page", [])
+
+    added = 0
+    for link in raw_links:
+        # Support both structured objects {"title": ..., "route": ...} and plain route strings
+        if isinstance(link, str):
+            route = link
+        elif isinstance(link, dict):
+            route = link.get("route") or ""
+        else:
+            # Pydantic/object with attributes
+            route = getattr(link, "route", None) or ""
+
+        if not route:
+            continue
+
+        # Normalise route — strip the domain if agent returned a full URL
+        if "finbyz.tech" in route:
+            from urllib.parse import urlparse
+
+            route = urlparse(route).path
+
+        # Ensure route starts with /
+        if not route.startswith("/"):
+            route = "/" + route
+
+        # Look up the NextJS Page name by route field
+        page_name = frappe.db.get_value("NextJS Page", {"route": route}, "name")
+        if page_name:
+            doc.append("nextjs_related_page", {"page": page_name})
+            added += 1
+
+    if added == 0:
+        return {
+            "success": False,
+            "message": "No matching NextJS Pages found for the suggested routes.",
+        }
+
+    doc.save()
+
+    return {
+        "success": True,
+        "message": f"Found and saved {added} related page(s) successfully.",
+    }

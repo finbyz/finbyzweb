@@ -2,6 +2,7 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("NextJS Page", {
+
     parent_nextjs_page: function(frm) {
         // Guard: circular reference
         if (frm.doc.parent_nextjs_page === frm.doc.name) {
@@ -10,14 +11,15 @@ frappe.ui.form.on("NextJS Page", {
             return;
         }
 
-        // Extract only the last slug from the current route (or use name as fallback)
+        // Extract only the last slug from the current route
         let current_route = (frm.doc.route || "").replace(/^\/+|\/+$/g, "");
-        let slug = current_route.split("/").pop()
+        let slug = current_route.split("/").pop();
 
         if (!slug) {
             frappe.msgprint(__("Please set a route or page name before assigning a parent."));
-            return;
-        }
+        frm.set_value("parent_nextjs_page", null);
+        return;
+    }
 
         if (frm.doc.parent_nextjs_page) {
             frappe.db.get_value(
@@ -27,16 +29,40 @@ frappe.ui.form.on("NextJS Page", {
             ).then(r => {
                 if (r.message && r.message.route) {
                     let parent_route = r.message.route.replace(/^\/+|\/+$/g, "");
-                    frm.set_value("route", `${parent_route}/${slug}`);
-                } else {
-                    frappe.msgprint(__("Could not fetch parent route. Please check the parent page."));
-                }
-            }).catch(() => {
-                frappe.msgprint(__("Error fetching parent route. Please try again."));
-            });
-        } else {
-            // Parent removed → revert to bare slug
-            frm.set_value("route", slug);
+                let new_route = `/${parent_route}/${slug}`;
+                let old_route = frm.doc.route || "/";
+
+                // Show confirmation before applying
+                frappe.confirm(
+                    __(
+                        `Are you sure you want to change the parent?<br><br>
+                        <b>Current Route:</b> ${old_route}<br>
+                        <b>New Route:</b> ${new_route}<br><br>
+                        This will update the page route.`,
+                    ),
+                    // On confirm
+                    function () {
+                        frm.set_value("route", new_route);
+                    },
+                    // On cancel
+                    function () {
+                        frm.set_value("parent_nextjs_page", null);
+                    }
+                );
+            } else {
+                frappe.msgprint(__("Could not fetch parent route. Please check the parent page."));
+                frm.set_value("parent_nextjs_page", null);
+            }
+        }).catch(() => {
+            frappe.msgprint(__("Error fetching parent route. Please try again."));
+            frm.set_value("parent_nextjs_page", null);
+        });
+
+    } else {
+            // Parent removed → silently revert to bare slug, no confirmation needed
+            let slug_only = (frm.doc.route || "").replace(/^\/+|\/+$/g, "").split("/").pop();
+            frm.set_value("route", `/${slug_only}`);
+
         }
     }
 ,
@@ -296,6 +322,39 @@ frappe.ui.form.on("NextJS Page", {
                     }
                 });
                 d.show();
+            }, __("AI Actions"));
+
+            frm.add_custom_button(__("Find Related Links"), () => {
+                frappe.prompt([
+                    {
+                        label: __("Instructions (Optional)"),
+                        fieldname: "user_input",
+                        fieldtype: "Small Text",
+                        description: __("Optional context, e.g. Focus on industry-specific related pages.")
+                    }
+                ], (values) => {
+                    frappe.dom.freeze(__("Finding related links..."));
+                    const run_ai = () => {
+                        frappe.call({
+                            method: "finbyzweb.nextjs_web.doctype.nextjs_page.nextjs_page.generate_related_links",
+                            args: { doc_name: frm.doc.name, user_input: values.user_input },
+                            callback: function (r) {
+                                frappe.dom.unfreeze();
+                                if (r.message && r.message.success) {
+                                    frm.reload_doc();
+                                    frappe.show_alert({ message: r.message.message, indicator: "green" });
+                                } else {
+                                    frappe.show_alert({
+                                        message: (r.message && r.message.message) || __("No related links found."),
+                                        indicator: "orange"
+                                    });
+                                }
+                            },
+                            error: () => frappe.dom.unfreeze()
+                        });
+                    };
+                    if (frm.is_dirty()) frm.save().then(run_ai); else run_ai();
+                }, __("AI Related Links"), __("Find"));
             }, __("AI Actions"));
         }
 
