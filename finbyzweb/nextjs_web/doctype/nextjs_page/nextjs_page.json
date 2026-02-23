@@ -42,7 +42,32 @@
   "faqs",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "display_and_cta_settings_tab",
+  "show_inquiry_form",
+  "show_business_slider",
+  "section_break_ixqx",
+  "cta_link",
+  "column_break_sbrx",
+  "subheading",
+  "sub_heading_icon",
+  "cta_section",
+  "show_cta",
+  "highlight_text",
+  "cta_title",
+  "cta_description",
+  "column_break_cta1",
+  "primary_button_text",
+  "primary_button_icon",
+  "primary_button_action",
+  "column_break_cta2",
+  "secondary_button_text",
+  "secondary_button_icon",
+  "secondary_button_action",
+  "trust_indicator_section",
+  "trust_indicator_text",
+  "column_break_trust",
+  "trust_indicator_icon"
  ],
  "fields": [
   {
@@ -271,13 +296,153 @@
    "reqd": 1,
    "set_only_once": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "display_and_cta_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Display & CTA Settings"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_inquiry_form",
+   "fieldtype": "Check",
+   "label": "Show Inquiry Form"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_business_slider",
+   "fieldtype": "Check",
+   "label": "Show Business Slider"
+  },
+  {
+   "default": "#inquiry-form",
+   "fieldname": "cta_link",
+   "fieldtype": "Data",
+   "label": "CTA Link"
+  },
+  {
+   "fieldname": "section_break_ixqx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_sbrx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Talk to our Experts",
+   "fieldname": "subheading",
+   "fieldtype": "Data",
+   "label": "Sub Heading"
+  },
+  {
+   "default": "CalendarCheck",
+   "fieldname": "sub_heading_icon",
+   "fieldtype": "Select",
+   "label": "Sub Heading Icon",
+   "options": "CalendarCheck\nFileText\nRocket\nCalendar"
+  },
+  {
+   "fieldname": "cta_section",
+   "fieldtype": "Section Break",
+   "label": "CTA Content"
+  },
+  {
+   "fieldname": "highlight_text",
+   "fieldtype": "Data",
+   "label": "Highlight Text"
+  },
+  {
+   "default": "Ready to Scale with Smart Tech? Let's Talk.",
+   "fieldname": "cta_title",
+   "fieldtype": "Data",
+   "label": "CTA Title"
+  },
+  {
+   "default": "Transform your business processes with AI-powered automation and expert implementation.",
+   "fieldname": "cta_description",
+   "fieldtype": "Small Text",
+   "label": "CTA Description"
+  },
+  {
+   "fieldname": "column_break_cta1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Book Demo",
+   "fieldname": "primary_button_text",
+   "fieldtype": "Data",
+   "label": "Primary Button Text"
+  },
+  {
+   "default": "CalendarCheck",
+   "fieldname": "primary_button_icon",
+   "fieldtype": "Select",
+   "label": "Primary Button Icon",
+   "options": "CalendarCheck\nFileText\nRocket\nCalendar"
+  },
+  {
+   "default": "/contact",
+   "fieldname": "primary_button_action",
+   "fieldtype": "Data",
+   "label": "Primary Button Action"
+  },
+  {
+   "fieldname": "column_break_cta2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Get Proposal",
+   "fieldname": "secondary_button_text",
+   "fieldtype": "Data",
+   "label": "Secondary Button Text"
+  },
+  {
+   "default": "FileText",
+   "fieldname": "secondary_button_icon",
+   "fieldtype": "Select",
+   "label": "Secondary Button Icon",
+   "options": "CalendarCheck\nFileText\nRocket\nCalendar"
+  },
+  {
+   "default": "/contact",
+   "fieldname": "secondary_button_action",
+   "fieldtype": "Data",
+   "label": "Secondary Button Action"
+  },
+  {
+   "fieldname": "trust_indicator_section",
+   "fieldtype": "Section Break",
+   "label": "Trust Indicator"
+  },
+  {
+   "default": "Trusted by 100+ businesses",
+   "fieldname": "trust_indicator_text",
+   "fieldtype": "Data",
+   "label": "Trust Indicator Text"
+  },
+  {
+   "fieldname": "column_break_trust",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "CalendarCheck",
+   "fieldname": "trust_indicator_icon",
+   "fieldtype": "Select",
+   "label": "Trust Indicator Icon",
+   "options": "CalendarCheck\nFileText\nRocket\nCalendar"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_cta",
+   "fieldtype": "Check",
+   "label": "Show CTA"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-19 13:03:17.221817",
+ "modified": "2026-02-23 13:22:57.558003",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS Page",
