@@ -121,7 +121,7 @@ class NextJSPage(Document):
             return []
 
         # Get site URL from settings
-        site_url = frappe.utils.get_url()
+        site_url = "https://finbyz.tech"
 
         # Start with Home
         items = [{"@type": "ListItem", "position": 1, "name": "Home", "item": site_url}]
