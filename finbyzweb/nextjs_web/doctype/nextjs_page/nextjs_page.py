@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from finbyzai.ai.agent.agent_service import AgentService
-
+from frappe import _
 
 class NextJSPage(Document):
 
@@ -29,6 +29,41 @@ class NextJSPage(Document):
 
         self.sync_faq_schema()
         self.sync_breadcrumb_schema()
+        self.validate_order_number()
+
+    def validate_order_number(self):
+        if self.parent_nextjs_page != "index":
+            return
+
+        # Get all valid existing order numbers (excluding current record)
+        existing_orders = frappe.get_all(
+            "NextJS Page",
+            filters={
+                "parent_nextjs_page": "index",
+                "name": ["!=", self.name],
+                "order_no": [">", 0]
+            },
+            pluck="order_no",
+            order_by="order_no asc"
+        )
+
+        next_slot = len(existing_orders) + 1
+
+        # Throw if missing, < 1, or beyond next valid slot
+        if not self.order_no or self.order_no < 1 or self.order_no > next_slot:
+            used = ", ".join(str(n) for n in existing_orders)
+            frappe.throw(
+                _("Order Number <b>{}</b> is invalid.<br><br>"
+                "Used order numbers: <b>{}</b>").format(self.order_no, used)
+            )
+
+        # Throw if duplicate
+        if self.order_no in existing_orders:
+            used = ", ".join(str(n) for n in existing_orders)
+            frappe.throw(
+                _("Order Number <b>{}</b> is already taken.<br><br>"
+                "Used order numbers: <b>{}</b>").format(self.order_no, used)
+            )
 
     def sync_faq_schema(self):
         """Synchronize FAQs child table with FAQPage schema."""
@@ -61,9 +96,20 @@ class NextJSPage(Document):
                 self.remove(existing_faq_schema)
             return
 
+        site_url = "https://finbyz.tech"
+        page_url = site_url + (self.route or "")
+
         faq_json_ld = {
             "@context": "https://schema.org",
             "@type": "FAQPage",
+            "@id": page_url + "#faq",
+            "mainEntityOfPage": page_url,
+            "publisher": {
+                "@type": "Organization",
+                "@id": site_url + "/#organization",
+                "name": "FinByz Tech Pvt Ltd",
+                "logo": site_url + "/files/FinbyzLogo.png",
+            },
             "mainEntity": faq_items,
         }
 
@@ -91,10 +137,15 @@ class NextJSPage(Document):
         if not breadcrumb_items:
             return
 
+        site_url = "https://finbyz.tech"
+        page_url = site_url + (self.route or "")
+
         # Build schema JSON
         breadcrumb_schema = {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
+            "@id": page_url + "#breadcrumb",
+            "publisher": {"@id": site_url + "/#organization"},
             "itemListElement": breadcrumb_items,
         }
 
