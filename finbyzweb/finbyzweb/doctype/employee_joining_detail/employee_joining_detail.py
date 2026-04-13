@@ -4,6 +4,8 @@ from frappe.model.document import Document
 import json
 import string
 import random
+from uuid import uuid4
+
 
 class EmployeeJoiningDetail(Document):
 
@@ -23,9 +25,8 @@ class EmployeeJoiningDetail(Document):
 
 	def random_token(self): 
 		N = 32
-		res = ''.join(random.choices(string.ascii_uppercase +
-									string.digits, k=N))
-		self.token = res
+		res = uuid4()
+		self.token = str(res)
 	
 	def generate_url(self):
 		self.url = f"https://erp.finbyz.tech/employee-joining-details?token={self.token}"
