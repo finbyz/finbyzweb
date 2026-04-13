@@ -136,7 +136,6 @@ def update_employee_data():
 	try:
 		# Save changes while ignoring permissions
 		doc.save(ignore_permissions=True)
-		doc.random_token()
 		doc.generate_url()
 		doc.save(ignore_permissions=True)
 		frappe.db.commit()  # Commit the transaction
