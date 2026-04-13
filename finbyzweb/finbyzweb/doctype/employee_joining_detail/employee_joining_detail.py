@@ -114,7 +114,7 @@ def update_employee_data():
 
 	# Fetch the document using the token
 	try:
-		doc = frappe.get_doc("Employee Joining Detail", {"token": token})
+		doc = frappe.get_doc("Employee Joining Detail", {"token": token, "status": "Pending"})
 	except Exception as e:
 		frappe.throw("Document not found for the given token.")
 
