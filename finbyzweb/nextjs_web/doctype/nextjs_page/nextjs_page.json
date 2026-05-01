@@ -14,8 +14,10 @@
   "column_break_labj",
   "published_on",
   "page_type",
+  "source_code_snippet",
   "parent_nextjs_page",
   "is_group",
+  "order_no",
   "seo_section",
   "meta_title",
   "meta_description",
@@ -118,6 +120,14 @@
    "options": "Web page\nBlog Post\nGallery\nCode Snippet",
    "reqd": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "source_code_snippet",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Source Code Snippet",
+   "options": "Code Snippet",
+   "read_only": 1
   },
   {
    "fieldname": "image",
@@ -231,6 +241,14 @@
    "fieldtype": "Check",
    "label": "Is Group"
   },
+{
+  "fieldname": "order_no",
+  "fieldtype": "Int",
+  "label": "Order Number",
+  "non_negative": 1,
+  "depends_on": "eval:doc.parent_nextjs_page == 'index'",
+  "mandatory_depends_on": "eval:doc.parent_nextjs_page == 'index'"
+},
   {
    "fieldname": "old_parent",
    "fieldtype": "Link",

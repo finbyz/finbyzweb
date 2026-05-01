@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("NextJS Page", {
 
-    parent_nextjs_page: function(frm) {
+    parent_nextjs_page: function (frm) {
         // Guard: circular reference
         if (frm.doc.parent_nextjs_page === frm.doc.name) {
             frappe.msgprint(__("A page cannot be its own parent."));
@@ -17,9 +17,9 @@ frappe.ui.form.on("NextJS Page", {
 
         if (!slug) {
             frappe.msgprint(__("Please set a route or page name before assigning a parent."));
-        frm.set_value("parent_nextjs_page", null);
-        return;
-    }
+            frm.set_value("parent_nextjs_page", null);
+            return;
+        }
 
         if (frm.doc.parent_nextjs_page) {
             frappe.db.get_value(
@@ -29,61 +29,67 @@ frappe.ui.form.on("NextJS Page", {
             ).then(r => {
                 if (r.message && r.message.route) {
                     let parent_route = r.message.route.replace(/^\/+|\/+$/g, "");
-                let new_route = `/${parent_route}/${slug}`;
-                let old_route = frm.doc.route || "/";
+                    let new_route = `/${parent_route}/${slug}`;
+                    let old_route = frm.doc.route || "/";
 
-                // Show confirmation before applying
-                frappe.confirm(
-                    __(
-                        `Are you sure you want to change the parent?<br><br>
-                        <b>Current Route:</b> ${old_route}<br>
-                        <b>New Route:</b> ${new_route}<br><br>
-                        This will update the page route.`,
-                    ),
-                    // On confirm
-                    function () {
+                    if (frm.is_new()) {
+                        // For local/new docs, update directly without confirmation
                         frm.set_value("route", new_route);
-                    },
-                    // On cancel
-                    function () {
-                        frm.set_value("parent_nextjs_page", null);
+                        frm.set_value("actual_route", new_route);
+                    } else {
+                        frappe.confirm(
+                            __(
+                                `Are you sure you want to change the parent?<br><br>
+            <b>Current Route:</b> ${old_route}<br>
+            <b>New Route:</b> ${new_route}<br><br>
+            This will update the page route.`,
+                            ),
+                            // On confirm
+                            function () {
+                                frm.set_value("route", new_route);
+                                frm.set_value("actual_route", new_route);
+                            },
+                            // On cancel
+                            function () {
+                                frm.set_value("parent_nextjs_page", null);
+                            }
+                        );
                     }
-                );
-            } else {
-                frappe.msgprint(__("Could not fetch parent route. Please check the parent page."));
+                } else {
+                    frappe.msgprint(__("Could not fetch parent route. Please check the parent page."));
+                    frm.set_value("parent_nextjs_page", null);
+                }
+            }).catch(() => {
+                frappe.msgprint(__("Error fetching parent route. Please try again."));
                 frm.set_value("parent_nextjs_page", null);
-            }
-        }).catch(() => {
-            frappe.msgprint(__("Error fetching parent route. Please try again."));
-            frm.set_value("parent_nextjs_page", null);
-        });
+            });
 
-    } else {
+        } else {
             // Parent removed → silently revert to bare slug, no confirmation needed
             let slug_only = (frm.doc.route || "").replace(/^\/+|\/+$/g, "").split("/").pop();
             frm.set_value("route", `/${slug_only}`);
-
+            frm.set_value("actual_route", `/${slug_only}`);
         }
     }
-,
+    ,
     title: function (frm) {
         if (frm.doc.title) {
             let slug = frappe.scrub(frm.doc.title).replace(/_/g, "-");
             // If route is empty, always set it.
             if (!frm.doc.route || frm.doc.route === "/") {
                 frm.set_value("route", "/" + slug);
+                frm.set_value("actual_route", "/" + slug);
             }
         }
     },
     refresh(frm) {
 
-        if (!frm.doc.route || !frm.doc.is_published) return;
-
-        let route = frm.doc.route.replace(/^\/+/, '');
-        const base_url = "https://finbyz.tech/";
-        const full_url = `${base_url}/${route}`;
-
-        frm.add_web_link(full_url, __('See on Website'));
+        if (frm.doc.route && frm.doc.is_published) {
+            let route = (frm.doc.route || "").replace(/^\/+/, "");
+            const base_url = "https://finbyz.tech/";
+            const full_url = `${base_url}/${route}`;
+            frm.add_web_link(full_url, __("See on Website"));
+        }
 
         if (!frm.is_new()) {
             frm.add_custom_button(__("Revise Content"), () => {
@@ -356,7 +362,73 @@ frappe.ui.form.on("NextJS Page", {
                     if (frm.is_dirty()) frm.save().then(run_ai); else run_ai();
                 }, __("AI Related Links"), __("Find"));
             }, __("AI Actions"));
+
+            frm.add_custom_button(__("Generate Page"), () => {
+                if (!frm.doc.page_type) {
+                    frappe.msgprint({
+                        title: __("Page Type Required"),
+                        message: __("Please set the <b>Page Type</b> field before generating a page."),
+                        indicator: "orange"
+                    });
+                    return;
+                }
+
+                frappe.confirm(
+                    __(`Generate and publish a Next.js page for this <b>${frm.doc.page_type}</b>?<br><br>
+                        The AI agent from <b>NextJS AI Settings</b> will generate the code
+                        and push it to <b>web.finbyz.com</b>.`),
+                    () => {
+                        const run = () => {
+                            frappe.call({
+                                method: "finbyzweb.nextjs_web.doctype.nextjs_page.nextjs_page.generate_nextjs_code",
+                                args: { doc_name: frm.doc.name },
+                                callback(r) {
+                                    if (r.message && r.message.success) {
+                                        frappe.show_alert({
+                                            message: __("⏳ Page generation started in background. You'll be notified when it's done."),
+                                            indicator: "blue"
+                                        }, 7);
+                                    } else {
+                                        frappe.msgprint({
+                                            title: __("Generation Failed"),
+                                            message: (r.message && r.message.message) || __("Unknown error. Check Error Log."),
+                                            indicator: "red"
+                                        });
+                                    }
+                                },
+                                error() {
+                                    frappe.show_alert({ message: __("Server error. Check Error Log."), indicator: "red" });
+                                }
+                            });
+                        };
+
+                        if (frm.is_dirty()) frm.save().then(run); else run();
+                    }
+                );
+            }, __("AI Actions"));
+
         }
+
+        // ─── Listen for background page generation result ───
+        frappe.realtime.off("nextjs_page_generated");
+        frappe.realtime.on("nextjs_page_generated", (data) => {
+            if (data.docname === frm.doc.name) {
+                if (data.success) {
+                    frm.reload_doc();
+                    frappe.msgprint({
+                        title: __("Page Published"),
+                        message: `✅ ${data.message}`,
+                        indicator: "green"
+                    });
+                } else {
+                    frappe.msgprint({
+                        title: __("Generation Failed"),
+                        message: data.message || __("Unknown error. Check Error Log."),
+                        indicator: "red"
+                    });
+                }
+            }
+        });
 
         // ─── Inline "Improve" Button for Text Selection ───
         setup_inline_improve_button(frm);

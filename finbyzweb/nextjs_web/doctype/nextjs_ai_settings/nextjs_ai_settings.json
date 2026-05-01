@@ -14,7 +14,12 @@
   "schema_builder_agent",
   "seo_generator_agent",
   "social_media_post_agent",
-  "content_revision_agent"
+  "content_revision_agent",
+  "page_generator_section",
+  "web_page_agent",
+  "code_snippet_agent",
+  "column_break_pgagents",
+  "blog_post_agent"
  ],
  "fields": [
   {
@@ -74,13 +79,40 @@
    "fieldtype": "Link",
    "label": "Related Links Finder Agent",
    "options": "AI Agent"
+  },
+  {
+   "fieldname": "page_generator_section",
+   "fieldtype": "Section Break",
+   "label": "Page Generator Agents"
+  },
+  {
+   "fieldname": "web_page_agent",
+   "fieldtype": "Link",
+   "label": "Web Page Agent",
+   "options": "AI Agent"
+  },
+  {
+   "fieldname": "code_snippet_agent",
+   "fieldtype": "Link",
+   "label": "Code Snippet Agent",
+   "options": "AI Agent"
+  },
+  {
+   "fieldname": "column_break_pgagents",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "blog_post_agent",
+   "fieldtype": "Link",
+   "label": "Blog Post Agent",
+   "options": "AI Agent"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-02-19 17:57:13.041365",
+ "modified": "2026-04-29 06:30:00.000000",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS AI Settings",
