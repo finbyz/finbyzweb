@@ -1,36 +1,131 @@
 # Copyright (c) 2026, Finbyz Tech Pvt Ltd and contributors
 # For license information, please see license.txt
 
+import base64
+import json
+import re
+import unicodedata
+from urllib.parse import urlparse
+
 import frappe
+import requests
 from frappe.model.document import Document
+
 from finbyzai.ai.agent.agent_service import AgentService
-from frappe import _
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+SITE_URL = "https://finbyz.tech"
+NEXTJS_API_DEFAULT = "https://web.finbyz.com"
+
+# Maps NextJS Page.page_type → NextJS AI Settings agent field name
+PAGE_TYPE_AGENT_MAP = {
+    "Web page": "web_page_agent",
+    "Blog Post": "blog_post_agent",
+    "Code Snippet": "code_snippet_agent",
+}
+
+# Maps NextJS Page.page_type → API slug for the Next.js write-page endpoint
+PAGE_TYPE_SLUG_MAP = {
+    "Web page": "webpage",
+    "Blog Post": "blog",
+    "Code Snippet": "code-snippet",
+}
+
+# Maps social platform name → credential type label
+PLATFORM_CREDENTIAL_MAP = {
+    "LinkedIn": "LinkedIn Integration",
+    "X (Twitter)": "Twitter Integration",
+}
+
+# Schema types managed internally; must never be AI-generated
+INTERNAL_SCHEMA_TYPES = {"FAQPage", "BreadcrumbList"}
+
+
+# ---------------------------------------------------------------------------
+# Utility helpers
+# ---------------------------------------------------------------------------
+
+
+def slugify(title: str) -> str:
+    """Convert a title string into a URL-safe slug (no leading slash)."""
+    title = (
+        unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
+    )
+    title = title.lower()
+    title = re.sub(r"[^a-z0-9]+", "-", title)
+    return title.strip("-")
+
+
+def _page_url(route: str) -> str:
+    """Return the full page URL for a given route."""
+    return SITE_URL + (route or "")
+
+
+def _get_agent(settings_field: str) -> AgentService:
+    """
+    Load NextJS AI Settings and return an initialised AgentService.
+    Raises a user-facing error if the agent field is not configured.
+    """
+    settings = frappe.get_single("NextJS AI Settings")
+    agent_name = getattr(settings, settings_field, None)
+    if not agent_name:
+        label = settings_field.replace("_", " ").title()
+        frappe.throw(f"Please configure {label} in NextJS AI Settings")
+    return AgentService(agent_name)
+
+
+def _getval(obj, key):
+    """Safely get a value from either a dict or an object with attributes."""
+    if isinstance(obj, dict):
+        return obj.get(key)
+    return getattr(obj, key, None)
+
+
+def _clean_schema_json(raw: str) -> str:
+    """Strip script tags and Markdown code fences from an AI-generated schema string."""
+    raw = re.sub(r"<script[^>]*>", "", raw)
+    raw = raw.replace("</script>", "")
+    raw = re.sub(r"```json\s*", "", raw).replace("```", "")
+    return raw.strip()
+
+
+def _truncate(text: str, limit: int = 2000) -> str:
+    return text[:limit] + "..." if len(text) > limit else text
+
+
+# ---------------------------------------------------------------------------
+# Document class
+# ---------------------------------------------------------------------------
 
 
 class NextJSPage(Document):
 
+    # ------------------------------------------------------------------
+    # Lifecycle hooks
+    # ------------------------------------------------------------------
+
     def autoname(self):
-        """Set name as slugified title."""
+        """Derive document name and auto-populate route fields from title."""
         if not self.name and self.title:
             self.name = frappe.scrub(self.title).replace("_", "-")
         if not self.name:
             self.name = frappe.generate_hash(length=8)
 
-        # Auto-generating route if empty
         if self.title and not self.route:
-            self.route = "/" + frappe.scrub(self.title).replace("_", "-")
+            self.route = "/" + slugify(self.title)
 
         if self.title and not self.actual_route:
-            self.actual_route = "/" + frappe.scrub(self.title).replace("_", "-")
+            self.actual_route = "/" + slugify(self.title)
 
     def validate(self):
-        # Ensure route starts with /
-        if self.route and not self.route.startswith("/"):
-            self.route = "/" + self.route
-
-        # Ensure actual_route starts with /
-        if self.actual_route and not self.actual_route.startswith("/"):
-            self.actual_route = "/" + self.actual_route
+        # Ensure routes always start with /
+        for field in ("route", "actual_route"):
+            value = self.get(field)
+            if value and not value.startswith("/"):
+                self.set(field, "/" + value)
 
         if self.is_published and not self.published_on:
             self.published_on = frappe.utils.today()
@@ -46,286 +141,248 @@ class NextJSPage(Document):
                 {"is_nextjs_page_generated": 1, "nextjs_page": self.name},
             )
 
+    # ------------------------------------------------------------------
+    # Schema synchronisation
+    # ------------------------------------------------------------------
+
     def sync_faq_schema(self):
-        """Synchronize FAQs child table with FAQPage schema."""
-        import json
+        """Keep the FAQPage JSON-LD schema in sync with the faqs child table."""
+        existing = self._find_schema("FAQPage")
 
-        # Filter out existing FAQPage schema
-        schema_table = self.get("nextjs_page_schema") or []
-        existing_faq_schema = next(
-            (s for s in schema_table if s.schema_type == "FAQPage"), None
-        )
-
-        if not self.faqs:
-            if existing_faq_schema:
-                self.remove(existing_faq_schema)
-            return
-
-        faq_items = []
-        for faq in self.faqs:
-            if faq.question and faq.answer:
-                faq_items.append(
-                    {
-                        "@type": "Question",
-                        "name": faq.question,
-                        "acceptedAnswer": {"@type": "Answer", "text": faq.answer},
-                    }
-                )
+        faq_items = [
+            {
+                "@type": "Question",
+                "name": faq.question,
+                "acceptedAnswer": {"@type": "Answer", "text": faq.answer},
+            }
+            for faq in (self.faqs or [])
+            if faq.question and faq.answer
+        ]
 
         if not faq_items:
-            if existing_faq_schema:
-                self.remove(existing_faq_schema)
+            if existing:
+                self.remove(existing)
             return
 
-        site_url = "https://finbyz.tech"
-        page_url = site_url + (self.route or "")
-
-        faq_json_ld = {
+        page_url = _page_url(self.route)
+        schema = {
             "@context": "https://schema.org",
             "@type": "FAQPage",
             "@id": page_url + "#faq",
             "mainEntityOfPage": page_url,
             "publisher": {
                 "@type": "Organization",
-                "@id": site_url + "/#organization",
+                "@id": SITE_URL + "/#organization",
                 "name": "FinByz Tech Pvt Ltd",
-                "logo": site_url + "/files/FinbyzLogo.png",
+                "logo": SITE_URL + "/files/FinbyzLogo.png",
             },
             "mainEntity": faq_items,
         }
-
-        if not existing_faq_schema:
-            self.append(
-                "nextjs_page_schema",
-                {
-                    "schema_type": "FAQPage",
-                    "schema_json": json.dumps(faq_json_ld, indent=2),
-                },
-            )
-        else:
-            existing_faq_schema.schema_json = json.dumps(faq_json_ld, indent=2)
+        self._upsert_schema("FAQPage", schema, existing)
 
     def sync_breadcrumb_schema(self):
-        """Auto-generate BreadcrumbList schema from route."""
-        import json
-
+        """Auto-generate a BreadcrumbList JSON-LD schema from the page route."""
         if not self.route:
             return
 
-        # Parse route into breadcrumb items
-        breadcrumb_items = self._parse_route_to_breadcrumbs()
-
-        if not breadcrumb_items:
+        items = self._build_breadcrumb_items()
+        if not items:
             return
 
-        site_url = "https://finbyz.tech"
-        page_url = site_url + (self.route or "")
-
-        # Build schema JSON
-        breadcrumb_schema = {
+        page_url = _page_url(self.route)
+        schema = {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "@id": page_url + "#breadcrumb",
-            "publisher": {"@id": site_url + "/#organization"},
-            "itemListElement": breadcrumb_items,
+            "publisher": {"@id": SITE_URL + "/#organization"},
+            "itemListElement": items,
         }
-
-        # Find existing BreadcrumbList schema
-        schema_table = self.get("nextjs_page_schema") or []
-        existing_breadcrumb = next(
-            (s for s in schema_table if s.schema_type == "BreadcrumbList"), None
+        self._upsert_schema(
+            "BreadcrumbList", schema, self._find_schema("BreadcrumbList")
         )
 
-        if not existing_breadcrumb:
+    def _find_schema(self, schema_type: str):
+        """Return the first schema row matching schema_type, or None."""
+        return next(
+            (
+                s
+                for s in (self.get("nextjs_page_schema") or [])
+                if s.schema_type == schema_type
+            ),
+            None,
+        )
+
+    def _upsert_schema(self, schema_type: str, schema_dict: dict, existing=None):
+        """Insert or update a schema row with the serialised schema_dict."""
+        serialised = json.dumps(schema_dict, indent=2)
+        if existing:
+            existing.schema_json = serialised
+        else:
             self.append(
                 "nextjs_page_schema",
                 {
-                    "schema_type": "BreadcrumbList",
-                    "schema_json": json.dumps(breadcrumb_schema, indent=2),
+                    "schema_type": schema_type,
+                    "schema_json": serialised,
                 },
             )
-        else:
-            existing_breadcrumb.schema_json = json.dumps(breadcrumb_schema, indent=2)
 
-    def _parse_route_to_breadcrumbs(self):
-        """Parse route into breadcrumb list items."""
+    def _build_breadcrumb_items(self) -> list:
+        """Parse self.route into an ordered list of ListItem breadcrumb dicts."""
         if not self.route or self.route == "/":
             return []
 
-        # Get site URL from settings
-        site_url = "https://finbyz.tech"
-
-        # Start with Home
-        items = [{"@type": "ListItem", "position": 1, "name": "Home", "item": site_url}]
-
-        # Split route and build incremental breadcrumbs
-        segments = [s for s in self.route.split("/") if s]
+        items = [{"@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL}]
         current_path = ""
 
-        for idx, segment in enumerate(segments, start=2):
+        for position, segment in enumerate(
+            (s for s in self.route.split("/") if s), start=2
+        ):
             current_path += f"/{segment}"
-            # Convert slug to title (e.g., "chemical-industry" → "Chemical Industry")
-            name = segment.replace("-", " ").replace("_", " ").title()
-
             items.append(
                 {
                     "@type": "ListItem",
-                    "position": idx,
-                    "name": name,
-                    "item": site_url.rstrip("/") + current_path,
+                    "position": position,
+                    "name": segment.replace("-", " ").replace("_", " ").title(),
+                    "item": SITE_URL.rstrip("/") + current_path,
                 }
             )
 
         return items
 
 
+# ---------------------------------------------------------------------------
+# Whitelisted API functions
+# ---------------------------------------------------------------------------
+
+
 @frappe.whitelist()
 def generate_seo(doc_name, user_input=None):
-    """Generate SEO metadata using AI Agent."""
+    """Generate and save SEO metadata using the configured AI Agent."""
     doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
-
-    if not settings.seo_generator_agent:
-        frappe.throw("Please configure SEO Generator Agent in NextJS AI Settings")
-
-    agent = AgentService(settings.seo_generator_agent)
-    page_url = "https://finbyz.tech" + (doc.route or "")
-    result = agent.invoke(
+    result = _get_agent("seo_generator_agent").invoke(
         title=doc.title,
         content=doc.content or "",
-        short_description="",  # Compatibility for existing prompts
-        page_url=page_url,
+        short_description="",
+        page_url=_page_url(doc.route),
         user_input=user_input or "Generate optimized SEO metadata.",
     )
 
-    doc.meta_title = result.meta_title
-    doc.meta_description = result.meta_description
-    doc.keywords = result.keywords
+    doc.meta_title = _getval(result, "meta_title")
+    doc.meta_description = _getval(result, "meta_description")
+    doc.keywords = _getval(result, "keywords")
 
-    # Update OG/Twitter fields for consistency
-    doc.og_title = result.meta_title
-    doc.og_description = result.meta_description
-    doc.twitter_title = result.meta_title
-    doc.twitter_description = result.meta_description
+    # Mirror to OG / Twitter fields for consistency
+    doc.og_title = doc.meta_title
+    doc.og_description = doc.meta_description
+    doc.twitter_title = doc.meta_title
+    doc.twitter_description = doc.meta_description
 
     doc.save()
-
     return {"success": True, "message": "SEO metadata generated and saved successfully"}
 
 
 @frappe.whitelist()
 def generate_faqs(doc_name, user_input=None):
-    """Generate FAQs using AI Agent."""
+    """Generate and save FAQs using the configured AI Agent."""
     doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
-
-    if not settings.faq_generator_agent:
-        frappe.throw("Please configure FAQ Generator Agent in NextJS AI Settings")
-
-    agent = AgentService(settings.faq_generator_agent)
-    page_url = "https://finbyz.tech" + (doc.route or "")
-    result = agent.invoke(
+    result = _get_agent("faq_generator_agent").invoke(
         title=doc.title,
         content=doc.content or "",
-        short_description="",  # Compatibility for existing prompts
-        page_url=page_url,
+        short_description="",
+        page_url=_page_url(doc.route),
         user_input=user_input or "Generate relevant FAQs for this page.",
     )
 
     doc.set("faqs", [])
     for faq in result.faqs:
-        doc.append("faqs", {"question": faq.question, "answer": faq.answer})
+        doc.append(
+            "faqs",
+            {
+                "question": _getval(faq, "question"),
+                "answer": _getval(faq, "answer"),
+            },
+        )
 
     doc.save()
-
     return {"success": True, "message": f"Generated and saved {len(result.faqs)} FAQs"}
 
 
 @frappe.whitelist()
 def generate_schema(doc_name, user_input=None):
-    """Generate JSON-LD Schema using AI Agent."""
+    """
+    Generate JSON-LD schema for any schema rows that have a schema_type
+    selected but an empty schema_json.
+
+    FAQPage and BreadcrumbList rows are always skipped — they are managed
+    automatically via sync_faq_schema() and sync_breadcrumb_schema().
+    """
     doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
-
-    if not settings.schema_builder_agent:
-        frappe.throw("Please configure Schema Builder Agent in NextJS AI Settings")
-
-    agent = AgentService(settings.schema_builder_agent)
-
+    agent = _get_agent("schema_builder_agent")
     generated_count = 0
+    schema_types = [schema_row.schema_type for schema_row in doc.nextjs_page_schema]
     for row in doc.nextjs_page_schema:
-        # If schema_type is selected but schema_json is empty, generate it
-        if row.schema_type == "FAQPage":
+        if (
+            not row.schema_type
+            or row.schema_json
+            or row.schema_type in INTERNAL_SCHEMA_TYPES
+        ):
             continue
-        if row.schema_type == "BreadcrumbList":
+
+        template = frappe.get_doc("NextJS Schema Type", row.schema_type)
+        reference_schema = template.schema or "{}"
+
+        # Organization schema is copied verbatim from the template
+        if row.schema_type == "Organization":
+            row.schema_json = reference_schema
+            generated_count += 1
             continue
 
-        if row.schema_type and not row.schema_json:
-            template_doc = frappe.get_doc("NextJS Schema Type", row.schema_type)
-            reference_schema = template_doc.schema or "{}"
-            if row.schema_type == "Organization":
-                row.schema_json = reference_schema
-                continue
-            page_url = "https://finbyz.tech" + (doc.route or "")
-            result = agent.invoke(
-                title=doc.title,
-                content=doc.content or "",
-                reference_schema=reference_schema,
-                page_url=page_url,
-                base_url="https://finbyz.tech",
-                user_input=user_input
-                or "Generate appropriate JSON-LD schema based on the template.",
-            )
+        # result = agent.invoke(
+        #     title=doc.title,
+        #     content=doc.content or "",
+        #     reference_schema=reference_schema,
+        #     page_url=_page_url(doc.route),
+        #     base_url=SITE_URL,
+        #     user_input=user_input
+        #     or "Generate appropriate JSON-LD schema based on the template.",
+        # )
+        result = agent.invoke(
+            schema_type=row.schema_type,
+            has_breadcrumb=True if "BreadcrumbList" in schema_types else False,
+            has_faq=True if "FAQPage" in schema_types else False,
+            title=doc.title,
+            content=doc.content or "",
+            page_url=_page_url(doc.route),
+            base_url=SITE_URL,
+            user_input=user_input
+            or "Generate appropriate JSON-LD schema based on the template.",
+        )
 
-            if hasattr(result, "schema_json"):
-                schema_val = result.schema_json
-            elif isinstance(result, dict) and "schema_json" in result:
-                schema_val = result["schema_json"]
-            else:
-                schema_val = str(result)
+        raw = _getval(result, "schema_json") or str(result)
+        row.schema_json = _clean_schema_json(raw)
+        generated_count += 1
 
-            # Clean the JSON: Remove script tags and markdown fences
-            if schema_val:
-                import re
-
-                # Remove <script ...> and </script>
-                schema_val = re.sub(r"<script[^>]*>", "", schema_val)
-                schema_val = schema_val.replace("</script>", "")
-
-                # Remove markdown code fences
-                schema_val = re.sub(r"```json\s*", "", schema_val)
-                schema_val = schema_val.replace("```", "")
-
-                row.schema_json = schema_val.strip()
-                generated_count += 1
-
-    if generated_count > 0:
-        doc.save()
-        return {
-            "success": True,
-            "message": f"Generated {generated_count} schemas successfully",
-        }
-    else:
+    if not generated_count:
         return {"success": False, "message": "No empty schema rows found to generate."}
 
-    return {"success": True, "message": "Schema generated and saved successfully"}
+    doc.save()
+    return {
+        "success": True,
+        "message": f"Generated {generated_count} schema(s) successfully",
+    }
 
 
 @frappe.whitelist()
 def revise_content(doc_name, user_input):
-    """Revise content using AI Agent."""
+    """Rewrite the full page content using the Content Writer Agent."""
     doc = frappe.get_doc("NextJS Page", doc_name)
     settings = frappe.get_single("NextJS AI Settings")
-
-    if not settings.content_writer_agent:
-        frappe.throw("Please configure Content Writer Agent in NextJS AI Settings")
-
-    agent = AgentService(settings.content_writer_agent)
-    page_url = "https://finbyz.tech" + (doc.route or "")
+    agent_name = settings.content_writer_agent
+    agent = _get_agent(agent_name)
     result = agent.invoke(
         title=doc.title,
         content=doc.content or "",
-        short_description="",  # Compatibility for existing prompts
+        short_description="",
         meta_title=doc.meta_title or "",
         meta_description=doc.meta_description or "",
         keywords=doc.keywords or "",
@@ -335,125 +392,123 @@ def revise_content(doc_name, user_input):
 
     doc.content = result.content
     doc.save()
-
     return {"success": True, "message": "Content revised and saved successfully"}
 
 
 @frappe.whitelist()
 def revise_faqs(doc_name, faqs_to_revise, user_input=None):
-    """Revise or regenerate specific FAQs using AI Agent."""
+    """Revise specific FAQs in-place using the FAQ Reviser Agent."""
     doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
-
-    agent_name = settings.faq_reviser_agent
-    if not agent_name:
-        frappe.throw("Please configure FAQ Reviser Agent in NextJS AI Settings")
-
-    agent = AgentService(agent_name)
-
-    import json
 
     if isinstance(faqs_to_revise, str):
         faqs_to_revise = json.loads(faqs_to_revise)
 
-    faqs_data = json.dumps(faqs_to_revise, indent=2)
-
-    page_url = "https://finbyz.tech" + (doc.route or "")
-    result = agent.invoke(
+    result = _get_agent("faq_reviser_agent").invoke(
         title=doc.title,
         content=doc.content or "",
-        short_description="",  # Compatibility for existing prompts
-        page_url=page_url,
+        short_description="",
+        page_url=_page_url(doc.route),
         user_input=user_input
         or "Please improve these FAQs for better clarity and SEO.",
-        faqs_data=faqs_data,
+        faqs_data=json.dumps(faqs_to_revise, indent=2),
     )
 
-    # Map revised data back to doc
-    if result.faqs:
-        for i, revised_faq in enumerate(result.faqs):
-            if i < len(faqs_to_revise):
-                original = faqs_to_revise[i]
-                for row in doc.faqs:
-                    # Match by original question or idx if provided
-                    if row.question == original.get(
-                        "question"
-                    ) or row.name == original.get("idx"):
-                        # Robust access: try .get() for dicts, dot notation/getattr for objects
-                        if hasattr(revised_faq, "get"):
-                            row.question = revised_faq.get("question")
-                            row.answer = revised_faq.get("answer")
-                        else:
-                            row.question = getattr(revised_faq, "question", None)
-                            row.answer = getattr(revised_faq, "answer", None)
-                        break
+    if not result.faqs:
+        return {
+            "success": False,
+            "message": "AI agent did not return any revised FAQs.",
+        }
+
+    for i, revised in enumerate(result.faqs):
+        if i >= len(faqs_to_revise):
+            break
+        original = faqs_to_revise[i]
+        for row in doc.faqs:
+            if row.question == original.get("question") or row.name == original.get(
+                "idx"
+            ):
+                row.question = _getval(revised, "question")
+                row.answer = _getval(revised, "answer")
+                break
 
     doc.save()
-
     return {"success": True, "message": "FAQs revised and saved successfully"}
 
 
 @frappe.whitelist()
-def generate_social_post(doc_name, user_input=None, platforms=None, credentials=None):
-    """Generate social media posts using AI Agent and create Social Media Post docs."""
-    import json as _json
+def revise_content_chunk(doc_name, content_chunk, instruction, is_markdown=False):
+    """
+    Revise a selected chunk of content using the Content Improvement Agent.
 
+    Full page content is sent as context so the AI can match tone and style,
+    but only the selected chunk is rewritten. The caller replaces the chunk
+    in the editor using the returned revised_content value.
+    """
+    if not content_chunk:
+        frappe.throw("Please select some content to revise.")
+    if not instruction:
+        frappe.throw("Please provide a revision instruction.")
+
+    is_markdown = frappe.parse_json(is_markdown)
     doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
 
-    if not settings.social_media_post_agent:
-        frappe.throw("Please configure Social Media Post Agent in NextJS AI Settings")
+    if doc.content_type == "Markdown" or is_markdown:
+        full_content = doc.content_md or ""
+        content_type = "Markdown"
+    else:
+        full_content = doc.content or ""
+        content_type = "HTML"
 
-    # Parse platforms
+    result = _get_agent("content_revision_agent").invoke(
+        content_chunk=content_chunk,
+        instruction=instruction,
+        full_content=full_content,
+        content_type=content_type,
+    )
+
+    # Prefer structured field; fall back to raw string representation
+    revised_text = _getval(result, "revised_content") or (
+        result if isinstance(result, str) else str(result)
+    )
+
+    return {"revised_content": revised_text.strip() if revised_text else ""}
+
+
+@frappe.whitelist()
+def generate_social_post(doc_name, user_input=None, platforms=None, credentials=None):
+    """
+    Generate social media posts with AI and create a Social Media Post doc
+    for each requested platform.
+    """
+    doc = frappe.get_doc("NextJS Page", doc_name)
+
     if isinstance(platforms, str):
-        platforms = _json.loads(platforms)
-
+        platforms = json.loads(platforms)
     if not platforms:
         frappe.throw("Please select at least one platform")
 
-    # Parse credentials
     if isinstance(credentials, str):
-        credentials = _json.loads(credentials)
+        credentials = json.loads(credentials)
     credentials = credentials or {}
 
-    # Platform to credential_type mapping
-    platform_credential_map = {
-        "LinkedIn": "LinkedIn Integration",
-        "X (Twitter)": "Twitter Integration",
-    }
+    content_text = _truncate(frappe.utils.strip_html_tags(doc.content or ""))
 
-    # Build the page URL
-    site_url = frappe.utils.get_url()
-    page_url = site_url.rstrip("/") + (doc.route or "")
-
-    # Prepare content summary (strip HTML tags for AI)
-    content_text = frappe.utils.strip_html_tags(doc.content or "")
-    # Truncate content to avoid token limit issues
-    if len(content_text) > 2000:
-        content_text = content_text[:2000] + "..."
-
-    # Format platforms string
-    platforms_str = ", ".join(platforms)
-
-    agent = AgentService(settings.social_media_post_agent)
-    result = agent.invoke(
+    result = _get_agent("social_media_post_agent").invoke(
         title=doc.title or "",
         content=content_text,
         meta_title=doc.meta_title or "",
         meta_description=doc.meta_description or "",
         keywords=doc.keywords or "",
-        page_url=page_url,
-        platforms=platforms_str,
+        page_url=_page_url(doc.route),
+        platforms=", ".join(platforms),
         user_input=user_input
         or "Generate engaging social media posts to promote this page.",
     )
 
-    # Create Social Media Post docs for each platform
     created_posts = []
     for post_data in result.posts:
-        platform = getattr(post_data, "platform", None) or post_data.get("platform")
-        content = getattr(post_data, "content", None) or post_data.get("content")
-
+        platform = _getval(post_data, "platform")
+        content = _getval(post_data, "content")
         if not platform or not content:
             continue
 
@@ -463,263 +518,116 @@ def generate_social_post(doc_name, user_input=None, platforms=None, credentials=
         new_post.content = content
         new_post.status = "Draft"
         new_post.created_on = frappe.utils.today()
+        new_post.credential_type = PLATFORM_CREDENTIAL_MAP.get(platform)
 
-        # Auto-set credential_type based on platform
-        new_post.credential_type = platform_credential_map.get(platform)
-
-        # Set credential if user selected one in the dialog
         platform_creds = credentials.get(platform, {})
         if platform_creds.get("credential"):
-            new_post.credential_type = platform_creds["credential_type"]
+            new_post.credential_type = platform_creds.get("credential_type")
             new_post.credential = platform_creds["credential"]
 
         new_post.insert()
-
         created_posts.append({"name": new_post.name, "platform": platform})
 
     if not created_posts:
         return {"success": False, "message": "AI agent did not generate any posts."}
 
     frappe.db.commit()
-
-
-@frappe.whitelist()
-def revise_content_chunk(doc_name, content_chunk, instruction, is_markdown=False):
-    """Revise a selected chunk of content using AI Agent.
-
-    Sends the full page content as context so the AI can match
-    tone/style, but only the selected chunk is revised.
-    Returns the revised text — the frontend replaces it in-place.
-    """
-    logger = frappe.logger("nextjs_page")
-    is_markdown = frappe.parse_json(is_markdown)
-
-    logger.info("=" * 50)
-    logger.info(f"[AI Improve] revise_content_chunk called. Markdown: {is_markdown}")
-
-    if not content_chunk:
-        frappe.throw("Please select some content to revise.")
-    if not instruction:
-        frappe.throw("Please provide a revision instruction.")
-
-    doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
-
-    if not settings.content_revision_agent:
-        frappe.throw("Please configure Content Revision Agent in NextJS AI Settings")
-
-    # Determine format and full context
-    content_type = "HTML"
-    if doc.content_type == "Markdown":
-        full_content = doc.content_md or ""
-        content_type = "Markdown"
-    else:
-        full_content = doc.content or ""
-        # If frontend explicitly says it's markdown, respect that (e.g. if content_type is switched)
-        if is_markdown:
-            content_type = "Markdown"
-
-    agent = AgentService(settings.content_revision_agent)
-    result = agent.invoke(
-        content_chunk=content_chunk,
-        instruction=instruction,
-        full_content=full_content,
-        content_type=content_type,
-    )
-
-    logger.info(f"[AI Improve] AI agent response received, type: {type(result)}")
-
-    # Extract revised content from result
-    revised_text = ""
-
-    # Comprehensive logging for debugging
-    log_data = {
-        "result_type": str(type(result)),
-        "result_value_str": str(result),
-        "doc_name": doc_name,
-        "instruction": instruction,
-        "content_chunk_length": len(content_chunk) if content_chunk else 0,
-        "dir_result": dir(result),
+    return {
+        "success": True,
+        "message": f"Created {len(created_posts)} social media post(s) successfully.",
+        "posts": created_posts,
     }
-
-    # Try to get data as dict for easier logging
-    try:
-        if hasattr(result, "dict") and callable(result.dict):
-            log_data["result_as_dict"] = result.dict()
-        elif hasattr(result, "model_dump") and callable(result.model_dump):
-            log_data["result_as_model_dump"] = result.model_dump()
-    except Exception as e:
-        log_data["extraction_log_error"] = str(e)
-
-    # Extraction logic
-    if isinstance(result, str) and result.strip():
-        revised_text = result
-        log_data["extraction_method"] = "result_is_string"
-    elif hasattr(result, "revised_content") and getattr(result, "revised_content"):
-        revised_text = result.revised_content
-        log_data["extraction_method"] = "attribute_extraction"
-    elif isinstance(result, dict) and result.get("revised_content"):
-        revised_text = result.get("revised_content")
-        log_data["extraction_method"] = "dict_key_extraction"
-    elif (
-        "result_as_dict" in log_data
-        and log_data["result_as_dict"]
-        and log_data["result_as_dict"].get("revised_content")
-    ):
-        revised_text = log_data["result_as_dict"].get("revised_content")
-        log_data["extraction_method"] = "injected_dict_extraction"
-    else:
-        # Fallback: Capture anything that looks like content
-        revised_text = str(result)
-        log_data["extraction_method"] = "fallback_stringification"
-
-    log_data["final_revised_text_preview"] = (
-        revised_text[:200] if revised_text else "EMPTY"
-    )
-
-    # Log to Error Log for final verification
-    frappe.log_error(
-        title=f"AI Improve Process: {doc_name}", message=frappe.as_json(log_data)
-    )
-
-    return {"revised_content": revised_text.strip() if revised_text else ""}
 
 
 @frappe.whitelist()
 def create_page_from_ai(user_input):
-    """Create a new NextJS Page based on AI generation."""
-    settings = frappe.get_single("NextJS AI Settings")
+    """
+    Create a new NextJS Page from an AI-generated outline.
 
-    if not settings.page_creator_agent:
-        frappe.throw("Please configure Page Creator Agent in NextJS AI Settings")
-
-    agent = AgentService(settings.page_creator_agent)
-
+    Uses the web_page_agent. If a dedicated page-creator agent is needed,
+    add a `page_creator_agent` Link field to the NextJS AI Settings DocType
+    and change the _get_agent() call below accordingly.
+    """
     try:
-        result = agent.invoke(user_input=user_input)
-    except Exception as e:
+        result = _get_agent("content_writer_agent").invoke(user_input=user_input)
+    except Exception:
         frappe.log_error(
             title="AI Page Creation Failed", message=frappe.get_traceback()
         )
-        frappe.throw(f"AI Agent failed to generate page data: {str(e)}")
+        frappe.throw(
+            "AI Agent failed to generate page data. Check the error log for details."
+        )
 
-    if not result or not hasattr(result, "title"):
-        # Fallback for different return types if needed
-        if isinstance(result, dict) and "title" in result:
-            data = result
-        else:
-            frappe.throw("AI Agent returned invalid data format")
-    else:
-        data = {
-            "title": result.title,
-            "meta_title": result.meta_title,
-            "meta_description": result.meta_description,
-            "keywords": result.keywords,
-            "content": result.content,
-        }
+    title = _getval(result, "title")
+    if not title:
+        frappe.throw("AI Agent returned invalid data — missing required 'title' field.")
 
     new_page = frappe.new_doc("NextJS Page")
-    new_page.title = data.get("title")
-    new_page.meta_title = data.get("meta_title")
-    new_page.meta_description = data.get("meta_description")
-    new_page.keywords = data.get("keywords")
+    new_page.title = title
+    new_page.meta_title = _getval(result, "meta_title")
+    new_page.meta_description = _getval(result, "meta_description")
+    new_page.keywords = _getval(result, "keywords")
     new_page.content_type = "Rich Text"
-    new_page.content = data.get("content", "")
+    new_page.content = _getval(result, "content") or ""
     new_page.page_type = "Web page"
     new_page.is_published = 0
-    new_page.actual_route = "/" + frappe.scrub(data.get("title", "untitled")).replace("_", "-")
-    new_page.insert()
-    frappe.db.commit()
+    new_page.route = "/" + slugify(title)
+    new_page.actual_route = "/" + slugify(title)
 
-    return {
-        "success": True,
-        "message": "Page created successfully",
-        "name": new_page.name,
-    }
+    return new_page
 
 
 @frappe.whitelist()
 def generate_related_links(doc_name, user_input=None):
-    """Generate related page links using AI Agent and store them in nextjs_related_page child table."""
+    """
+    Use AI to find related NextJS Pages and populate the nextjs_related_page
+    child table.
+    """
     doc = frappe.get_doc("NextJS Page", doc_name)
-    settings = frappe.get_single("NextJS AI Settings")
-
-    if not settings.related_links_finder_agent:
-        frappe.throw(
-            "Please configure Related Links Finder Agent in NextJS AI Settings"
-        )
-
-    agent = AgentService(settings.related_links_finder_agent)
-    page_url = "https://finbyz.tech" + (doc.route or "")
-
-    result = agent.invoke(
+    result = _get_agent("related_links_finder_agent").invoke(
         title=doc.title or "",
         content=doc.content or "",
         meta_title=doc.meta_title or "",
         meta_description=doc.meta_description or "",
         keywords=doc.keywords or "",
-        page_url=page_url,
+        page_url=_page_url(doc.route),
         user_input=user_input or "Find related pages for this page.",
     )
 
-    # Extract list of related links from agent result
-    # Supports new format: {"related_links": [{"title": "...", "route": "..."}]}
-    # Also supports legacy format: {"routes": ["...", ...]} or {"related_links": ["...", ...]}
-    raw_links = []
-    if hasattr(result, "related_links"):
-        raw_links = result.related_links
-    elif hasattr(result, "routes"):
-        raw_links = result.routes
-    elif isinstance(result, dict):
-        raw_links = result.get("related_links") or result.get("routes") or []
-
+    raw_links = _getval(result, "related_links") or _getval(result, "routes") or []
     if not raw_links:
         return {
             "success": False,
             "message": "AI agent did not return any related links.",
         }
 
-    # Clear existing related pages and repopulate
     doc.set("nextjs_related_page", [])
-
     added = 0
-    for link in raw_links:
-        # Support both structured objects {"title": ..., "route": ...} and plain route strings
-        if isinstance(link, str):
-            route = link
-        elif isinstance(link, dict):
-            route = link.get("route") or ""
-        else:
-            # Pydantic/object with attributes
-            route = getattr(link, "route", None) or ""
 
+    for link in raw_links:
+        route = link if isinstance(link, str) else (_getval(link, "route") or "")
         if not route:
             continue
 
-        # Normalise route — strip the domain if agent returned a full URL
+        # Strip domain if agent returned an absolute URL
         if "finbyz.tech" in route:
-            from urllib.parse import urlparse
-
             route = urlparse(route).path
 
-        # Ensure route starts with /
         if not route.startswith("/"):
             route = "/" + route
 
-        # Look up the NextJS Page name by route field
         page_name = frappe.db.get_value("NextJS Page", {"route": route}, "name")
         if page_name:
             doc.append("nextjs_related_page", {"page": page_name})
             added += 1
 
-    if added == 0:
+    if not added:
         return {
             "success": False,
             "message": "No matching NextJS Pages found for the suggested routes.",
         }
 
     doc.save()
-
     return {
         "success": True,
         "message": f"Found and saved {added} related page(s) successfully.",
@@ -728,7 +636,7 @@ def generate_related_links(doc_name, user_input=None):
 
 @frappe.whitelist()
 def generate_nextjs_code(doc_name):
-    """Enqueue Next.js code generation to background to avoid timeout."""
+    """Enqueue Next.js code generation as a background job to avoid request timeouts."""
     frappe.enqueue(
         "finbyzweb.nextjs_web.doctype.nextjs_page.nextjs_page._generate_nextjs_code_background",
         doc_name=doc_name,
@@ -742,92 +650,65 @@ def generate_nextjs_code(doc_name):
 
 
 def _generate_nextjs_code_background(doc_name):
-    """Background task for generating and publishing Next.js code."""
-    import base64
-    import requests
-    import json
-
+    """
+    Background task: generate Next.js page code with AI and push it to the
+    Next.js write-page API. Publishes a realtime event on completion or failure.
+    """
     try:
         doc = frappe.get_doc("NextJS Page", doc_name)
         settings = frappe.get_single("NextJS AI Settings")
 
-        # Determine which agent to use
-        agent_name = None
-        if doc.page_type == "Web page":
-            agent_name = settings.web_page_agent
-        elif doc.page_type == "Blog Post":
-            agent_name = settings.blog_post_agent
-        elif doc.page_type == "Code Snippet":
-            agent_name = settings.code_snippet_agent
-
+        agent_field = PAGE_TYPE_AGENT_MAP.get(doc.page_type)
+        agent_name = agent_field and getattr(settings, agent_field, None)
         if not agent_name:
-            raise Exception(
-                f"Please configure {doc.page_type} Agent in NextJS AI Settings"
+            raise ValueError(
+                f"Please configure a {doc.page_type} Agent in NextJS AI Settings"
             )
 
         agent = AgentService(agent_name)
 
-        # Prepare input data for the agent
-        content_text = frappe.utils.strip_html_tags(doc.content or "")
-        if doc.content_type == "Markdown":
-            content_text = doc.content_md or ""
+        content_text = (
+            doc.content_md or ""
+            if doc.content_type == "Markdown"
+            else frappe.utils.strip_html_tags(doc.content or "")
+        )
 
-        ai_input_data = {
-            "title": doc.title or "",
-            "content": content_text,
-            "meta_title": doc.meta_title or "",
-            "meta_description": doc.meta_description or "",
-            "keywords": doc.keywords or "",
-            "page_type": doc.page_type or "Web page",
-            "slug": doc.route or frappe.utils.slug(doc.title),
-            "publish_date": doc.published_on or frappe.utils.today(),
-            "author_name": doc.owner or "Administrator",
-            "primary_category": "Business",
-            # Add mappings for the Web Page Agent prompt
-            "seo_title": doc.meta_title or doc.title,
-            "seo_description": doc.meta_description or "",
-            "page_description": doc.meta_description or "",
-            "heroImage": doc.image or "",
-            "existing_component_str": "[]",  # Placeholder for now
-        }
+        result = agent.invoke(
+            query=f"Generate Next.js code for the {doc.page_type}: {doc.title}",
+            title=doc.title or "",
+            content=content_text,
+            meta_title=doc.meta_title or "",
+            meta_description=doc.meta_description or "",
+            keywords=doc.keywords or "",
+            page_type=doc.page_type or "Web page",
+            slug=doc.route or ("/" + slugify(doc.title)),
+            publish_date=doc.published_on or frappe.utils.today(),
+            author_name=doc.owner or "Administrator",
+            primary_category="Business",
+            seo_title=doc.meta_title or doc.title,
+            seo_description=doc.meta_description or "",
+            page_description=doc.meta_description or "",
+            heroImage=doc.image or "",
+            existing_component_str="[]",
+        )
 
-        # Pass a query string to avoid 'contents is not specified' error in Gemini
-        query = f"Generate Next.js code for the {doc.page_type}: {doc.title}"
-        result = agent.invoke(query=query, **ai_input_data)
-
-        # Check if the result has page_code
-        page_code = getattr(result, "page_code", None)
-        if not page_code and isinstance(result, dict):
-            page_code = result.get("page_code")
-
+        page_code = _getval(result, "page_code") or (
+            result if isinstance(result, str) else None
+        )
         if not page_code:
-            if isinstance(result, str):
-                page_code = result
-            else:
-                raise Exception("AI Agent did not return page_code")
+            raise ValueError("AI Agent did not return page_code")
 
-        # Send to Next.js API
-        page_code_base64 = base64.b64encode(page_code.encode("utf-8")).decode("utf-8")
-        slug = doc.route or frappe.utils.slug(doc.title)
-
-        # Map page_type to the specific strings expected by the Next.js API
-        type_map = {
-            "Web page": "webpage",
-            "Blog Post": "blog",
-            "Code Snippet": "code-snippet",
-        }
-        page_type_slug = type_map.get(doc.page_type, "webpage")
-
-        # Extract FAQs for the payload
-        faqs_data = []
-        for faq in doc.get("faqs") or []:
-            faqs_data.append({"question": faq.question, "answer": faq.answer})
+        slug = doc.route or ("/" + slugify(doc.title))
+        faqs_data = [
+            {"question": faq.question, "answer": faq.answer}
+            for faq in (doc.get("faqs") or [])
+        ]
 
         payload = {
             "slug": slug,
-            "type": page_type_slug,
+            "type": PAGE_TYPE_SLUG_MAP.get(doc.page_type, "webpage"),
             "name": doc.name,
-            "pageCode": page_code_base64,
+            "pageCode": base64.b64encode(page_code.encode("utf-8")).decode("utf-8"),
             "components": [],
             "seoData": {
                 "seo_title": doc.meta_title or doc.title,
@@ -836,50 +717,52 @@ def _generate_nextjs_code_background(doc_name):
                 "small_description": doc.meta_description or "",
                 "keywords": doc.keywords or "",
                 "image": doc.image or "",
-                "content": content_text[:500] if content_text else "",
-                "faqs": faqs_data,  # Added FAQs here
+                "content": content_text[:500],
+                "faqs": faqs_data,
             },
         }
 
-        nextjs_api_url = frappe.conf.get("nextjs_api_url") or "https://web.finbyz.com"
-        api_endpoint = f"{nextjs_api_url}/api/write-page"
-
+        api_url = (
+            frappe.conf.get("nextjs_api_url") or NEXTJS_API_DEFAULT
+        ) + "/api/write-page"
         response = requests.post(
-            api_endpoint,
+            api_url,
             json=payload,
             headers={"Content-Type": "application/json", "Accept": "application/json"},
             timeout=120,
         )
 
-        if response.status_code == 200:
-            doc.is_published = 1
-            doc.published_on = frappe.utils.today()
-            doc.save()
-
-            frappe.publish_realtime(
-                "nextjs_page_generated",
-                {
-                    "success": True,
-                    "message": "Page generated and published successfully!",
-                    "docname": doc_name,
-                },
-                user=frappe.session.user,
-            )
-        else:
-            error_msg = f"API Error: {response.status_code}"
+        if response.status_code != 200:
             try:
-                error_msg = response.json().get("message", error_msg)
-            except:
-                pass
-            raise Exception(error_msg)
+                error_msg = response.json().get("message") or response.text
+            except Exception:
+                error_msg = response.text
+            raise RuntimeError(f"API Error {response.status_code}: {error_msg}")
 
-    except Exception as e:
-        frappe.log_error(
-            title="AI Generate Background Error", message=frappe.get_traceback()
-        )
+        doc.is_published = 1
+        doc.published_on = frappe.utils.today()
+        doc.save()
+
         frappe.publish_realtime(
             "nextjs_page_generated",
-            {"success": False, "message": f"Error: {str(e)}", "docname": doc_name},
+            {
+                "success": True,
+                "message": "Page generated and published successfully!",
+                "docname": doc_name,
+            },
             user=frappe.session.user,
         )
 
+    except Exception:
+        frappe.log_error(
+            title="NextJS Code Generation Failed", message=frappe.get_traceback()
+        )
+        frappe.publish_realtime(
+            "nextjs_page_generated",
+            {
+                "success": False,
+                "message": "Generation failed. Check the error log for details.",
+                "docname": doc_name,
+            },
+            user=frappe.session.user,
+        )

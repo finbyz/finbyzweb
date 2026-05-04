@@ -1,9 +1,9 @@
 frappe.listview_settings['NextJS Page'] = {
     add_fields: ["is_published", "page_type"],
     onload: function (listview) {
-        listview.page.add_inner_button(__("AI Page"), function () {
+        listview.page.add_inner_button(__("Draft Content with AI"), function () {
             let d = new frappe.ui.Dialog({
-                title: __('AI Page'),
+                title: __('Draft Content'),
                 fields: [
                     {
                         label: __('What is this page about?'),
@@ -24,13 +24,8 @@ frappe.listview_settings['NextJS Page'] = {
                         freeze: true,
                         freeze_message: __('AI is generating your page...'),
                         callback: function (r) {
-                            if (r.message && r.message.success) {
-                                frappe.show_alert({
-                                    message: __('Page Created Successfully'),
-                                    indicator: 'green'
-                                });
-                                frappe.set_route('Form', 'NextJS Page', r.message.name);
-                            }
+                            if (!r.message) return
+                            frappe.new_doc("NextJS Page", r.message)
                         }
                     });
                 }

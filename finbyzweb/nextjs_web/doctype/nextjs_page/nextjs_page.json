@@ -241,14 +241,14 @@
    "fieldtype": "Check",
    "label": "Is Group"
   },
-{
-  "fieldname": "order_no",
-  "fieldtype": "Int",
-  "label": "Order Number",
-  "non_negative": 1,
-  "depends_on": "eval:doc.parent_nextjs_page == 'index'",
-  "mandatory_depends_on": "eval:doc.parent_nextjs_page == 'index'"
-},
+  {
+   "depends_on": "eval:doc.parent_nextjs_page == 'index'",
+   "fieldname": "order_no",
+   "fieldtype": "Int",
+   "label": "Order Number",
+   "mandatory_depends_on": "eval:doc.parent_nextjs_page == 'index'",
+   "non_negative": 1
+  },
   {
    "fieldname": "old_parent",
    "fieldtype": "Link",
@@ -312,7 +312,6 @@
    "in_standard_filter": 1,
    "label": "Actual Route",
    "reqd": 1,
-   "set_only_once": 1,
    "unique": 1
   },
   {
@@ -460,7 +459,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-23 13:22:57.558003",
+ "modified": "2026-05-04 11:53:01.239540",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS Page",

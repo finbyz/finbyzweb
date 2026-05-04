@@ -5,27 +5,30 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "faq_generator_agent",
+  "content_writer_agent_section",
   "content_writer_agent",
-  "faq_reviser_agent",
-  "page_creator_agent",
-  "related_links_finder_agent",
+  "code_snippet_content_writer_agent",
   "column_break_ahbn",
-  "schema_builder_agent",
-  "seo_generator_agent",
-  "social_media_post_agent",
   "content_revision_agent",
+  "next_js_agnets_section",
+  "faq_generator_agent",
+  "faq_reviser_agent",
+  "related_links_finder_agent",
+  "column_break_svfy",
+  "seo_generator_agent",
+  "schema_builder_agent",
+  "social_media_post_agent",
   "page_generator_section",
   "web_page_agent",
-  "code_snippet_agent",
+  "blog_post_agent",
   "column_break_pgagents",
-  "blog_post_agent"
+  "code_snippet_agent"
  ],
  "fields": [
   {
    "fieldname": "content_writer_agent",
    "fieldtype": "Link",
-   "label": "Content Writer Agent",
+   "label": "Content Writer",
    "options": "AI Agent"
   },
   {
@@ -41,7 +44,7 @@
   {
    "fieldname": "seo_generator_agent",
    "fieldtype": "Link",
-   "label": "SEO Generator Agent",
+   "label": "Meta data Generator Agent",
    "options": "AI Agent"
   },
   {
@@ -63,15 +66,9 @@
    "options": "AI Agent"
   },
   {
-   "fieldname": "page_creator_agent",
-   "fieldtype": "Link",
-   "label": "Page Creator Agent",
-   "options": "AI Agent"
-  },
-  {
    "fieldname": "content_revision_agent",
    "fieldtype": "Link",
-   "label": "Content Revision Agent",
+   "label": "Content Improvement Agent",
    "options": "AI Agent"
   },
   {
@@ -106,13 +103,33 @@
    "fieldtype": "Link",
    "label": "Blog Post Agent",
    "options": "AI Agent"
+  },
+  {
+   "fieldname": "next_js_agnets_section",
+   "fieldtype": "Section Break",
+   "label": "SEO Agents"
+  },
+  {
+   "fieldname": "column_break_svfy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "content_writer_agent_section",
+   "fieldtype": "Section Break",
+   "label": "Content Writer Agent"
+  },
+  {
+   "fieldname": "code_snippet_content_writer_agent",
+   "fieldtype": "Link",
+   "label": "Code Snippet Content Writer Agent",
+   "options": "AI Agent"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-04-29 06:30:00.000000",
+ "modified": "2026-05-04 14:39:26.183206",
  "modified_by": "Administrator",
  "module": "NextJS Web",
  "name": "NextJS AI Settings",

@@ -20,7 +20,16 @@ def generate_nextjs_page(name, instruction):
     if not doc.snippet_name:
         frappe.throw("snippet_name is missing in Code Snippet.")
 
-    ai_agent_doc = frappe.get_doc("AI Agent", "NextJs Page Agent")
+    # Fetch AI Agent name from NextJS AI Settings
+    settings = frappe.get_single("NextJS AI Settings")
+    agent_name = settings.code_snippet_content_writer_agent
+
+    if not agent_name:
+        frappe.throw(
+            "code_snippet_content_writer_agent is not configured in NextJS AI Settings."
+        )
+
+    ai_agent_doc = frappe.get_doc("AI Agent", agent_name)
 
     ai_input_data = {
         "instruction": instruction,
