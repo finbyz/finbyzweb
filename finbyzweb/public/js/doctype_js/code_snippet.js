@@ -46,6 +46,7 @@ frappe.ui.form.on('Code Snippet', {
                                             content_type: data.content_type,
                                             page_type: data.page_type,
                                             parent_nextjs_page: data.parent_nextjs_page,
+                                            source_code_snippet: frm.doc.name
                                         });
 
                                     } else {
