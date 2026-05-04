@@ -627,7 +627,7 @@ def create_page_from_ai(user_input):
     new_page.content = data.get("content", "")
     new_page.page_type = "Web page"
     new_page.is_published = 0
-
+    new_page.actual_route = "/" + frappe.scrub(data.get("title", "untitled")).replace("_", "-")
     new_page.insert()
     frappe.db.commit()
 
