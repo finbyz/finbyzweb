@@ -6,6 +6,7 @@ from frappe.model.document import Document
 from finbyzai.ai.agent.agent_service import AgentService
 from frappe import _
 
+
 class NextJSPage(Document):
 
     def autoname(self):
@@ -19,50 +20,30 @@ class NextJSPage(Document):
         if self.title and not self.route:
             self.route = "/" + frappe.scrub(self.title).replace("_", "-")
 
+        if self.title and not self.actual_route:
+            self.actual_route = "/" + frappe.scrub(self.title).replace("_", "-")
+
     def validate(self):
         # Ensure route starts with /
         if self.route and not self.route.startswith("/"):
             self.route = "/" + self.route
+
+        # Ensure actual_route starts with /
+        if self.actual_route and not self.actual_route.startswith("/"):
+            self.actual_route = "/" + self.actual_route
 
         if self.is_published and not self.published_on:
             self.published_on = frappe.utils.today()
 
         self.sync_faq_schema()
         self.sync_breadcrumb_schema()
-        self.validate_order_number()
 
-    def validate_order_number(self):
-        if self.parent_nextjs_page != "index":
-            return
-
-        # Get all valid existing order numbers (excluding current record)
-        existing_orders = frappe.get_all(
-            "NextJS Page",
-            filters={
-                "parent_nextjs_page": "index",
-                "name": ["!=", self.name],
-                "order_no": [">", 0]
-            },
-            pluck="order_no",
-            order_by="order_no asc"
-        )
-
-        next_slot = len(existing_orders) + 1
-
-        # Throw if missing, < 1, or beyond next valid slot
-        if not self.order_no or self.order_no < 1 or self.order_no > next_slot:
-            used = ", ".join(str(n) for n in existing_orders)
-            frappe.throw(
-                _("Order Number <b>{}</b> is invalid.<br><br>"
-                "Used order numbers: <b>{}</b>").format(self.order_no, used)
-            )
-
-        # Throw if duplicate
-        if self.order_no in existing_orders:
-            used = ", ".join(str(n) for n in existing_orders)
-            frappe.throw(
-                _("Order Number <b>{}</b> is already taken.<br><br>"
-                "Used order numbers: <b>{}</b>").format(self.order_no, used)
+    def after_insert(self):
+        if self.source_code_snippet:
+            frappe.db.set_value(
+                "Code Snippet",
+                self.source_code_snippet,
+                {"is_nextjs_page_generated": 1, "nextjs_page": self.name},
             )
 
     def sync_faq_schema(self):
@@ -291,15 +272,31 @@ def generate_schema(doc_name, user_input=None):
                 content=doc.content or "",
                 reference_schema=reference_schema,
                 page_url=page_url,
+                base_url="https://finbyz.tech",
                 user_input=user_input
                 or "Generate appropriate JSON-LD schema based on the template.",
             )
 
             if hasattr(result, "schema_json"):
-                row.schema_json = result.schema_json
-                generated_count += 1
+                schema_val = result.schema_json
             elif isinstance(result, dict) and "schema_json" in result:
-                row.schema_json = result["schema_json"]
+                schema_val = result["schema_json"]
+            else:
+                schema_val = str(result)
+
+            # Clean the JSON: Remove script tags and markdown fences
+            if schema_val:
+                import re
+
+                # Remove <script ...> and </script>
+                schema_val = re.sub(r"<script[^>]*>", "", schema_val)
+                schema_val = schema_val.replace("</script>", "")
+
+                # Remove markdown code fences
+                schema_val = re.sub(r"```json\s*", "", schema_val)
+                schema_val = schema_val.replace("```", "")
+
+                row.schema_json = schema_val.strip()
                 generated_count += 1
 
     if generated_count > 0:
@@ -618,6 +615,7 @@ def create_page_from_ai(user_input):
             "meta_title": result.meta_title,
             "meta_description": result.meta_description,
             "keywords": result.keywords,
+            "content": result.content,
         }
 
     new_page = frappe.new_doc("NextJS Page")
@@ -625,6 +623,8 @@ def create_page_from_ai(user_input):
     new_page.meta_title = data.get("meta_title")
     new_page.meta_description = data.get("meta_description")
     new_page.keywords = data.get("keywords")
+    new_page.content_type = "Rich Text"
+    new_page.content = data.get("content", "")
     new_page.page_type = "Web page"
     new_page.is_published = 0
 
@@ -724,3 +724,162 @@ def generate_related_links(doc_name, user_input=None):
         "success": True,
         "message": f"Found and saved {added} related page(s) successfully.",
     }
+
+
+@frappe.whitelist()
+def generate_nextjs_code(doc_name):
+    """Enqueue Next.js code generation to background to avoid timeout."""
+    frappe.enqueue(
+        "finbyzweb.nextjs_web.doctype.nextjs_page.nextjs_page._generate_nextjs_code_background",
+        doc_name=doc_name,
+        now=frappe.flags.in_test,
+        queue="long",
+    )
+    return {
+        "success": True,
+        "message": "Generation started in the background. You will be notified once complete.",
+    }
+
+
+def _generate_nextjs_code_background(doc_name):
+    """Background task for generating and publishing Next.js code."""
+    import base64
+    import requests
+    import json
+
+    try:
+        doc = frappe.get_doc("NextJS Page", doc_name)
+        settings = frappe.get_single("NextJS AI Settings")
+
+        # Determine which agent to use
+        agent_name = None
+        if doc.page_type == "Web page":
+            agent_name = settings.web_page_agent
+        elif doc.page_type == "Blog Post":
+            agent_name = settings.blog_post_agent
+        elif doc.page_type == "Code Snippet":
+            agent_name = settings.code_snippet_agent
+
+        if not agent_name:
+            raise Exception(
+                f"Please configure {doc.page_type} Agent in NextJS AI Settings"
+            )
+
+        agent = AgentService(agent_name)
+
+        # Prepare input data for the agent
+        content_text = frappe.utils.strip_html_tags(doc.content or "")
+        if doc.content_type == "Markdown":
+            content_text = doc.content_md or ""
+
+        ai_input_data = {
+            "title": doc.title or "",
+            "content": content_text,
+            "meta_title": doc.meta_title or "",
+            "meta_description": doc.meta_description or "",
+            "keywords": doc.keywords or "",
+            "page_type": doc.page_type or "Web page",
+            "slug": doc.route or frappe.utils.slug(doc.title),
+            "publish_date": doc.published_on or frappe.utils.today(),
+            "author_name": doc.owner or "Administrator",
+            "primary_category": "Business",
+            # Add mappings for the Web Page Agent prompt
+            "seo_title": doc.meta_title or doc.title,
+            "seo_description": doc.meta_description or "",
+            "page_description": doc.meta_description or "",
+            "heroImage": doc.image or "",
+            "existing_component_str": "[]",  # Placeholder for now
+        }
+
+        # Pass a query string to avoid 'contents is not specified' error in Gemini
+        query = f"Generate Next.js code for the {doc.page_type}: {doc.title}"
+        result = agent.invoke(query=query, **ai_input_data)
+
+        # Check if the result has page_code
+        page_code = getattr(result, "page_code", None)
+        if not page_code and isinstance(result, dict):
+            page_code = result.get("page_code")
+
+        if not page_code:
+            if isinstance(result, str):
+                page_code = result
+            else:
+                raise Exception("AI Agent did not return page_code")
+
+        # Send to Next.js API
+        page_code_base64 = base64.b64encode(page_code.encode("utf-8")).decode("utf-8")
+        slug = doc.route or frappe.utils.slug(doc.title)
+
+        # Map page_type to the specific strings expected by the Next.js API
+        type_map = {
+            "Web page": "webpage",
+            "Blog Post": "blog",
+            "Code Snippet": "code-snippet",
+        }
+        page_type_slug = type_map.get(doc.page_type, "webpage")
+
+        # Extract FAQs for the payload
+        faqs_data = []
+        for faq in doc.get("faqs") or []:
+            faqs_data.append({"question": faq.question, "answer": faq.answer})
+
+        payload = {
+            "slug": slug,
+            "type": page_type_slug,
+            "name": doc.name,
+            "pageCode": page_code_base64,
+            "components": [],
+            "seoData": {
+                "seo_title": doc.meta_title or doc.title,
+                "title": doc.title,
+                "description": doc.meta_description or "",
+                "small_description": doc.meta_description or "",
+                "keywords": doc.keywords or "",
+                "image": doc.image or "",
+                "content": content_text[:500] if content_text else "",
+                "faqs": faqs_data,  # Added FAQs here
+            },
+        }
+
+        nextjs_api_url = frappe.conf.get("nextjs_api_url") or "https://web.finbyz.com"
+        api_endpoint = f"{nextjs_api_url}/api/write-page"
+
+        response = requests.post(
+            api_endpoint,
+            json=payload,
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            timeout=120,
+        )
+
+        if response.status_code == 200:
+            doc.is_published = 1
+            doc.published_on = frappe.utils.today()
+            doc.save()
+
+            frappe.publish_realtime(
+                "nextjs_page_generated",
+                {
+                    "success": True,
+                    "message": "Page generated and published successfully!",
+                    "docname": doc_name,
+                },
+                user=frappe.session.user,
+            )
+        else:
+            error_msg = f"API Error: {response.status_code}"
+            try:
+                error_msg = response.json().get("message", error_msg)
+            except:
+                pass
+            raise Exception(error_msg)
+
+    except Exception as e:
+        frappe.log_error(
+            title="AI Generate Background Error", message=frappe.get_traceback()
+        )
+        frappe.publish_realtime(
+            "nextjs_page_generated",
+            {"success": False, "message": f"Error: {str(e)}", "docname": doc_name},
+            user=frappe.session.user,
+        )
+
