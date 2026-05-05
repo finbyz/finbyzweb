@@ -106,7 +106,12 @@ class NextJSPage(Document):
     # ------------------------------------------------------------------
     # Lifecycle hooks
     # ------------------------------------------------------------------
-
+    def on_trash(self):
+        if self.source_code_snippet:
+            frappe.db.set_value("Code Snippet", self.source_code_snippet, "is_nextjs_page_generated", 0 )
+            frappe.db.set_value("Code Snippet", self.source_code_snippet, "nextjs_page", None )
+            self.source_code_snippet = None
+        
     def autoname(self):
         """Derive document name and auto-populate route fields from title."""
         if not self.name and self.title:
