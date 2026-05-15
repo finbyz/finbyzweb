@@ -37,7 +37,7 @@ def set_form_contact_data(lead_name, company_name, mobile_no, title, email,notes
 	frappe.db.commit()
 	
 @frappe.whitelist(allow_guest=True)
-def set_form_data(lead_name, company_name, mobile_no, title, email):
+def set_form_data(lead_name, company_name, mobile_no, title, email, message = ""):
 	data = frappe.new_doc("Lead")
 	data.lead_name = lead_name
 	data.company_name = company_name
@@ -45,6 +45,7 @@ def set_form_data(lead_name, company_name, mobile_no, title, email):
 	data.source = 'Website'
 	data.source_web_page = title
 	data.email_id = email
+	data.message = message
 	data.save(ignore_permissions=True)
 	
 	frappe.db.commit()
