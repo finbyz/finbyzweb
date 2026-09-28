@@ -1,5 +1,11 @@
 from __future__ import unicode_literals
+
 import frappe
+import requests
+
+
+TURNSTILE_SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v1/siteverify"
+TURNSTILE_TIMEOUT_SECONDS = 5
 
 @frappe.whitelist()
 def customer_before_save(self, method):
@@ -22,8 +28,17 @@ def customer_before_save(self, method):
 
 	frappe.db.commit()
 
-@frappe.whitelist(allow_guest=True)
-def set_form_contact_data(lead_name, company_name, mobile_no, title, email,notes):
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+def set_form_contact_data(
+	lead_name: str,
+	company_name: str,
+	mobile_no: str,
+	title: str,
+	email: str,
+	notes: str,
+):
+	_verify_turnstile(frappe.form_dict.get("cf-turnstile-response"))
+
 	data = frappe.new_doc("Lead")
 	data.lead_name = lead_name
 	data.company_name = company_name
@@ -36,8 +51,17 @@ def set_form_contact_data(lead_name, company_name, mobile_no, title, email,notes
 	
 	frappe.db.commit()
 	
-@frappe.whitelist(allow_guest=True)
-def set_form_data(lead_name, company_name, mobile_no, title, email, message = ""):
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+def set_form_data(
+	lead_name: str,
+	company_name: str,
+	mobile_no: str,
+	title: str,
+	email: str,
+	message: str = "",
+):
+	_verify_turnstile(frappe.form_dict.get("cf-turnstile-response"))
+
 	data = frappe.new_doc("Lead")
 	data.lead_name = lead_name
 	data.company_name = company_name
@@ -49,6 +73,38 @@ def set_form_data(lead_name, company_name, mobile_no, title, email, message = ""
 	data.save(ignore_permissions=True)
 	
 	frappe.db.commit()
+
+
+def _verify_turnstile(token: str | None) -> None:
+	if not token:
+		frappe.throw("Please complete the security check.", frappe.PermissionError)
+
+	secret = frappe.conf.get("turnstile_secret_key")
+	if not secret:
+		frappe.logger("finbyzweb").error("Turnstile secret key is not configured")
+		frappe.throw("Security check is unavailable. Please try again later.", frappe.PermissionError)
+
+	payload = {"secret": secret, "response": token}
+	if remote_ip := getattr(frappe.local, "request_ip", None):
+		payload["remoteip"] = remote_ip
+
+	try:
+		response = requests.post(
+			TURNSTILE_SITEVERIFY_URL,
+			data=payload,
+			timeout=TURNSTILE_TIMEOUT_SECONDS,
+		)
+		response.raise_for_status()
+		verification = response.json()
+	except (requests.RequestException, ValueError):
+		frappe.logger("finbyzweb").exception("Turnstile verification request failed")
+		frappe.throw("Security check is unavailable. Please try again later.", frappe.PermissionError)
+
+	if not isinstance(verification, dict) or not verification.get("success"):
+		error_codes = verification.get("error-codes", []) if isinstance(verification, dict) else []
+		frappe.logger("finbyzweb").warning("Turnstile verification failed: %s", error_codes)
+		frappe.throw("Security check failed. Please try again.", frappe.PermissionError)
+
 
 @frappe.whitelist(allow_guest=True)
 def related_link_query(doctype, txt, searchfield, start, page_len, filters):
