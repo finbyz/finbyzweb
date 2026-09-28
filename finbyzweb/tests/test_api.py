@@ -96,7 +96,7 @@ class TestTurnstileVerification(TestCase):
 	def test_contact_form_verifies_token_before_creating_lead(self):
 		with patch("finbyzweb.api.frappe.form_dict", {"cf-turnstile-response": "contact-token"}):
 			with patch("finbyzweb.api._verify_turnstile") as verify:
-				with patch("finbyzweb.api.frappe.new_doc", return_value=Mock()) as new_doc:
+				with patch("finbyzweb.api.frappe.new_doc", return_value=Mock()) as new_doc, patch("finbyzweb.api.frappe.db", Mock()):
 					set_form_contact_data(
 						lead_name="Test Lead",
 						company_name="Test Company",

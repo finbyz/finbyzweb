@@ -4,7 +4,7 @@ import frappe
 import requests
 
 
-TURNSTILE_SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v1/siteverify"
+TURNSTILE_SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 TURNSTILE_TIMEOUT_SECONDS = 5
 
 @frappe.whitelist()
