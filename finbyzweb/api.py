@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import frappe
 import requests
+from urllib.parse import parse_qs, urlsplit
 
 
 TURNSTILE_SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
@@ -59,6 +60,11 @@ def set_form_data(
 	title: str,
 	email: str,
 	message: str = "",
+	utm_source: str = "",
+	utm_medium: str = "",
+	utm_campaign: str = "",
+	utm_term: str = "",
+	utm_content: str = "",
 ):
 	_verify_turnstile(frappe.form_dict.get("cf-turnstile-response"))
 
@@ -70,6 +76,15 @@ def set_form_data(
 	data.source_web_page = title
 	data.email_id = email
 	data.message = message
+	query_params = parse_qs(urlsplit(title).query)
+	for fieldname, value in {
+		"utm_source": utm_source,
+		"utm_medium": utm_medium,
+		"utm_campaign": utm_campaign,
+		"utm_term": utm_term,
+		"utm_content": utm_content,
+	}.items():
+		data.set(fieldname, value.strip() or query_params.get(fieldname, [""])[0].strip())
 	data.save(ignore_permissions=True)
 	
 	frappe.db.commit()
