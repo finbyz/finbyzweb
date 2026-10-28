@@ -234,7 +234,7 @@
                                     <li>
                                         <img class="nav-service-icon" src="/files/job-opening.svg" alt="Jobs" title="Jobs"> 
                                         <a href="/jobs" class="link-underline p-1">Job Opening</a>
-                                        {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='modified desc',limit=3) -%}
+                                        {%- set jobopen = frappe.get_all('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='modified desc',limit=3) -%}
                                         <ul class="blogPosts">
                                             {%- for d in jobopen -%}
                                             <li>
@@ -662,7 +662,7 @@
                             <h5 class="link-underline mt-1">From the blog</h5>
                         </a>
 
-                        {%- set blog = frappe.get_list('Blog Post',filters={'published': 1},fields=["title","route"],order_by='published_on desc',limit=3) -%}
+                        {%- set blog = frappe.get_all('Blog Post',filters={'published': 1},fields=["title","route"],order_by='published_on desc',limit=3) -%}
                         <ul class="blogPosts">
                             {%- for d in blog -%}
                             <li>
@@ -724,7 +724,7 @@
                             <h5 class="link-underline mt-1">Job Openings</h5>
                         </a>
 
-                        {%- set jobopen = frappe.get_list('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='modified desc',limit=3) -%}
+                        {%- set jobopen = frappe.get_all('Job Opening',filters={'publish': 1},fields=["job_title","route"],order_by='modified desc',limit=3) -%}
                         <ul class="blogPosts">
                             {%- for d in jobopen -%}
                             <li>
