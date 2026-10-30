@@ -127,7 +127,14 @@ def related_link_query(doctype, txt, searchfield, start, page_len, filters):
 	args = {
 
 	}
-	meta = frappe.get_meta(filters.get("reference_doctype"))
+	# doctype and searchfield are pasted into the SQL as names, so accept only a real
+	# doctype and one of its real columns
+	ref_doc = filters.get("reference_doctype")
+	if not ref_doc or not frappe.db.exists("DocType", ref_doc):
+		frappe.throw(_("Invalid reference doctype"))
+	meta = frappe.get_meta(ref_doc)
+	if searchfield not in meta.get_valid_columns():
+		frappe.throw(_("Invalid search field"))
 	if meta.get_field('published'):
 		return frappe.db.sql("""select name
 				from `tab{ref_doc}` where published = 1 and `{key}` LIKE %(txt)s {cond}
@@ -149,11 +156,14 @@ def add_preload_headers(response):
 @frappe.whitelist(allow_guest=True)
 def select_category(gallery_category=None,gallery_sub_category=None):
 	condition = ""
+	values = {}
 	if str(gallery_category) != "All":
-		condition += f"where gallery_category ='{gallery_category}'"
+		condition += "where gallery_category = %(gallery_category)s"
+		values["gallery_category"] = gallery_category
 	if gallery_sub_category:
-		condition += f"and gallery_sub_category ='{gallery_sub_category}'"
-	result = frappe.db.sql(f"""select * from `tabGallery` {condition}""", as_dict = 1)
+		condition += " and gallery_sub_category = %(gallery_sub_category)s"
+		values["gallery_sub_category"] = gallery_sub_category
+	result = frappe.db.sql(f"""select * from `tabGallery` {condition}""", values or (), as_dict = 1)
 
 	output = ""
 	for row in result:
@@ -167,8 +177,11 @@ def get_sub_category(category=None):
 	return output
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_employee_joining_detail(token):
+	# returns the whole record (bank, ID numbers); the joining form uses
+	# employee_joining_detail.get_employee_data instead
+	frappe.only_for(("System Manager", "HR Manager"))
 	if not frappe.db.exists("Employee Joining Detail", {"token": token}):
 		frappe.throw(_("You are not authorized to view this record!"))
 		return
@@ -176,11 +189,14 @@ def get_employee_joining_detail(token):
 	return joining_detail.as_dict()
 
 from frappe import _
-@frappe.whitelist(allow_guest=True,methods=['POST'])
+@frappe.whitelist(methods=['POST'])
 def update_employee_joining_detail(email,data):
 	"""
 	ENDPOINT: /api/method/finbyzweb.api.update_employee_joining_detail
 	"""
+	# knowing a personal email was enough to rewrite any field (bank details, token) of a
+	# joining record; the joining form uses employee_joining_detail.update_employee_data
+	frappe.only_for(("System Manager", "HR Manager"))
 	data = frappe.parse_json(data)
 	if not frappe.db.exists("Employee Joining Detail", {"personal_email": email}):
 		frappe.throw(_("You are not authorized to update this record!"))
