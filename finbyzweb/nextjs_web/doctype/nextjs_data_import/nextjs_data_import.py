@@ -473,6 +473,7 @@ class NextJSDataImport(Document):
 
 @frappe.whitelist()
 def start_import(docname):
+	frappe.has_permission("NextJS Data Import", "write", docname, throw=True)
 	doc = frappe.get_doc("NextJS Data Import", docname)
 	doc.status = "Processing"
 	doc.log = "Starting import...\n"

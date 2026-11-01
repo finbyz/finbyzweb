@@ -3,6 +3,7 @@
 
 # finbyzweb.finbyzweb.doctype.brochure_details.brochure_details.create_brochure
 import frappe
+from frappe.rate_limiter import rate_limit
 from frappe.model.document import Document
 
 
@@ -12,6 +13,8 @@ class BrochureDetails(Document):
 
      
 @frappe.whitelist(allow_guest=True)
+@rate_limit(key="email_id", limit=3, seconds=60 * 60)
+@rate_limit(limit=100, seconds=60 * 60)
 def create_brochure(name, email_id, mobile_no, company_name):
     existing = frappe.db.exists("Brochure Details", {"email": email_id})
     if existing:

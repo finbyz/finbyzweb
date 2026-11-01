@@ -12,6 +12,7 @@ def slugify(text):
 @frappe.whitelist(methods=["POST"])
 def generate_nextjs_page(name, instruction):
 
+    frappe.has_permission("Code Snippet", "write", name, throw=True)
     if not frappe.db.exists("Code Snippet", name):
         frappe.throw(f"Code Snippet {name} not found")
 

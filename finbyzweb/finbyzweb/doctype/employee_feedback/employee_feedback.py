@@ -6,7 +6,6 @@ from frappe.model.document import Document
 
 
 class EmployeeFeedback(Document):
-	@frappe.whitelist()
 	def before_validate(self):
 		self.set_employee_name()
 

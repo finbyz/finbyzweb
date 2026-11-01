@@ -8,7 +8,6 @@ from urllib.parse import parse_qs, urlsplit
 TURNSTILE_SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 TURNSTILE_TIMEOUT_SECONDS = 5
 
-@frappe.whitelist()
 def customer_before_save(self, method):
 	doc = frappe.get_single("Customer Details")
 	doc.ignore_permissions = True

@@ -128,60 +128,6 @@ class Gallery(WebsiteGenerator):
 		
 		# Last resort: convert to string
 		return str(parsed_result).strip()
-
-	@frappe.whitelist()
-	def expand_gallery_description_with_instruction(self, custom_instruction):
-		"""
-		Expands gallery description with custom user instruction
-		Approach with user-provided custom instruction
-		"""
-		try:
-			# Hardcoded AI Agent name
-			ai_agent_name = "Gallery Content Generator"
-			
-			# Get the AI agent
-			ai_agent = frappe.get_doc("AI Agent", ai_agent_name)
-			
-			if not ai_agent:
-				frappe.throw(f"AI Agent '{ai_agent_name}' not found")
-			
-			if not custom_instruction:
-				frappe.throw("Custom instruction is required")
-			
-			# Prepare AI input data with custom instruction
-			ai_input_data = {
-				"existing_description": self.description or "",
-				"title": self.title or "Gallery Item",
-				"custom_instruction": custom_instruction
-			}
-			
-			# Invoke the AI agent
-			result = ai_agent.invoke(**ai_input_data)
-   
-			# Log the raw output for debugging
-			frappe.log_error(
-				title=f"AI Raw Output - {self.name}",
-				message=str(result)
-			)
-			
-			# Update the description field with expanded content
-			self.description = result.content
-			
-			# Save the document
-			self.save()
-			self.reload()
-			
-			return {
-				"status": "success",
-				"message": "Description content has been successfully expanded with custom instructions"
-			}
-			
-		except Exception as e:
-			frappe.log_error(f"Error expanding gallery description with instruction: {str(e)}")
-			return {
-				"status": "error",
-				"message": str(e)
-			}
 			
 def get_list_context(context=None):
 	list_context = frappe._dict(

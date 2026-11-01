@@ -8,6 +8,7 @@ def generate_faqs(doctype, docname):
     Generate FAQs for a single Web Page or Blog Post.
     This function is called from the button in the form.
     """
+    frappe.has_permission(doctype, "write", docname, throw=True)
     ai_agent_name = "FAQs Agent"
     if not frappe.db.exists("AI Agent", ai_agent_name):
         frappe.throw(f"AI Agent '{ai_agent_name}' does not exist.")
@@ -96,31 +97,3 @@ def generate_faqs_bulk(doctype, docnames):
             })
         time.sleep(60)
     return results
-
-
-@frappe.whitelist()
-def create_faqs_for_documents(doctype, docnames):
-    """
-    Generate FAQs for multiple Web Pages or Blog Posts.
-    
-    Args:
-        doctype (str): "Web Page" or "Blog Post"
-        docnames (str or list): JSON string or list of document names
-    """
-    if doctype not in ['Web Page','Blog Post','Gallery']:
-        frappe.throw(f"{doctype} not allowed to generate faqs")
-  
-    if isinstance(docnames, str):
-        docnames = frappe.parse_json(docnames)
-    
-    if not isinstance(docnames, list):
-        frappe.throw("docnames must be a list of document names")
-    
-    if not docnames:
-        frappe.throw("No documents provided for bulk generation")
-    
-    job = frappe.enqueue(generate_faqs_bulk, doctype = doctype,docnames=docnames,queue='long',job_name=f'faqs generation for {doctype}')
-    return {
-        "sucess": True,
-        'job_id': job.id
-    }

@@ -44,7 +44,6 @@ def update_proxy_setting_cache():
         # Log any errors that occur during cache update
         frappe.logger().error(f"Error updating Proxy Setting cache: {str(e)}")
 
-@frappe.whitelist()
 def clear_proxy_settings():
     try:
         doc = frappe.get_single("Proxy Setting")

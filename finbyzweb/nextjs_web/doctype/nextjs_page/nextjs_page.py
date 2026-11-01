@@ -263,6 +263,7 @@ class NextJSPage(Document):
 @frappe.whitelist()
 def generate_seo(doc_name, user_input=None):
     """Generate and save SEO metadata using the configured AI Agent."""
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     doc = frappe.get_doc("NextJS Page", doc_name)
     result = _get_agent("seo_generator_agent").invoke(
         title=doc.title,
@@ -289,6 +290,7 @@ def generate_seo(doc_name, user_input=None):
 @frappe.whitelist()
 def generate_faqs(doc_name, user_input=None):
     """Generate and save FAQs using the configured AI Agent."""
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     doc = frappe.get_doc("NextJS Page", doc_name)
     result = _get_agent("faq_generator_agent").invoke(
         title=doc.title,
@@ -321,6 +323,7 @@ def generate_schema(doc_name, user_input=None):
     FAQPage and BreadcrumbList rows are always skipped — they are managed
     automatically via sync_faq_schema() and sync_breadcrumb_schema().
     """
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     doc = frappe.get_doc("NextJS Page", doc_name)
     agent = _get_agent("schema_builder_agent")
     generated_count = 0
@@ -380,6 +383,7 @@ def generate_schema(doc_name, user_input=None):
 @frappe.whitelist()
 def revise_content(doc_name, user_input):
     """Rewrite the full page content using the Content Writer Agent."""
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     doc = frappe.get_doc("NextJS Page", doc_name)
     settings = frappe.get_single("NextJS AI Settings")
     agent_name = settings.content_writer_agent
@@ -403,6 +407,7 @@ def revise_content(doc_name, user_input):
 @frappe.whitelist()
 def revise_faqs(doc_name, faqs_to_revise, user_input=None):
     """Revise specific FAQs in-place using the FAQ Reviser Agent."""
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     doc = frappe.get_doc("NextJS Page", doc_name)
 
     if isinstance(faqs_to_revise, str):
@@ -449,6 +454,7 @@ def revise_content_chunk(doc_name, content_chunk, instruction, is_markdown=False
     but only the selected chunk is rewritten. The caller replaces the chunk
     in the editor using the returned revised_content value.
     """
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     if not content_chunk:
         frappe.throw("Please select some content to revise.")
     if not instruction:
@@ -485,6 +491,7 @@ def generate_social_post(doc_name, user_input=None, platforms=None, credentials=
     Generate social media posts with AI and create a Social Media Post doc
     for each requested platform.
     """
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     doc = frappe.get_doc("NextJS Page", doc_name)
 
     if isinstance(platforms, str):
@@ -553,6 +560,7 @@ def create_page_from_ai(user_input):
     add a `page_creator_agent` Link field to the NextJS AI Settings DocType
     and change the _get_agent() call below accordingly.
     """
+    frappe.has_permission("NextJS Page", "create", throw=True)
     try:
         result = _get_agent("content_writer_agent").invoke(user_input=user_input)
     except Exception:
@@ -588,6 +596,7 @@ def generate_related_links(doc_name, user_input=None):
     Use AI to find related NextJS Pages and populate the nextjs_related_page
     child table.
     """
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     doc = frappe.get_doc("NextJS Page", doc_name)
     result = _get_agent("related_links_finder_agent").invoke(
         title=doc.title or "",
@@ -642,6 +651,7 @@ def generate_related_links(doc_name, user_input=None):
 @frappe.whitelist()
 def generate_nextjs_code(doc_name):
     """Enqueue Next.js code generation as a background job to avoid request timeouts."""
+    frappe.has_permission("NextJS Page", "write", doc_name, throw=True)
     frappe.enqueue(
         "finbyzweb.nextjs_web.doctype.nextjs_page.nextjs_page._generate_nextjs_code_background",
         doc_name=doc_name,

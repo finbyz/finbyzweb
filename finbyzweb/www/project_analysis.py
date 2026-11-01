@@ -365,9 +365,9 @@ def get_projects():
         SELECT DISTINCT p.name as name, p.project_name 
         from `tabProject` as p 
         join `tabPortal User` as pu on p.customer = pu.parent 
-        where pu.user = '{current_user}'
+        where pu.user = %s
         order by  p.resource_based_project DESC
-        LIMIT 1""",as_dict=1)
+        LIMIT 1""", (current_user,), as_dict=1)
     return projects
 from datetime import datetime, timedelta
 

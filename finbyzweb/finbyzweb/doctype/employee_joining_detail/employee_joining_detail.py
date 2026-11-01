@@ -100,6 +100,15 @@ def get_employee_joining_detail_fields():
 
 from frappe.utils.file_manager import save_file
 
+# Fields the public joining form (website /employee-joining-details) lets a joiner fill in.
+# Everything else (token, status, employee, company email, job offer, ...) is set by HR only.
+JOINER_FIELDS = {
+	"first_name", "middle_name", "last_name", "date_of_birth", "personal_email", "gender", "date_of_joining",
+	"cell_number", "current_address", "person_to_be_contacted", "emergency_phone_number", "relation", "reference",
+	"marital_status", "blood_group", "salutation", "bank_name", "bank_ac_no", "ifsc_code", "micr_code", "pan_number",
+}
+JOINER_FILE_FIELDS = {"aadhar_card", "pan_card", "salary_slip"}
+
 @frappe.whitelist(allow_guest=True)
 def update_employee_data():
 	"""
@@ -120,7 +129,7 @@ def update_employee_data():
 
 	# Dynamically update fields based on the provided data
 	for field, value in data.items():
-		if hasattr(doc, field):  # Check if the field exists in the document
+		if field in JOINER_FIELDS:
 			setattr(doc, field, value)
 
 	# Handle file uploads (attachments)
@@ -129,7 +138,10 @@ def update_employee_data():
 			if file.filename:
 				# raise Exception(str(fieldname) + str(file.filename))
 				# Save the file and link it to the document
-				file_doc = save_file(file.filename, file.stream.read(), doc.doctype, doc.name, decode=False, is_private=0)
+				if fieldname not in JOINER_FILE_FIELDS:
+					continue
+				# ID and bank documents: private, readable only by users with access to the record
+				file_doc = save_file(file.filename, file.stream.read(), doc.doctype, doc.name, decode=False, is_private=1)
 				if hasattr(doc, fieldname):  # Check if the field exists in the document
 					setattr(doc, fieldname, file_doc.file_url)  # Save the file URL to the document field
 

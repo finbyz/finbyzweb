@@ -6,6 +6,7 @@ def generate_related_content(doctype, docname):
     """
     Generate related links and gallery links for Web Page, Blog Post, or Gallery.
     """
+    frappe.has_permission(doctype, "write", docname, throw=True)
     # Validate doctype
     if doctype not in ['Web Page', 'Blog Post', 'Gallery']:
         frappe.throw(f"Doctype '{doctype}' is not supported")
