@@ -1,5 +1,10 @@
 import frappe
 
+# Proxy employees are set within minutes of a record arriving, so only recent rows can still
+# need one; filtering on creation lets the creation index replace a scan of the whole table.
+RECENT_DAYS = 3
+
+
 def update_proxy_employee():
     doctype_list = ["Application Usage log", "Screen Screenshot Log", "Work Intensity"]
     
@@ -8,8 +13,9 @@ def update_proxy_employee():
         combinations = frappe.db.sql(f"""
             SELECT DISTINCT employee, project 
             FROM `tab{doctype}`
-            WHERE proxy_employee IS NULL OR proxy_employee = ''
-        """, as_dict=True)
+            WHERE creation >= NOW() - INTERVAL %s DAY
+                AND (proxy_employee IS NULL OR proxy_employee = '')
+        """, (RECENT_DAYS,), as_dict=True)
         
         # Process each combination individually
         for combo in combinations:
@@ -18,11 +24,8 @@ def update_proxy_employee():
             
             # Get the cache value
             cache_key = f"proxy_setting_{employee}_{project}"
-            print(cache_key)
             cached_value = frappe.cache().get_value(cache_key)
-            print("meghwin"+str(cached_value))
             if cached_value:
-                print(cached_value)
                 parts = cached_value.split()
                 if len(parts) >= 3:
                     for_employee = parts[0]
@@ -34,13 +37,15 @@ def update_proxy_employee():
                         UPDATE `tab{doctype}`
                         SET proxy_employee = %s
                         WHERE employee = %s AND project = %s
+                        AND creation >= NOW() - INTERVAL %s DAY
                         AND (proxy_employee IS NULL OR proxy_employee = '')
-                    """, (proxy_employee, for_employee, project_value))
+                    """, (proxy_employee, for_employee, project_value, RECENT_DAYS))
         
         # For any remaining records, set proxy_employee = employee
         frappe.db.sql(f"""
             UPDATE `tab{doctype}`
             SET proxy_employee = employee
-            WHERE (proxy_employee IS NULL OR proxy_employee = '')
-        """)
+            WHERE creation >= NOW() - INTERVAL %s DAY
+                AND (proxy_employee IS NULL OR proxy_employee = '')
+        """, (RECENT_DAYS,))
         
