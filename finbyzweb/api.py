@@ -39,18 +39,17 @@ def set_form_contact_data(
 ):
 	_verify_turnstile(frappe.form_dict.get("cf-turnstile-response"))
 
-	data = frappe.new_doc("Lead")
-	data.lead_name = lead_name
-	data.company_name = company_name
-	data.mobile_no = mobile_no
-	data.source = 'Website'
-	data.notes = title
-	data.email_id = email
-	data.notes = notes
-	data.save(ignore_permissions=True)
-	
-	frappe.db.commit()
-	
+	# Lead.notes is a CRM Note table in v16; the visitor's text goes into Lead.message
+	_save_website_lead(
+		lead_name=lead_name,
+		company_name=company_name,
+		mobile_no=mobile_no,
+		email=email,
+		source_web_page=title,
+		message=notes,
+	)
+
+
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 def set_form_data(
 	lead_name: str,
@@ -67,25 +66,67 @@ def set_form_data(
 ):
 	_verify_turnstile(frappe.form_dict.get("cf-turnstile-response"))
 
+	query_params = parse_qs(urlsplit(title).query)
+	utm = {
+		fieldname: (value or "").strip() or query_params.get(fieldname, [""])[0].strip()
+		for fieldname, value in {
+			"utm_source": utm_source,
+			"utm_medium": utm_medium,
+			"utm_campaign": utm_campaign,
+			"utm_term": utm_term,
+			"utm_content": utm_content,
+		}.items()
+	}
+	_save_website_lead(
+		lead_name=lead_name,
+		company_name=company_name,
+		mobile_no=mobile_no,
+		email=email,
+		source_web_page=title,
+		message=message,
+		utm=utm,
+	)
+
+
+def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_page, message, utm=None):
+	"""Create a Lead from a website form.
+
+	v16 dropped Lead.source, so website leads are marked with utm_source "Website" unless the
+	visitor came with their own UTM source. A visitor who is already a Lead (email must be unique)
+	would get a DuplicateEntryError and lose the inquiry; their inquiry is added to the existing
+	Lead's timeline instead.
+	"""
+	utm = dict(utm or {})
+	utm["utm_source"] = utm.get("utm_source") or "Website"
+
+	existing = email and frappe.db.get_value("Lead", {"email_id": email.strip()}, "name")
+	if existing and not frappe.db.get_single_value("CRM Settings", "allow_lead_duplication_based_on_emails"):
+		lines = [
+			"<b>New website inquiry</b>",
+			f"Name: {frappe.utils.escape_html(lead_name or '')}",
+			f"Organization: {frappe.utils.escape_html(company_name or '')}",
+			f"Mobile: {frappe.utils.escape_html(mobile_no or '')}",
+			f"Page: {frappe.utils.escape_html(source_web_page or '')}",
+		]
+		if utm.get("utm_source") != "Website" or any(utm.get(k) for k in ("utm_medium", "utm_campaign")):
+			lines.append("UTM: " + frappe.utils.escape_html(", ".join(f"{k}={v}" for k, v in utm.items() if v)))
+		if message:
+			lines.append("Message: " + frappe.utils.escape_html(message))
+		lead = frappe.get_doc("Lead", existing)
+		lead.add_comment("Comment", "<br>".join(lines), comment_email=email, comment_by=lead_name)
+		frappe.db.commit()
+		return
+
 	data = frappe.new_doc("Lead")
 	data.lead_name = lead_name
 	data.company_name = company_name
 	data.mobile_no = mobile_no
-	data.source = 'Website'
-	data.source_web_page = title
 	data.email_id = email
+	data.source_web_page = source_web_page
 	data.message = message
-	query_params = parse_qs(urlsplit(title).query)
-	for fieldname, value in {
-		"utm_source": utm_source,
-		"utm_medium": utm_medium,
-		"utm_campaign": utm_campaign,
-		"utm_term": utm_term,
-		"utm_content": utm_content,
-	}.items():
-		data.set(fieldname, value.strip() or query_params.get(fieldname, [""])[0].strip())
+	for fieldname, value in utm.items():
+		data.set(fieldname, value)
 	data.save(ignore_permissions=True)
-	
 	frappe.db.commit()
 
 
@@ -204,4 +245,4 @@ def update_employee_joining_detail(email,data):
 	joining_detail.update(data)
 	joining_detail.flags.ignore_permissions = True
 	joining_detail.save()
-	return _("Updated successfully!")
+	return _("Updated successfully!")
