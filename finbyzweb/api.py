@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import frappe
 import requests
+import json
+from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlsplit
 
 
@@ -63,6 +65,8 @@ def set_form_data(
 	utm_campaign: str = "",
 	utm_term: str = "",
 	utm_content: str = "",
+	attribution: str = "",
+	ga_client_id: str = "",
 ):
 	_verify_turnstile(frappe.form_dict.get("cf-turnstile-response"))
 
@@ -85,10 +89,116 @@ def set_form_data(
 		source_web_page=title,
 		message=message,
 		utm=utm,
+		journey=_parse_attribution(attribution, ga_client_id),
 	)
 
 
-def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_page, message, utm=None):
+# Lead "Website Journey" fields (custom fields, module Finbyzweb) filled from the website's
+# attribution payload (finbyzwebsite src/lib/attribution.ts). Everything is optional: old cached
+# pages, the chatbot and other forms simply leave them empty.
+_JOURNEY_MAX_BYTES = 20000
+_JOURNEY_MAX_PAGES = 25
+
+
+def _clean_text(value, limit=140):
+	if value is None or isinstance(value, (dict, list)):
+		return ""
+	text = frappe.utils.strip_html_tags(str(value)).replace("\n", " ").replace("\r", " ").strip()
+	return text[:limit]
+
+
+def _clean_int(value, upper=100000):
+	try:
+		number = int(value)
+	except (TypeError, ValueError):
+		return None
+	return number if 0 <= number <= upper else None
+
+
+def _epoch_to_site_datetime(value, millis=False):
+	try:
+		seconds = float(value) / (1000 if millis else 1)
+	except (TypeError, ValueError):
+		return None
+	# accept 2020-01-01 .. now + 1 day (browser clocks drift)
+	if not (1577836800 <= seconds <= datetime.now().timestamp() + 86400):
+		return None
+	return frappe.utils.convert_utc_to_system_timezone(datetime.fromtimestamp(seconds, tz=timezone.utc)).replace(tzinfo=None)
+
+
+def _parse_attribution(raw, ga_client_id=""):
+	"""Map the website attribution JSON to Lead field values. Never raises: a bad payload must not
+	lose the inquiry."""
+	values = {}
+	try:
+		if ga_client_id:
+			values["ga_client_id"] = _clean_text(ga_client_id, 60)
+		if not raw or len(raw) > _JOURNEY_MAX_BYTES:
+			return values
+		data = json.loads(raw)
+		if not isinstance(data, dict):
+			return values
+		values["tracking_consent"] = _clean_text(data.get("consent"), 20)
+
+		first = data.get("first") if isinstance(data.get("first"), dict) else {}
+		last = data.get("last") if isinstance(data.get("last"), dict) else {}
+		for prefix, touch in (("first", first), ("last", last)):
+			if not touch:
+				continue
+			values[f"{prefix}_channel"] = _clean_text(touch.get("channel"), 80)
+			values[f"{prefix}_source"] = _clean_text(touch.get("source"), 80)
+			landing = _clean_text(touch.get("landing"))
+			values[f"{prefix}_landing_page"] = landing if landing.startswith("/") else ""
+		if first:
+			values["first_referrer"] = _clean_text(first.get("referrer"))
+			first_on = _epoch_to_site_datetime(first.get("at"), millis=True)
+			if first_on:
+				values["first_visit_on"] = first_on
+				submitted = _epoch_to_site_datetime(data.get("submitted_at"), millis=True) or frappe.utils.now_datetime()
+				values["days_to_convert"] = max(0, (submitted - first_on).days)
+
+		visits = _clean_int(data.get("visits"))
+		pages = _clean_int(data.get("pages"))
+		if visits is not None:
+			values["visits_before_lead"] = visits
+		if pages is not None:
+			values["pages_viewed"] = pages
+
+		lines = []
+		journey = data.get("journey") if isinstance(data.get("journey"), list) else []
+		for step in journey[-_JOURNEY_MAX_PAGES:]:
+			if not isinstance(step, dict):
+				continue
+			path = _clean_text(step.get("p"), 200)
+			if not path.startswith("/"):
+				continue
+			when = _epoch_to_site_datetime(step.get("t"))
+			lines.append(f"{when.strftime('%Y-%m-%d %H:%M') if when else '?'}  {path}")
+		if lines:
+			values["website_journey"] = "\n".join(lines)
+	except ValueError:
+		pass  # malformed JSON from a client: ignore, the inquiry still saves
+	except Exception:
+		frappe.log_error(title="Website lead attribution not parsed", message=frappe.get_traceback())
+	return {k: v for k, v in values.items() if v not in (None, "")}
+
+
+def _journey_summary(journey):
+	if not journey or not journey.get("first_channel"):
+		return ""
+	text = f"Came from: {journey.get('first_channel')} - {journey.get('first_source', '')}"
+	if journey.get("first_landing_page"):
+		text += f", landed on {journey['first_landing_page']}"
+	if journey.get("first_visit_on"):
+		text += f" ({frappe.utils.format_datetime(journey['first_visit_on'], 'dd MMM yyyy')})"
+	if journey.get("last_source") and journey.get("last_source") != journey.get("first_source"):
+		text += f"; latest: {journey.get('last_channel')} - {journey['last_source']}"
+	if journey.get("visits_before_lead") or journey.get("pages_viewed"):
+		text += f"; {journey.get('visits_before_lead', 0)} visits, {journey.get('pages_viewed', 0)} pages"
+	return text
+
+
+def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_page, message, utm=None, journey=None):
 	"""Create a Lead from a website form.
 
 	v16 dropped Lead.source, so website leads are marked with utm_source "Website" unless the
@@ -110,6 +220,11 @@ def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_pag
 		]
 		if utm.get("utm_source") != "Website" or any(utm.get(k) for k in ("utm_medium", "utm_campaign")):
 			lines.append("UTM: " + frappe.utils.escape_html(", ".join(f"{k}={v}" for k, v in utm.items() if v)))
+		summary = _journey_summary(journey)
+		if summary:
+			lines.append(frappe.utils.escape_html(summary))
+		if journey and journey.get("website_journey"):
+			lines.append("Pages: " + frappe.utils.escape_html(journey["website_journey"]).replace("\n", "<br>"))
 		if message:
 			lines.append("Message: " + frappe.utils.escape_html(message))
 		lead = frappe.get_doc("Lead", existing)
@@ -126,6 +241,9 @@ def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_pag
 	data.message = message
 	for fieldname, value in utm.items():
 		data.set(fieldname, value)
+	for fieldname, value in (journey or {}).items():
+		if data.meta.has_field(fieldname):
+			data.set(fieldname, value)
 	data.save(ignore_permissions=True)
 	frappe.db.commit()
 
@@ -245,4 +363,4 @@ def update_employee_joining_detail(email,data):
 	joining_detail.update(data)
 	joining_detail.flags.ignore_permissions = True
 	joining_detail.save()
-	return _("Updated successfully!")
+	return _("Updated successfully!")
