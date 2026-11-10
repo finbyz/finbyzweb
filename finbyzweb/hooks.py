@@ -154,6 +154,15 @@ scheduler_events = {
 # }
 
 doc_events = {
+	# refresh finbyz.tech pages right after their ERP content changes (finbyzweb/finbyzweb/doc_events/website_cache.py)
+	"NextJS Page": {
+		"on_update": "finbyzweb.finbyzweb.doc_events.website_cache.queue_refresh",
+		"on_trash": "finbyzweb.finbyzweb.doc_events.website_cache.queue_refresh",
+	},
+	"Job Opening": {
+		"on_update": "finbyzweb.finbyzweb.doc_events.website_cache.queue_refresh",
+		"on_trash": "finbyzweb.finbyzweb.doc_events.website_cache.queue_refresh",
+	},
 	"Customer": {
 		"before_save": "finbyzweb.api.customer_before_save"
 	},
