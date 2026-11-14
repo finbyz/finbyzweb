@@ -581,6 +581,8 @@ def generate_video_schema(doc_name):
     if not row or row.schema_json or not video_id or video_id not in video_json:
         return
     row.schema_json = video_json
+    # only this row changes: old dead related-page links (Link fields) must not block the save
+    doc.flags.ignore_links = True
     doc.save(ignore_permissions=True)
 
 
