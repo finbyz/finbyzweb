@@ -43,6 +43,13 @@ PLATFORM_CREDENTIAL_MAP = {
 # Schema types managed internally; must never be AI-generated
 INTERNAL_SCHEMA_TYPES = {"FAQPage", "BreadcrumbList"}
 
+# A page with a YouTube video (youtube_link) gets a VideoObject schema row, written by the
+# Schema Builder agent from facts fetched from YouTube (sync_video_schema / generate_video_schema).
+VIDEO_SCHEMA_TYPE = "VideoObject"
+YOUTUBE_ID_RE = re.compile(
+    r"(?:youtube(?:-nocookie)?\.com/(?:watch\?(?:[^#]*&)?v=|embed/|shorts/|live/|v/)|youtu\.be/)([A-Za-z0-9_-]{11})"
+)
+
 
 # ---------------------------------------------------------------------------
 # Utility helpers
@@ -92,6 +99,142 @@ def _clean_schema_json(raw: str) -> str:
     return raw.strip()
 
 
+def _youtube_id(url):
+    """Return the 11-character YouTube video id in url, or None (also None for /files/*.mp4)."""
+    match = YOUTUBE_ID_RE.search(url or "")
+    return match.group(1) if match else None
+
+
+def _youtube_facts(video_id: str) -> dict:
+    """
+    Facts Google needs for a VideoObject, taken from YouTube itself so nothing is invented:
+    title, upload date, duration and thumbnails from the YouTube Data API (key in ai_crm's
+    YouTube Settings), with oEmbed as a fallback for the title.
+    """
+    facts = {
+        "video_id": video_id,
+        "embedUrl": f"https://www.youtube.com/embed/{video_id}",
+        "contentUrl": f"https://www.youtube.com/watch?v={video_id}",
+        "thumbnailUrl": [f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"],
+    }
+    api_key = None
+    try:
+        if frappe.db.exists("DocType", "YouTube Settings"):
+            api_key = frappe.get_single("YouTube Settings").get_password(
+                "api_key", raise_exception=False
+            )
+    except Exception:
+        api_key = None
+
+    if api_key:
+        try:
+            response = requests.get(
+                "https://www.googleapis.com/youtube/v3/videos",
+                params={"part": "snippet,contentDetails", "id": video_id, "key": api_key},
+                timeout=20,
+            )
+            items = (response.json().get("items") or []) if response.ok else []
+            if items:
+                snippet = items[0].get("snippet") or {}
+                details = items[0].get("contentDetails") or {}
+                facts["name"] = snippet.get("title")
+                facts["youtube_description"] = (snippet.get("description") or "")[:1000]
+                facts["channel"] = snippet.get("channelTitle")
+                if snippet.get("publishedAt"):
+                    facts["uploadDate"] = snippet["publishedAt"]
+                if details.get("duration") and details["duration"] not in ("P0D", "PT0S"):
+                    facts["duration"] = details["duration"]
+                thumbs = snippet.get("thumbnails") or {}
+                urls = [thumbs[k]["url"] for k in ("maxres", "standard", "high") if thumbs.get(k, {}).get("url")]
+                if urls:
+                    facts["thumbnailUrl"] = urls
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), f"YouTube facts failed for {video_id}")
+
+    if not facts.get("name"):
+        try:
+            response = requests.get(
+                "https://www.youtube.com/oembed",
+                params={"url": facts["contentUrl"], "format": "json"},
+                timeout=20,
+            )
+            if response.ok:
+                facts["name"] = response.json().get("title")
+        except Exception:
+            pass
+    return facts
+
+
+def _video_schema_json(doc, agent, user_input=None):
+    """
+    Ask the Schema Builder agent for the page's VideoObject (up to 3 tries), then pin the
+    fields Google checks (urls, thumbnails, upload date, duration) to YouTube's own values.
+    Returns the JSON string, or None when no valid schema could be made.
+    """
+    video_id = _youtube_id(doc.youtube_link)
+    if not video_id:
+        return None
+    facts = _youtube_facts(video_id)
+    page_url = _page_url(doc.route)
+    schema_types = [r.schema_type for r in doc.nextjs_page_schema]
+    hint = (
+        "This page shows a YouTube video as part of its main content. Generate a VideoObject for that video.\n"
+        "VIDEO FACTS (taken from YouTube - copy them exactly, never change or invent them):\n"
+        + json.dumps(facts, indent=1)
+        + f"\nFields: @context, @type VideoObject, @id {page_url}#video, name (the video title above, "
+        "else the page title), description (one or two sentences on what the video shows, from the page "
+        "content and the video description), thumbnailUrl, uploadDate, duration, embedUrl, contentUrl exactly "
+        f"as given (leave out any that are missing), publisher = {{\"@type\": \"Organization\", \"@id\": \"{SITE_URL}/#organization\"}}, "
+        f"mainEntityOfPage = {{\"@type\": \"WebPage\", \"@id\": \"{page_url}#webpage\"}}, inLanguage \"en\".\n"
+        "IMPORTANT: your final answer must be an object with a single key schema_json whose value is the "
+        "JSON-LD as a string."
+    )
+    if user_input:
+        hint = user_input + "\n\n" + hint
+
+    data = None
+    for _attempt in range(3):
+        try:
+            result = agent.invoke(
+                schema_type=VIDEO_SCHEMA_TYPE,
+                has_breadcrumb="BreadcrumbList" in schema_types,
+                has_faq="FAQPage" in schema_types,
+                title=doc.title,
+                content=doc.content or "",
+                page_url=page_url,
+                base_url=SITE_URL,
+                user_input=hint,
+            )
+            candidate = json.loads(_clean_schema_json(_getval(result, "schema_json") or str(result)))
+        except Exception:
+            continue
+        if isinstance(candidate, dict) and candidate.get("@type") == VIDEO_SCHEMA_TYPE:
+            data = candidate
+            break
+
+    if not data:
+        frappe.log_error(
+            f"Schema Builder gave no valid VideoObject for NextJS Page {doc.name} ({doc.youtube_link})",
+            "VideoObject schema not generated",
+        )
+        return None
+
+    data["@context"] = "https://schema.org"
+    data["@id"] = page_url + "#video"
+    for key in ("embedUrl", "contentUrl", "thumbnailUrl", "uploadDate", "duration"):
+        if facts.get(key):
+            data[key] = facts[key]
+        else:
+            data.pop(key, None)
+    if not data.get("name"):
+        data["name"] = facts.get("name") or doc.title
+    if not data.get("description"):
+        data["description"] = doc.meta_description or doc.title
+    data.setdefault("publisher", {"@type": "Organization", "@id": SITE_URL + "/#organization"})
+    data.setdefault("mainEntityOfPage", {"@type": "WebPage", "@id": page_url + "#webpage"})
+    return json.dumps(data, indent=2)
+
+
 def _truncate(text: str, limit: int = 2000) -> str:
     return text[:limit] + "..." if len(text) > limit else text
 
@@ -137,6 +280,22 @@ class NextJSPage(Document):
 
         self.sync_faq_schema()
         self.sync_breadcrumb_schema()
+        self.sync_video_schema()
+
+    def on_update(self):
+        # A new or changed YouTube video leaves an empty VideoObject row: fill it with the AI agent
+        # in the background (an AI call takes too long for the save request).
+        row = self._find_schema(VIDEO_SCHEMA_TYPE)
+        if row and not row.schema_json and _youtube_id(self.youtube_link):
+            frappe.enqueue(
+                "finbyzweb.nextjs_web.doctype.nextjs_page.nextjs_page.generate_video_schema",
+                queue="default",
+                timeout=600,
+                enqueue_after_commit=True,
+                job_id=f"nextjs-video-schema-{self.name}",
+                deduplicate=True,
+                doc_name=self.name,
+            )
 
     def after_insert(self):
         if self.source_code_snippet:
@@ -184,6 +343,26 @@ class NextJSPage(Document):
             "mainEntity": faq_items,
         }
         self._upsert_schema("FAQPage", schema, existing)
+
+    def sync_video_schema(self):
+        """
+        Keep a VideoObject schema row while the page has a YouTube video (youtube_link).
+        The row is added empty (on_update has the AI fill it); a changed video empties it so it is
+        regenerated; removing the video removes the row. Self-hosted /files/*.mp4 links are ignored.
+        """
+        if not frappe.db.exists("NextJS Schema Type", VIDEO_SCHEMA_TYPE):
+            return
+        video_id = _youtube_id(self.youtube_link)
+        existing = self._find_schema(VIDEO_SCHEMA_TYPE)
+        if not video_id:
+            before = self.get_doc_before_save()
+            if existing and before and _youtube_id(before.youtube_link):
+                self.remove(existing)
+            return
+        if not existing:
+            self.append("nextjs_page_schema", {"schema_type": VIDEO_SCHEMA_TYPE})
+        elif existing.schema_json and video_id not in str(existing.schema_json):
+            existing.schema_json = None
 
     def sync_breadcrumb_schema(self):
         """Auto-generate a BreadcrumbList JSON-LD schema from the page route."""
@@ -336,6 +515,14 @@ def generate_schema(doc_name, user_input=None):
         ):
             continue
 
+        # VideoObject is built from the page's YouTube video facts
+        if row.schema_type == VIDEO_SCHEMA_TYPE:
+            video_json = _video_schema_json(doc, agent, user_input)
+            if video_json:
+                row.schema_json = video_json
+                generated_count += 1
+            continue
+
         template = frappe.get_doc("NextJS Schema Type", row.schema_type)
         reference_schema = template.schema or "{}"
 
@@ -378,6 +565,24 @@ def generate_schema(doc_name, user_input=None):
         "success": True,
         "message": f"Generated {generated_count} schema(s) successfully",
     }
+
+
+def generate_video_schema(doc_name):
+    """Background job (queued by NextJSPage.on_update): fill an empty VideoObject row with the AI agent."""
+    doc = frappe.get_doc("NextJS Page", doc_name)
+    row = doc._find_schema(VIDEO_SCHEMA_TYPE)
+    if not row or row.schema_json:
+        return
+    video_json = _video_schema_json(doc, _get_agent("schema_builder_agent"))
+    if not video_json:
+        return
+    doc.reload()  # the page may have been edited while the agent ran
+    row = doc._find_schema(VIDEO_SCHEMA_TYPE)
+    video_id = _youtube_id(doc.youtube_link)
+    if not row or row.schema_json or not video_id or video_id not in video_json:
+        return
+    row.schema_json = video_json
+    doc.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
