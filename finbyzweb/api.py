@@ -239,7 +239,7 @@ def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_pag
 	data.email_id = email
 	data.source_web_page = source_web_page
 	data.message = message
-	_ensure_utm_records(data, utm)
+	_split_unknown_utm(data, utm)
 	for fieldname, value in utm.items():
 		data.set(fieldname, value)
 	for fieldname, value in (journey or {}).items():
@@ -250,32 +250,37 @@ def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_pag
 
 
 UTM_LINK_DOCTYPES = {"utm_source": "UTM Source", "utm_medium": "UTM Medium", "utm_campaign": "UTM Campaign"}
+UTM_OTHER_FIELD = "utm_other"
 
 
-def _ensure_utm_records(lead, utm):
-	"""Create missing UTM Source / Medium / Campaign records before the Lead is saved.
+def _split_unknown_utm(lead, utm):
+	"""Keep only known UTM values in the Lead's Link fields; put the rest in Other UTM Values.
 
-	On Lead these are Link fields, so a visitor arriving with a new utm_source (a new referrer or
-	campaign) would otherwise fail link validation and the inquiry would be lost. A value that
-	cannot be stored as a record name is dropped instead of blocking the Lead.
+	Lead.utm_source / utm_medium / utm_campaign link to UTM Source / Medium / Campaign records, so
+	an unknown value would fail link validation and lose the inquiry. Rather than creating a
+	record for every new referrer or campaign, an unknown value leaves the Link empty and is kept
+	as text ("utm_source: example.com"). Add a UTM record by hand when a source is worth reporting
+	on; later leads with that value then use the Link.
 	"""
+	other = []
 	for fieldname, doctype in UTM_LINK_DOCTYPES.items():
-		value = (utm.get(fieldname) or "").strip()[:140]
-		utm[fieldname] = value or None
+		value = (utm.get(fieldname) or "").strip()
+		utm[fieldname] = None
 		if not value:
 			continue
 		df = lead.meta.get_field(fieldname)
-		if not df or df.fieldtype != "Link" or frappe.db.exists(doctype, value):
-			continue
-		try:
-			record = frappe.new_doc(doctype)
-			record.name = value  # UTM doctypes are autoname: prompt
-			record.insert(ignore_permissions=True)
-		except frappe.DuplicateEntryError:
-			pass
-		except Exception:
-			frappe.log_error(f"Website lead: could not create {doctype} {value!r}", frappe.get_traceback())
-			utm[fieldname] = None
+		if df and df.fieldtype != "Link":
+			utm[fieldname] = value
+		elif len(value) <= 140 and frappe.db.exists(doctype, value):
+			utm[fieldname] = frappe.db.get_value(doctype, value, "name")
+		else:
+			other.append(f"{fieldname}: {value}")
+	if other:
+		text = "\n".join(other)
+		if lead.meta.has_field(UTM_OTHER_FIELD):
+			lead.set(UTM_OTHER_FIELD, text)
+		else:
+			lead.message = "\n\n".join(filter(None, [lead.message, "UTM: " + text]))
 
 
 def _verify_turnstile(token: str | None) -> None:
