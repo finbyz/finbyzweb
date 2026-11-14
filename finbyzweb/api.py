@@ -239,6 +239,7 @@ def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_pag
 	data.email_id = email
 	data.source_web_page = source_web_page
 	data.message = message
+	_ensure_utm_records(data, utm)
 	for fieldname, value in utm.items():
 		data.set(fieldname, value)
 	for fieldname, value in (journey or {}).items():
@@ -246,6 +247,35 @@ def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_pag
 			data.set(fieldname, value)
 	data.save(ignore_permissions=True)
 	frappe.db.commit()
+
+
+UTM_LINK_DOCTYPES = {"utm_source": "UTM Source", "utm_medium": "UTM Medium", "utm_campaign": "UTM Campaign"}
+
+
+def _ensure_utm_records(lead, utm):
+	"""Create missing UTM Source / Medium / Campaign records before the Lead is saved.
+
+	On Lead these are Link fields, so a visitor arriving with a new utm_source (a new referrer or
+	campaign) would otherwise fail link validation and the inquiry would be lost. A value that
+	cannot be stored as a record name is dropped instead of blocking the Lead.
+	"""
+	for fieldname, doctype in UTM_LINK_DOCTYPES.items():
+		value = (utm.get(fieldname) or "").strip()[:140]
+		utm[fieldname] = value or None
+		if not value:
+			continue
+		df = lead.meta.get_field(fieldname)
+		if not df or df.fieldtype != "Link" or frappe.db.exists(doctype, value):
+			continue
+		try:
+			record = frappe.new_doc(doctype)
+			record.name = value  # UTM doctypes are autoname: prompt
+			record.insert(ignore_permissions=True)
+		except frappe.DuplicateEntryError:
+			pass
+		except Exception:
+			frappe.log_error(f"Website lead: could not create {doctype} {value!r}", frappe.get_traceback())
+			utm[fieldname] = None
 
 
 def _verify_turnstile(token: str | None) -> None:
