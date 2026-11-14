@@ -378,7 +378,6 @@ class NextJSPage(Document):
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "@id": page_url + "#breadcrumb",
-            "publisher": {"@id": SITE_URL + "/#organization"},
             "itemListElement": items,
         }
         self._upsert_schema(
