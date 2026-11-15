@@ -243,8 +243,8 @@ function add_ai_buttons(frm) {
     frm.add_custom_button(__("Create Social Media Post"), () =>
         show_social_post_dialog(frm), GROUP);
 
-    frm.add_custom_button(__("Generate Page"), () =>
-        show_generate_page_dialog(frm), GROUP);
+    // "Generate Page" retired 15 Nov 2026 (F-13): it posted to web.finbyz.com/api/write-page (dev-only, 502).
+    // Pages are now built in the finbyzwebsite repo; show_generate_page_dialog is kept unused.
 }
 
 // ---------------------------------------------------------------------------
