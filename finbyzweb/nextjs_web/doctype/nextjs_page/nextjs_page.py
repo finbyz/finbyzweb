@@ -454,6 +454,10 @@ def generate_seo(doc_name, user_input=None):
     doc.meta_title = _getval(result, "meta_title")
     doc.meta_description = _getval(result, "meta_description")
     doc.keywords = _getval(result, "keywords")
+    # Chat Hint: one-line question for the website chat bubble on this page (read at website build)
+    hint = re.sub(r"\s+", " ", _getval(result, "chat_hint") or "").strip()
+    if hint and len(hint) <= 70 and doc.meta.has_field("chat_hint"):
+        doc.chat_hint = hint
 
     # Mirror to OG / Twitter fields for consistency
     doc.og_title = doc.meta_title
