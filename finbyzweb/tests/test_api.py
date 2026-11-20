@@ -93,10 +93,12 @@ class TestTurnstileVerification(TestCase):
 				with self.assertRaises(frappe.PermissionError):
 					_verify_turnstile("unverified-token")
 
-	def test_contact_form_verifies_token_before_creating_lead(self):
+	def _post_contact(self, check_result):
 		with patch("finbyzweb.api.frappe.form_dict", {"cf-turnstile-response": "contact-token"}):
-			with patch("finbyzweb.api._verify_turnstile") as verify:
-				with patch("finbyzweb.api.frappe.new_doc", return_value=Mock()) as new_doc, patch("finbyzweb.api.frappe.db", Mock()):
+			with patch("finbyzweb.api._turnstile_result", return_value=check_result) as check:
+				with patch("finbyzweb.api.frappe.new_doc", return_value=Mock()) as new_doc, \
+					patch("finbyzweb.api.frappe.db", Mock()), \
+					patch("finbyzweb.api.frappe.cache", Mock(incrby=Mock(return_value=1))):
 					set_form_contact_data(
 						lead_name="Test Lead",
 						company_name="Test Company",
@@ -105,6 +107,16 @@ class TestTurnstileVerification(TestCase):
 						email="lead@example.com",
 						notes="Please contact me",
 					)
-
-		verify.assert_called_once_with("contact-token")
+		check.assert_called_once_with("contact-token")
 		new_doc.assert_called_once_with("Lead")
+		return new_doc.return_value
+
+	def test_contact_form_verifies_token_before_creating_lead(self):
+		lead = self._post_contact("")
+		self.assertEqual(lead.message, "Please contact me")
+
+	def test_contact_form_keeps_lead_when_security_check_fails(self):
+		# A visitor whose browser cannot pass Cloudflare must not lose the inquiry
+		lead = self._post_contact("rejected: invalid-input-response")
+		self.assertTrue(lead.message.startswith("[Security check not completed: rejected: invalid-input-response."))
+		self.assertTrue(lead.message.endswith("Please contact me"))

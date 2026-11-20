@@ -32,14 +32,15 @@ def customer_before_save(self, method):
 
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 def set_form_contact_data(
-	lead_name: str,
-	company_name: str,
-	mobile_no: str,
-	title: str,
-	email: str,
-	notes: str,
+	lead_name: str = "",
+	company_name: str = "",
+	mobile_no: str = "",
+	title: str = "",
+	email: str = "",
+	notes: str = "",
 ):
-	_verify_turnstile(frappe.form_dict.get("cf-turnstile-response"))
+	# A failed security check never loses an inquiry: the Lead is saved and marked (see _inquiry_check)
+	notes = _inquiry_check(notes)
 
 	# Lead.notes is a CRM Note table in v16; the visitor's text goes into Lead.message
 	_save_website_lead(
@@ -54,11 +55,11 @@ def set_form_contact_data(
 
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 def set_form_data(
-	lead_name: str,
-	company_name: str,
-	mobile_no: str,
-	title: str,
-	email: str,
+	lead_name: str = "",
+	company_name: str = "",
+	mobile_no: str = "",
+	title: str = "",
+	email: str = "",
 	message: str = "",
 	utm_source: str = "",
 	utm_medium: str = "",
@@ -68,9 +69,9 @@ def set_form_data(
 	attribution: str = "",
 	ga_client_id: str = "",
 ):
-	_verify_turnstile(frappe.form_dict.get("cf-turnstile-response"))
+	message = _inquiry_check(message)
 
-	query_params = parse_qs(urlsplit(title).query)
+	query_params = parse_qs(urlsplit(title or "").query)
 	utm = {
 		fieldname: (value or "").strip() or query_params.get(fieldname, [""])[0].strip()
 		for fieldname, value in {
@@ -209,7 +210,12 @@ def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_pag
 	utm = dict(utm or {})
 	utm["utm_source"] = utm.get("utm_source") or "Website"
 
-	existing = email and frappe.db.get_value("Lead", {"email_id": email.strip()}, "name")
+	email = (email or "").strip()
+	lead_name = (lead_name or "").strip()[:140]
+	company_name = (company_name or "").strip()[:140]
+	if not (email or (mobile_no or "").strip()):
+		frappe.throw("Please enter your email or phone number.")
+	existing = email and frappe.db.get_value("Lead", {"email_id": email}, "name")
 	if existing and not frappe.db.get_single_value("CRM Settings", "allow_lead_duplication_based_on_emails"):
 		lines = [
 			"<b>New website inquiry</b>",
@@ -232,20 +238,48 @@ def _save_website_lead(lead_name, company_name, mobile_no, email, source_web_pag
 		frappe.db.commit()
 		return
 
-	data = frappe.new_doc("Lead")
-	data.lead_name = lead_name
-	data.company_name = company_name
-	data.mobile_no = mobile_no
-	data.email_id = email
-	data.source_web_page = source_web_page
-	data.message = message
-	_split_unknown_utm(data, utm)
-	for fieldname, value in utm.items():
-		data.set(fieldname, value)
-	for fieldname, value in (journey or {}).items():
-		if data.meta.has_field(fieldname):
+	def build(keep_mobile=True, keep_email=True):
+		data = frappe.new_doc("Lead")
+		data.lead_name = lead_name
+		# Lead requires Organization; the quick forms send none for Gmail/Yahoo addresses
+		data.company_name = company_name or NO_COMPANY
+		data.mobile_no = mobile_no if keep_mobile else None
+		data.email_id = email if keep_email else None
+		data.source_web_page = source_web_page
+		data.message = message
+		dropped = [f"Mobile: {mobile_no}" for _ in [1] if not keep_mobile and mobile_no]
+		dropped += [f"Email: {email}" for _ in [1] if not keep_email and email]
+		if dropped:
+			data.message = "\n\n".join(filter(None, [message, "As typed, not valid, check by hand: " + ", ".join(dropped)]))
+		_split_unknown_utm(data, utm)
+		for fieldname, value in utm.items():
 			data.set(fieldname, value)
-	data.save(ignore_permissions=True)
+		for fieldname, value in (journey or {}).items():
+			if data.meta.has_field(fieldname):
+				data.set(fieldname, value)
+		return data
+
+	# An inquiry must never be refused for a badly typed phone or email: save it with those two
+	# fields kept in the message instead, so sales can still read and call/write.
+	email_ok = not email or bool(frappe.utils.validate_email_address(email))
+	attempts = [(True, True), (True, False), (False, True), (False, False)]
+	attempts = [a for a in attempts if email_ok or not a[1]]  # a bad email is never retried
+	for i, (keep_mobile, keep_email) in enumerate(attempts):
+		frappe.db.savepoint("website_lead")
+		try:
+			build(keep_mobile, keep_email).save(ignore_permissions=True)
+			break
+		except frappe.ValidationError:
+			frappe.db.rollback(save_point="website_lead")
+			frappe.clear_messages()
+			if i == len(attempts) - 1:
+				frappe.log_error(
+					"Website inquiry not saved",
+					frappe.as_json({"lead_name": lead_name, "company_name": company_name, "mobile_no": mobile_no,
+						"email": email, "page": source_web_page, "message": message}) + "\n\n" + frappe.get_traceback(),
+				)
+				frappe.db.commit()
+				raise
 	frappe.db.commit()
 
 
@@ -281,6 +315,60 @@ def _split_unknown_utm(lead, utm):
 			lead.set(UTM_OTHER_FIELD, text)
 		else:
 			lead.message = "\n\n".join(filter(None, [lead.message, "UTM: " + text]))
+
+
+NO_COMPANY = "Not given"
+# Most unverified inquiries per hour, site-wide (website traffic reaches the ERP through one proxy IP,
+# so a per-IP limit is not possible). Above it, posts are refused and logged. site_config can change it.
+UNVERIFIED_LEADS_PER_HOUR = 20
+
+
+def _turnstile_result(token: str | None) -> str:
+	"""Return "" when the Cloudflare check passed, else a short reason. Never raises."""
+	if not token:
+		return "no token (" + _clean_text(frappe.form_dict.get("turnstile_fallback") or "not sent", 40) + ")"
+	secret = frappe.conf.get("turnstile_secret_key")
+	if not secret:
+		return "secret key not configured"
+	payload = {"secret": secret, "response": token}
+	if remote_ip := getattr(frappe.local, "request_ip", None):
+		payload["remoteip"] = remote_ip
+	try:
+		response = requests.post(TURNSTILE_SITEVERIFY_URL, data=payload, timeout=TURNSTILE_TIMEOUT_SECONDS)
+		response.raise_for_status()
+		verification = response.json()
+	except (requests.RequestException, ValueError):
+		frappe.logger("finbyzweb").exception("Turnstile verification request failed")
+		return "Cloudflare not reachable"
+	if isinstance(verification, dict) and verification.get("success"):
+		return ""
+	codes = verification.get("error-codes", []) if isinstance(verification, dict) else []
+	return "rejected: " + (", ".join(map(str, codes)) or "unknown")
+
+
+def _inquiry_check(message: str) -> str:
+	"""Security check for website inquiries that never loses a real inquiry.
+
+	A visitor whose browser cannot finish the Cloudflare check (privacy browsers, in-app browsers,
+	blocked scripts, slow networks) used to be refused. Now the Lead is saved with a note at the top
+	of its message, and only a flood of unverified posts (a bot) is refused.
+	"""
+	reason = _turnstile_result(frappe.form_dict.get("cf-turnstile-response"))
+	if not reason:
+		return message or ""
+	cap = frappe.utils.cint(frappe.conf.get("website_unverified_leads_per_hour") or UNVERIFIED_LEADS_PER_HOUR)
+	key = "finbyzweb:unverified_leads:" + datetime.now(timezone.utc).strftime("%Y%m%d%H")
+	count = frappe.cache.incrby(key, 1)
+	frappe.cache.expire(key, 7200)
+	frappe.logger("finbyzweb").warning("Website inquiry without security check (%s), %s this hour", reason, count)
+	if count > cap:
+		if count == cap + 1:
+			frappe.log_error("Website inquiries: unverified limit reached",
+				f"More than {cap} inquiries this hour without a passed security check. Further ones are refused until the hour ends. Last reason: {reason}")
+			frappe.db.commit()
+		frappe.throw("Too many requests. Please try again later or write to info@finbyz.tech.", frappe.PermissionError)
+	note = f"[Security check not completed: {reason}. Saved so the inquiry is not lost; may be spam.]"
+	return "\n\n".join(filter(None, [note, message]))
 
 
 def _verify_turnstile(token: str | None) -> None:
