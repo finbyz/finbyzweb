@@ -39,6 +39,7 @@ def set_form_contact_data(
 	email: str = "",
 	notes: str = "",
 ):
+	_require_contact(email, mobile_no)
 	# A failed security check never loses an inquiry: the Lead is saved and marked (see _inquiry_check)
 	notes = _inquiry_check(notes)
 
@@ -69,6 +70,7 @@ def set_form_data(
 	attribution: str = "",
 	ga_client_id: str = "",
 ):
+	_require_contact(email, mobile_no)
 	message = _inquiry_check(message)
 
 	query_params = parse_qs(urlsplit(title or "").query)
@@ -344,6 +346,18 @@ def _turnstile_result(token: str | None) -> str:
 		return ""
 	codes = verification.get("error-codes", []) if isinstance(verification, dict) else []
 	return "rejected: " + (", ".join(map(str, codes)) or "unknown")
+
+
+def _require_contact(email: str, mobile_no: str) -> None:
+	"""Refuse only a post nobody could answer: no valid email and no phone with 6+ digits.
+
+	The website forms check both before sending, so this stops junk (and the daily health probe)
+	before it counts against the unverified limit or becomes a Lead.
+	"""
+	email_ok = bool(email and frappe.utils.validate_email_address((email or "").strip()))
+	phone_ok = sum(ch.isdigit() for ch in (mobile_no or "")) >= 6
+	if not (email_ok or phone_ok):
+		frappe.throw("Please enter a valid email or phone number.")
 
 
 def _inquiry_check(message: str) -> str:
